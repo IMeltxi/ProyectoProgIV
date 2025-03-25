@@ -43,7 +43,7 @@ void visualizarListaUsuarios(ListaUsuarios lu){
 
 }
 Usuario* iniciarSesion(ListaUsuarios lu, char* email, char* contra) {
-	Usuario usuarioNoEncontrado = {"","",0};
+
     for (int i = 0; i < lu.numUsuarios; i++) {
         if (strcmp(lu.aUsuarios[i].email, email) == 0 && strcmp(lu.aUsuarios[i].contrasenia, contra) == 0) {
             return &lu.aUsuarios[i];  // Devolvemos un puntero al usuario encontrado
@@ -51,5 +51,13 @@ Usuario* iniciarSesion(ListaUsuarios lu, char* email, char* contra) {
     }
     printf("NO SE HA ENCONTRADO AL USUARIO\n");
 
-    return usuarioNoEncontrado;
+    return 0;
+}
+void visualizarPerfilUsuario(Usuario u){
+	printf("- Nombre: %s",u.nombre);
+	printf("- Apellido: %s",u.apellido);
+	printf("- DNI: %i",u.dni);
+	printf("- Telefono: %i",u.telefono);
+	printf("- Email: %s",u.email);
+	printf("- Direccion: %s",u.direccion);
 }

@@ -20,8 +20,7 @@ void aniadirUsuarioAListaUsuarios(ListaUsuarios *lu, Usuario u);//Registrar usua
 void visualizarUsuario(Usuario u);
 void visualizarListaUsuarios(ListaUsuarios lu);
 
-
 Usuario* iniciarSesion(ListaUsuarios lu,char* email, char* contra);
-
+void visualizarPerfilUsuario(Usuario u);
 
 #endif
