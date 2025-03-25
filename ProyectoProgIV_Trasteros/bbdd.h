@@ -10,5 +10,7 @@ void crearTablas(sqlite3 *db);
 void aniadirUsuario(sqlite3 *db, Usuario u);
 void aniadirTrasteroABBDD(sqlite3 *db, Trastero t);
 void modificarDisponibilidadTrasteroABBDD(sqlite3 *db, Trastero t);
+void aniadirTrasteroAlquilado(sqlite3 *db, Trastero t);
+void guardarTrasteroEnHistorial(sqlite3 *db, Trastero t);
 void borrarBBDD(sqlite3*db);
 #endif /* BBDD_H_ */
