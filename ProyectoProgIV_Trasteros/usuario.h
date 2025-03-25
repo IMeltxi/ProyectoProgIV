@@ -16,12 +16,12 @@ typedef struct{
 }ListaUsuarios;
 
 void inicializarListaUsuarios(ListaUsuarios *lu);
-
-void aniadirUsuarioAListaUsuarios(ListaUsuarios *lu, Usuario u);
+void aniadirUsuarioAListaUsuarios(ListaUsuarios *lu, Usuario u);//Registrar usuario
 void visualizarUsuario(Usuario u);
 void visualizarListaUsuarios(ListaUsuarios lu);
-void resgistrarUsuario(Usuario u);
-void iniciarSesion(Usuario u);
+
+
+Usuario* iniciarSesion(ListaUsuarios lu,char* email, char* contra);
 
 
 #endif

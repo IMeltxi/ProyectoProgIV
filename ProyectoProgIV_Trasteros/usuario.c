@@ -29,19 +29,27 @@ void aniadirUsuarioAListaUsuarios(ListaUsuarios *lu, Usuario u){
 }
 //Para listar los clientes
 void visualizarUsuario(Usuario u){
-	printf("%s%15s%15i%15i%20s%15s",u.nombre,u.apellido,u.dni,u.telefono,u.email,u.direccion);
+	printf("%s%15s%15i%15i%20s%15s%15s\n",u.nombre,u.apellido,u.dni,u.telefono,u.email,u.direccion,u.contrasenia);
 	fflush(stdout);
-	fflush(stdin);
 }
 void visualizarListaUsuarios(ListaUsuarios lu){
 	int i;
-	printf("%s%15s%15s%15s%20s%15s\n","NOMBRE","APELLIDOS","DNI","TELEFONO","EMAIL","DIRECCION");
+	printf("%s%15s%15s%15s%20s%15s%15s\n","NOMBRE","APELLIDOS","DNI","TELEFONO","EMAIL","DIRECCION","CONTRASEÑA");
 	fflush(stdout);
-	fflush(stdin);
-	for(i=0;i<sizeof(lu);i++){
+	for(i=0;i<lu.numUsuarios;i++){
 		visualizarUsuario(lu.aUsuarios[i]);
+		fflush(stdout);
 	}
 
 }
-void resgistrarUsuario(Usuario u);
-void iniciarSesion(Usuario u);
+Usuario* iniciarSesion(ListaUsuarios lu, char* email, char* contra) {
+	Usuario usuarioNoEncontrado = {"","",0};
+    for (int i = 0; i < lu.numUsuarios; i++) {
+        if (strcmp(lu.aUsuarios[i].email, email) == 0 && strcmp(lu.aUsuarios[i].contrasenia, contra) == 0) {
+            return &lu.aUsuarios[i];  // Devolvemos un puntero al usuario encontrado
+        }
+    }
+    printf("NO SE HA ENCONTRADO AL USUARIO\n");
+
+    return usuarioNoEncontrado;
+}
