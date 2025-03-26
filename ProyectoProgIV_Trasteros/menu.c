@@ -53,12 +53,49 @@ void menuCliente(Usuario u) {
 		fflush(stdin);
 		scanf(" %c", &opcion);
 		switch (opcion) {
-			case '1':
-				menuPerfil(u);
-				break;
-			default:
-				break;
+		case '1': // Ver el perfil del usuario
+			menuPerfil(u);
+			break;
+	    case '2': // Mostrar catálogo de trasteros (aquí necesitarías implementar la función que muestra el catálogo de trasteros disponibles)
+	    	visualizarTrasterosDisponibles(listaTrasteros);
+	    	break;
+		case '3': {// Alquilar un trastero
+			char input[10];
+			printf("Ingrese el número de trastero a alquilar: ");
+			fflush(stdout);
+			gets(input);
+			int num = atoi(input);
+			int pos = buscarTrastero(listaTrasteros, num);
+			if (pos != -1) {
+				alquilarTrastero(&listaTrasteros.aTrasteros[pos]);
+				printf("Trastero alquilado con éxito.\n");
+			} else {
+				printf("Trastero no encontrado.\n");
+			}
+			break;
 		}
+		case '4': {
+			char input[10];
+			printf("Ingrese el número de trastero a devolver: ");
+			fflush(stdout);
+			gets(input);
+			int num = atoi(input);
+			int pos = buscarTrastero(listaTrasteros, num);
+			if (pos != -1) {
+				devolverTrastero(&listaTrasteros.aTrasteros[pos]);
+				printf("Trastero devuelto con éxito.\n");
+			} else {
+				printf("Trastero no encontrado.\n");
+			}
+			break;
+		}
+		case '0':
+			// Cerrar sesión
+			printf("Cerrando sesión...\n");
+			break;
+			default:
+				printf("Opción inválida. Intente nuevamente.\n");
+		        }
     }while (opcion != '0');
 
 
@@ -122,7 +159,7 @@ int autenticarAdministrador() {
         return 0;
     }
 }
-void registrarUsuario(){
+int registrarUsuario(){
 	char nombre[50],apellido[50],email[50],direccion[50], contrasena[50],confirmarContrasena[50],telefono[9],dni[9];
 	printf("Introduce el nomre:");
 	fflush(stdout);
@@ -194,8 +231,10 @@ int autenticarUsuario() {
     }
 }
 
-void manejarCliente() {
+void manejarCliente(ListaUsuarios *lu) {
     char opcion;
+    Usuario *usuarioActual = NULL;
+
     do {
         opcion = menuIniReg();
         switch (opcion) {
@@ -204,7 +243,7 @@ void manejarCliente() {
                 printf("Iniciando sesión...\n");
             	}break;
             case '2':
-            	if(registrarUsuario()){ DA ERROR
+            	if(registrarUsuario()){
             		printf("Usuario Registrado...\n");
             	}
                 break;
@@ -214,7 +253,7 @@ void manejarCliente() {
     } while (opcion != '1' && opcion != '2');
 
     do {
-        opcion = menuCliente();
+        opcion = menuCliente(Usuario u);
         switch (opcion) {
             case '1':
                 printf("Mostrando perfil...\n");
