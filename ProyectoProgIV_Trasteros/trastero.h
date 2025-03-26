@@ -1,6 +1,7 @@
 
 #ifndef TRASTERO_H_
 #define TRASTERO_H_
+#define MAX_TRASTEROS 100
 
 
 typedef struct{
@@ -12,7 +13,7 @@ typedef struct{
 }Trastero;
 
 typedef struct{
-	Trastero aTrasteros[100];
+	Trastero aTrasteros[MAX_TRASTEROS];
 	int numeroTrasteros;
 }ListaTrasteros;
 
