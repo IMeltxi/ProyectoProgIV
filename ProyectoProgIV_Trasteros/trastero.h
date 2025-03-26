@@ -17,6 +17,7 @@ typedef struct{
 	int numeroTrasteros;
 }ListaTrasteros;
 
+void inicializarListaTrasteros(ListaTrasteros *lt);
 void alquilarTrastero(Trastero *t);
 void devolverTrastero(Trastero *t);
 int buscarTrastero(ListaTrasteros lt, int numeroTrastero);

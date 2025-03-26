@@ -6,41 +6,50 @@
 #include <time.h>
 
 
-int inicializarBBDD(sqlite3 **db){
-	int result;
-
-	result = sqlite3_open(NOMBRE_BBDD, db);
-	return result;
+int inicializarBBDD(sqlite3 **db) {
+    int result = sqlite3_open(NOMBRE_BBDD, db);
+    if (result != SQLITE_OK) {
+        printf("Error al abrir la base de datos: %s\n", sqlite3_errmsg(*db));
+        fflush(stdout);
+    } else {
+        printf("Base de datos abierta correctamente.\n");
+        fflush(stdout);
+    }
+    return result;
 }
 
 void crearTablas(sqlite3 *db){
-	sqlite3_stmt *stmt; //Acceso a ejecuci�n de sentencias
-	char sql[100];
-	//TABLA USUARIO
+	printf("Crear tablas abierto\n");fflush(stdout);
+	sqlite3_stmt *stmt;
+	char sql[300];
 	sprintf(sql, "CREATE TABLE IF NOT EXISTS Usuario "
-			"(nombre varchar(30),apellido varchar(30),dni int,telefono int, "
-			"email varchar(30), direccion varchar(30),contrasenia varchar(30))");
+			"(nombre varchar(30), apellido varchar(30), dni int, telefono int, "
+			"email varchar(30), direccion varchar(30), contrasenia varchar(30))");
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
 	sqlite3_step(stmt); //Ejecutar la sentencia
 	sqlite3_finalize(stmt); //Cerrar la sentencia
+
 	//TABLA TRASTERO
 	sprintf(sql, "CREATE TABLE IF NOT EXISTS Trastero "
 				"(numeroTrastero int,metrosCuadrados int, precio float, valoracion int, disponible TINYINT(1))");//TINYINT(1) = boolean (1=true)
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
 	sqlite3_step(stmt); //Ejecutar la sentencia
 	sqlite3_finalize(stmt); //Cerrar la sentencia
+
 	//TABLA HISTORIAL (HISTORIAL DE LOS TRASTEROS RENTADOS)
 	sprintf(sql, "CREATE TABLE IF NOT EXISTS Historial "
 					"(numeroTrastero int, dni int, valoracion int,diaInicio varchar(20),diaFinal varchar(20))");
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
 	sqlite3_step(stmt); //Ejecutar la sentencia
 	sqlite3_finalize(stmt); //Cerrar la sentencia
+
 	//TABLA DE TRASTEROS ACTUALMENTE ALQUILADOS
 	sprintf(sql, "CREATE TABLE IF NOT EXISTS Alquilados "
 						"(numeroTrastero int, dni int, valoracion int,diaInicio varchar(20))");
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
 	sqlite3_step(stmt); //Ejecutar la sentencia
 	sqlite3_finalize(stmt); //Cerrar la sentencia
+
 
 }
 void aniadirUsuarioABBDD(sqlite3 *db, Usuario u){
@@ -202,7 +211,6 @@ void obtenerListaTrasterosAlquilados(sqlite3 *db) {
     }
     sqlite3_finalize(stmt);
 
-    // 3️⃣ Consultamos los trasteros
     sprintf(sql, "SELECT numeroTrastero FROM Alquilados");
     sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 

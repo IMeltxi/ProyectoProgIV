@@ -1,6 +1,8 @@
 // main.c
 #include "menu.h"
 #include "usuario.h"
+#include "trastero.h"
+#include "bbdd.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -8,11 +10,22 @@
 
 int main() {
     ListaUsuarios lu;
+    ListaTrasteros lt;
     Usuario u={0};
+    sqlite3 *db; //Acceso a la bbdd
+    int result;
     printf("Iniciando el programa...\n");
+
+    result = inicializarBBDD(&db);
+    	if(result == SQLITE_OK){
+    		crearTablas(db);
+    	}else{
+    		printf("No se ha establecido la conexi�n con la BBDD\n");
+    		fflush(stdout);
+    	}
     inicializarListaUsuarios(&lu);
-    aniadirUsuarioAListaUsuarios(&lu, u);
-    visualizarListaUsuarios(lu);
+    inicializarListaTrasteros(&lt);
+
 
     char opcionPrincipal;
     do {

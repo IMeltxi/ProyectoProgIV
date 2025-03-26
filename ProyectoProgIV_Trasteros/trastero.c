@@ -1,6 +1,8 @@
 #include "trastero.h"
 #include <stdio.h>
-
+void inicializarListaTrasteros(ListaTrasteros* lt){
+	lt->numeroTrasteros=0;
+}
 void alquilarTrastero(Trastero *t) {
     t->disponible = 0;
 }
