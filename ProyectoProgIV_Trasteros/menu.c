@@ -124,14 +124,21 @@ int autenticarAdministrador() {
 	fflush(stdout);
 	fflush(stdin);
     gets(confirmarContrasena);
-    if (strcmp(contrasena, confirmarContrasena) == 0 ) {
+    //Esta ya registrado?
+    if(usuarioRegistrado(NOMBRE_BBDD,dni)==1){
+    	printf("Este DNI ya esta registrado");fflush(stdout);
+    	return 1;
+    }else if (strcmp(contrasena, confirmarContrasena) == 0 ) {
     	Usuario u ={nombre,apellido,atoi(dni),atoi(apellido),email,direccion,contrasena};
     	visualizarPerfilUsuario(u);
-
+    	aniadirUsuarioABBDD(NOMBRE_BBDD,u);
            printf("Usuario registrado\n");
            aniadirUsuarioABBDD(NOMBRE_BBDD,u);
            return 0;
-       }else return 1;
+       }else {
+    	   printf("Las contraseñas no coinciden");fflush(stdout);
+    	   return 1;
+       }
 
 }
 int autenticarUsuario() {

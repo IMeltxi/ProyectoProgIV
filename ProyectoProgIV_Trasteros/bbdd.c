@@ -154,9 +154,9 @@ int usuarioRegistrado(sqlite3 *db,int dni){
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 	result = sqlite3_column_int(stmt, 0);
 	if(result!=0){
-		return 1;
+		return 1;//Esta registrado
 	}else{
-		return 0;
+		return 0;//No esta registrado
 	}
 	sqlite3_finalize(stmt);
 	return result;
