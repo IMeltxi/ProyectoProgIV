@@ -1,10 +1,19 @@
 #include "menu.h"
 #include <stdio.h>
+#include <string.h>
 #include "usuario.h"
+#include "trastero.h"
+
+
+
 #define ADMIN_USER "admin"
 #define ADMIN_PASS "1234"
 #define USER1 "user"
 #define USER_PASS "1234"
+
+ListaTrasteros listaTrasteros;
+
+
 char mostrarMenuPrincipal() {
     char opcion;
     printf("Menu PRINCIPAL\n");
@@ -81,7 +90,7 @@ int autenticarAdministrador() {
         return 0;
     }
 }
-int registrarUsuario(){
+ int registrarUsuario(){
 	char nombre[50],apellido[50],email[50],direccion[50], contrasena[50],confirmarContrasena[50],telefono[9],dni[9];
 	printf("Introduce el nomre:");
 	fflush(stdout);
@@ -186,4 +195,70 @@ void manejarCliente() {
                 printf("ERROR.\n");
         }
     } while (opcion != '0');
+}
+void manejarAdministrador() {
+    char opcion;
+    if (autenticarAdministrador()) {
+        do {
+            opcion = menuAdministrador();
+            switch (opcion) {
+                case '1': {
+                    Trastero nuevo;
+                    printf("Ingrese Numero de Trastero: ");
+                    scanf("%d", &nuevo.numeroTrastero);
+                    printf("Ingrese Metros Cuadrados: ");
+                    scanf("%d", &nuevo.metrosCuadrados);
+                    printf("Ingrese Valoracion: ");
+                    scanf("%d", &nuevo.valoracion);
+                    printf("Ingrese Precio: ");
+                    scanf("%d", &nuevo.precio);
+                    nuevo.disponible = 1;
+                    aniadirTrastero(&listaTrasteros, nuevo);
+                    printf("%s", nuevo);
+                    break;
+                }
+                case '2': {
+                    int num;
+                    printf("Ingrese Numero de Trastero a eliminar: ");
+                    scanf("%d", &num);
+                    Trastero t;
+                    t.numeroTrastero = num;
+                    eliminarTrastero(&listaTrasteros, t);
+                    break;
+                }
+                case '3':
+                    visualizarTrasterosDisponibles(listaTrasteros);
+                    break;
+                case '4': {
+                    int num;
+                    printf("Ingrese Numero de Trastero a alquilar: ");
+                    scanf("%d", &num);
+                    int pos = buscarTrastero(listaTrasteros, num);
+                    if (pos != -1) {
+                        alquilarTrastero(&listaTrasteros.aTrasteros[pos]);
+                    } else {
+                        printf("Trastero no encontrado.\n");
+                    }
+                    break;
+                }
+                case '5': {
+                    int num;
+                    printf("Ingrese Numero de Trastero a devolver: ");
+                    scanf("%d", &num);
+                    int pos = buscarTrastero(listaTrasteros, num);
+                    if (pos != -1) {
+                        devolverTrastero(&listaTrasteros.aTrasteros[pos]);
+                    } else {
+                        printf("Trastero no encontrado.\n");
+                    }
+                    break;
+                }
+                case '0':
+                    printf("Saliendo del administrador...\n");
+                    break;
+                default:
+                    printf("Opcion invalida.\n");
+            }
+        } while (opcion != '0');
+    }
 }
