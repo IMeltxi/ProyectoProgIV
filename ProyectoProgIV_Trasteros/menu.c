@@ -1,10 +1,19 @@
 #include "menu.h"
 #include <stdio.h>
+#include <string.h>
 #include "usuario.h"
+#include "trastero.h"
+#include "bbdd.h"
+
+
 #define ADMIN_USER "admin"
 #define ADMIN_PASS "1234"
 #define USER1 "user"
 #define USER_PASS "1234"
+
+ListaTrasteros listaTrasteros;
+
+
 char mostrarMenuPrincipal() {
     char opcion;
     printf("Menu PRINCIPAL\n");
@@ -81,7 +90,7 @@ int autenticarAdministrador() {
         return 0;
     }
 }
-int registrarUsuario(){
+ int registrarUsuario(){
 	char nombre[50],apellido[50],email[50],direccion[50], contrasena[50],confirmarContrasena[50],telefono[9],dni[9];
 	printf("Introduce el nomre:");
 	fflush(stdout);
@@ -118,8 +127,9 @@ int registrarUsuario(){
     if (strcmp(contrasena, confirmarContrasena) == 0 ) {
     	Usuario u ={nombre,apellido,atoi(dni),atoi(apellido),email,direccion,contrasena};
     	visualizarPerfilUsuario(u);
-           printf("Usuario registrado\n");
 
+           printf("Usuario registrado\n");
+           aniadirUsuarioABBDD(NOMBRE_BBDD,u);
            return 0;
        }else return 1;
 
@@ -187,3 +197,92 @@ void manejarCliente() {
         }
     } while (opcion != '0');
 }
+void manejarAdministrador() {
+    char opcion;
+    if (autenticarAdministrador()) {
+        do {
+            opcion = menuAdministrador();
+            switch (opcion) {
+                case '1': {
+                    Trastero nuevo;
+                    char input[50];
+                    printf("Ingrese Numero de Trastero: ");
+                    fflush(stdout);
+                    gets(input);
+                    nuevo.numeroTrastero = atoi(input);
+
+                    printf("Ingrese Metros Cuadrados: ");
+                    fflush(stdout);
+                    gets(input);
+                    nuevo.metrosCuadrados = atoi(input);
+
+                    printf("Ingrese Valoracion: ");
+                    fflush(stdout);
+                    gets(input);
+                    nuevo.valoracion = atoi(input);
+
+                    printf("Ingrese Precio: ");
+                    fflush(stdout);
+                    gets(input);
+                    nuevo.precio = atoi(input);
+
+                    nuevo.disponible = 1;
+                    aniadirTrastero(&listaTrasteros, nuevo);
+                    printf("Trastero agregado correctamente.\n");
+                    break;
+                }
+                case '2': {
+                    char input[50];
+                    printf("Ingrese Numero de Trastero a eliminar: ");
+                    fflush(stdout);
+                    gets(input);
+                    int num = atoi(input);
+
+                    Trastero t;
+                    t.numeroTrastero = num;
+                    eliminarTrastero(&listaTrasteros, t);
+                    break;
+                }
+                case '3':
+                    visualizarTrasterosDisponibles(listaTrasteros);
+                    break;
+                case '4': {
+                    char input[50];
+                    printf("Ingrese Numero de Trastero a alquilar: ");
+                    fflush(stdout);
+                    gets(input);
+                    int num = atoi(input);
+
+                    int pos = buscarTrastero(listaTrasteros, num);
+                    if (pos != -1) {
+                        alquilarTrastero(&listaTrasteros.aTrasteros[pos]);
+                    } else {
+                        printf("Trastero no encontrado.\n");
+                    }
+                    break;
+                }
+                case '5': {
+                    char input[50];
+                    printf("Ingrese Numero de Trastero a devolver: ");
+                    fflush(stdout);
+                    gets(input);
+                    int num = atoi(input);
+
+                    int pos = buscarTrastero(listaTrasteros, num);
+                    if (pos != -1) {
+                        devolverTrastero(&listaTrasteros.aTrasteros[pos]);
+                    } else {
+                        printf("Trastero no encontrado.\n");
+                    }
+                    break;
+                }
+                case '0':
+                    printf("Saliendo del administrador...\n");
+                    break;
+                default:
+                    printf("Opcion invalida.\n");
+            }
+        } while (opcion != '0');
+    }
+}
+

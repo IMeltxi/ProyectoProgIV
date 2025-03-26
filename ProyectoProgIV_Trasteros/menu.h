@@ -8,5 +8,5 @@ char menuharmenuIniReg();
 int registrarUsuario();
 int autenticarUsuario();
 void manejarCliente();
-
+void manejarAdminiistrador();
 #endif /* MENU_H_ */
