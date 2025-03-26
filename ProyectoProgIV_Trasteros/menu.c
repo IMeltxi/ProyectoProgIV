@@ -14,6 +14,18 @@ char mostrarMenuPrincipal() {
     return opcion;
 }
 
+char menuIniReg() {
+    char opcion;
+    printf("\n--- MENÚ CLIENTE ---\n");
+    printf("1. Iniciar Sesión\n");
+    printf("2. Registrarse\n");
+    printf("Seleccione una opción: ");
+    fflush(stdout);
+    fflush(stdin);
+    scanf(" %c", &opcion);
+    return opcion;
+}
+
 char menuCliente() {
     char opcion;
     printf("Menu CLIENTE\n");
@@ -28,6 +40,7 @@ char menuCliente() {
     scanf(" %c", &opcion);
     return opcion;
 }
+
 
 char menuAdministrador() {
     char opcion;

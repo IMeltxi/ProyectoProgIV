@@ -4,5 +4,6 @@
 char mostrarMenuPrincipal();
 char menuCliente();
 char menuAdministrador();
+char menuharmenuIniReg();
 
 #endif /* MENU_H_ */
