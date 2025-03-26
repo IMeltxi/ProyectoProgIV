@@ -154,28 +154,44 @@ Usuario obtenerUsuario(sqlite3 *db, int dni) {
     sqlite3_finalize(stmt);
     return u;
 }
-ListaTrasteros obtenerListaTrasterosAlquilados(sqlite3 *db) {
+Trastero* obtenerListaTrasterosAlquilados(sqlite3 *db) {
+#define MAX_TRASTEROS 100  // Definimos un tamaño máximo fijo
+
+Trastero* obtenerListaTrasterosAlquilados(sqlite3 *db, int *cantidad) {
     sqlite3_stmt *stmt;
     char sql[100];
-    ListaTrasteros lista;
-    lista.numeroTrasteros = 0; // Inicializamos la cantidad de trasteros a 0
 
-    sprintf(sql, "SELECT numeroTrastero, dni, valoracion, diaInicio FROM Alquilados");
+    // Contamos el numero de trasteros
+    sprintf(sql, "SELECT COUNT(*) FROM Alquilados");
+    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) {
-        printf("Error preparando consulta: %s\n", sqlite3_errmsg(db));
-        return lista;
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        *cantidad = sqlite3_column_int(stmt, 0);
+    } else {
+        *cantidad = 0;
     }
-
-    while (sqlite3_step(stmt) == SQLITE_ROW && lista.numeroTrasteros < MAX_TRASTEROS) {
-        lista.aTrasteros[lista.numeroTrasteros].numeroTrastero = sqlite3_column_int(stmt, 0);
-        lista.aTrasteros[lista.numeroTrasteros].valoracion = sqlite3_column_int(stmt, 2);
-        strcpy(lista.aTrasteros[lista.numeroTrasteros].diaInicio, (const char*)sqlite3_column_text(stmt, 3));
-        lista.numTrasteros++;
-    }
-
     sqlite3_finalize(stmt);
-    return lista;
-}
+
+    // 3️⃣ Consultamos los trasteros
+    sprintf(sql, "SELECT numeroTrastero FROM Alquilados");
+    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL){
+
+    }
+
+
+//    // 4️⃣ Llenamos la lista
+//    int i = 0;
+//    while (sqlite3_step(stmt) == SQLITE_ROW && i < *cantidad) {
+//        listaTrasteros[i].numeroTrastero = sqlite3_column_int(stmt, 0);
+//        listaTrasteros[i].dni = sqlite3_column_int(stmt, 1);
+//        listaTrasteros[i].valoracion = sqlite3_column_int(stmt, 2);
+//        strcpy(listaTrasteros[i].diaInicio, (const char*)sqlite3_column_text(stmt, 3));
+//        i++;
+//    }
+//
+//    sqlite3_finalize(stmt);
+//    return listaTrasteros;  // 📌 No usamos malloc(), la memoria es estática
+//}
+
 
 
