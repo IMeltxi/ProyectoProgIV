@@ -23,7 +23,7 @@ int main() {
                     opcionAdmin = menuAdministrador();
                     switch (opcionAdmin) {
                         case '1':
-                            printf("A\xF1adiendo trastero...\n");
+                            printf("aniadiendo trastero...\n");
                             break;
                         case '2':
                             printf("Eliminando trastero...\n");
@@ -35,10 +35,10 @@ int main() {
                             printf("Mostrando trasteros disponibles...\n");
                             break;
                         case '0':
-                            printf("Saliendo del men\xFA administrador...\n");
+                            printf("Saliendo del menu administrador...\n");
                             break;
                         default:
-                            printf("Opci\xF3n no v\xE1lida.\n");
+                            printf("ERROR\n");
                     }
                 } while (opcionAdmin != '0');
                 break;
@@ -61,10 +61,10 @@ int main() {
                             printf("Devolviendo trastero...\n");
                             break;
                         case '0':
-                            printf("Cerrando sesi\xF3n...\n");
+                            printf("Cerrando sesion...\n");
                             break;
                         default:
-                            printf("Opci\xF3n no v\xE1lida.\n");
+                            printf("ERROR.\n");
                     }
                 } while (opcionCliente != '0');
                 break;
@@ -73,7 +73,7 @@ int main() {
                 printf("Saliendo del programa...\n");
                 break;
             default:
-                printf("Opci\xF3n no v\xE1lida, intente de nuevo.\n");
+                printf("ERROR.\n");
         }
     } while (opcionPrincipal != '0');
 
