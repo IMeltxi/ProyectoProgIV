@@ -22,7 +22,7 @@ void aniadirTrasteroAlquilado(sqlite3 *db, Trastero t,Usuario u);
 void guardarTrasteroEnHistorial(sqlite3 *db, Trastero t);
 //Funciones de extraccion de datos
 Usuario obtenerUsuario(sqlite3 *db,int dni);
-Trastero obtenerTrastero(sqlite3 *db,int numTrastero);
+Trastero buscarTrasteroDDBB(sqlite3 *db, int numeroTrastero);
 Trastero* obtenerListaTrasterosAlquilados(sqlite3 *db);
 
 //Funcion para borrar toda la base de datos (provisional)

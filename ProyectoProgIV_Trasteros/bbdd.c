@@ -1,5 +1,7 @@
 #include "bbdd.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "sqlite3.h"
 #include <time.h>
 
@@ -155,39 +157,72 @@ Usuario obtenerUsuario(sqlite3 *db, int dni) {
     return u;
 }
 
-//Trastero* obtenerListaTrasterosAlquilados(sqlite3 *db, int *cantidad) {
-//    sqlite3_stmt *stmt;
-//    char sql[100];
-//
-//    // Contamos el numero de trasteros
-//    sprintf(sql, "SELECT COUNT(*) FROM Alquilados");
-//    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-//
-//    if (sqlite3_step(stmt) == SQLITE_ROW) {
-//        *cantidad = sqlite3_column_int(stmt, 0);
-//    } else {
-//        *cantidad = 0;
-//    }
-//    sqlite3_finalize(stmt);
-//
-//    // 3️⃣ Consultamos los trasteros
-//    sprintf(sql, "SELECT numeroTrastero FROM Alquilados");
-//    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-//
-//
-////    // 4️⃣ Llenamos la lista
-////    int i = 0;
-////    while (sqlite3_step(stmt) == SQLITE_ROW && i < *cantidad) {
-////        listaTrasteros[i].numeroTrastero = sqlite3_column_int(stmt, 0);
-////        listaTrasteros[i].dni = sqlite3_column_int(stmt, 1);
-////        listaTrasteros[i].valoracion = sqlite3_column_int(stmt, 2);
-////        strcpy(listaTrasteros[i].diaInicio, (const char*)sqlite3_column_text(stmt, 3));
-////        i++;
-////    }
-////
-////    sqlite3_finalize(stmt);
-//    return listaTrasteros;  // 📌 No usamos malloc(), la memoria es estática
-//}
+Trastero buscarTrasteroDDBB(sqlite3 *db, int numeroTrastero){
+    sqlite3_stmt *stmt;
+    char sql[100];
+    Trastero t = {0};  // Inicializamos la estructura Trastero con valores por defecto.
+
+
+    sprintf(sql, "SELECT numeroTrastero, metrosCuadrados, precio, valoracion, disponible FROM Trastero WHERE numeroTrastero = %i",numeroTrastero);
+    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+
+    // Ejecutamos la consulta
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        // Si encontramos el trastero, llenamos la estructura Trastero
+        t.numeroTrastero = sqlite3_column_int(stmt, 0);
+        t.metrosCuadrados = sqlite3_column_int(stmt, 1);
+        t.precio = sqlite3_column_double(stmt, 2);
+        t.valoracion = sqlite3_column_int(stmt, 3);
+        t.disponible = sqlite3_column_int(stmt, 4);
+    } else {
+        // Si no se encuentra el trastero, dejamos la estructura Trastero con valores por defecto (0).
+        printf("Trastero no encontrado con el número: %d\n", numeroTrastero);
+    }
+
+    // Finalizamos la sentencia SQL
+    sqlite3_finalize(stmt);
+
+    return t;
+}
+
+Trastero* obtenerListaTrasterosAlquilados(sqlite3 *db) {
+    sqlite3_stmt *stmt;
+    char sql[100];
+    int numeroTrastero, cantidad,i=0;
+    Trastero t,*listaTrasteros;
+
+    // Contamos el numero de trasteros
+    sprintf(sql, "SELECT COUNT(*) FROM Alquilados");
+    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        cantidad = sqlite3_column_int(stmt, 0);
+    } else {
+        cantidad = 0;
+    }
+    sqlite3_finalize(stmt);
+
+    // Reservamos memoria para la lista de trasteros
+    // 3️⃣ Reservamos memoria para la lista de trasteros
+    listaTrasteros = (Trastero*)malloc(cantidad * sizeof(Trastero));
+
+    // 3️⃣ Consultamos los trasteros
+    sprintf(sql, "SELECT numeroTrastero FROM Alquilados");
+    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+
+
+
+
+    while (sqlite3_step(stmt) == SQLITE_ROW && i < cantidad) {
+        numeroTrastero = sqlite3_column_int(stmt, 0);
+        t=buscarTrasteroDDBB(NOMBRE_BBDD,numeroTrastero);
+		listaTrasteros[i] = t;
+        i++;
+    }
+
+    sqlite3_finalize(stmt);
+    return listaTrasteros;
+}
 
 
 
