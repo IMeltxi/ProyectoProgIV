@@ -78,23 +78,6 @@ void modificarDisponibilidadTrasteroABBDD(sqlite3 *db, Trastero t){
 	sqlite3_step(stmt); //Ejecutar la sentencia
 	sqlite3_finalize(stmt); //Cerrar la sentencia
 }
-void borrarBBDD(sqlite3 *db){
-	sqlite3_stmt *stmt; //Acceso a ejecuci�n de sentencias
-	char sql[100];
-	sprintf(sql, "DROP TABLE IF EXISTS Usuario");
-	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
-	sqlite3_step(stmt); //Ejecutar la sentencia
-	sqlite3_finalize(stmt); //Cerrar la sentencia
-	sprintf(sql, "DROP TABLE IF EXISTS Trastero");
-	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
-	sqlite3_step(stmt); //Ejecutar la sentencia
-	sqlite3_finalize(stmt); //Cerrar la sentencia
-	sprintf(sql, "DROP TABLE IF EXISTS Alquilados");
-	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
-	sqlite3_step(stmt); //Ejecutar la sentencia
-	sqlite3_finalize(stmt); //Cerrar la sentencia
-}
-
 // Función para obtener la fecha actual en formato "YYYY-MM-DD"
 //Generada con Chat-GPT
 void obtenerFechaActual(char *buffer, int buffer_size) {
@@ -140,9 +123,6 @@ void guardarTrasteroEnHistorial(sqlite3 *db, Trastero t) {
 	sqlite3_finalize(stmt); //Cerrar la sentencia
 
 }
-/** TODO: Verificar que se han realizado todas las funciones de insercion a la bd necesarias
- * 		Realizar funciones para obtener informacion de la bd (obtener Trastero, obtener Usuario ...)
- */
 Usuario obtenerUsuario(sqlite3 *db, int dni) {
     sqlite3_stmt *stmt;
     char sql[100];
@@ -165,7 +145,22 @@ Usuario obtenerUsuario(sqlite3 *db, int dni) {
     sqlite3_finalize(stmt);
     return u;
 }
+int usuarioRegistrado(sqlite3 *db,int dni){
+	sqlite3_stmt *stmt;
+	char sql[100];
+	int result;
+	sprintf(sql, "SELECT COUNT(*) FROM Usuario WHERE dni = %d", dni);
 
+	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+	result = sqlite3_column_int(stmt, 0);
+	if(result!=0){
+		return 1;
+	}else{
+		return 0;
+	}
+	sqlite3_finalize(stmt);
+	return result;
+}
 Trastero buscarTrasteroDDBB(sqlite3 *db, int numeroTrastero){
     sqlite3_stmt *stmt;
     char sql[100];
@@ -193,8 +188,8 @@ Trastero buscarTrasteroDDBB(sqlite3 *db, int numeroTrastero){
 
     return t;
 }
-
-void obtenerListaTrasterosAlquilados(sqlite3 *db) {
+//TODO: Modificar la funcion para que cumpla con su nombre
+void obtenerListaTrasterosAlquiladosCSV(sqlite3 *db) {
     sqlite3_stmt *stmt;
     char sql[100];
     int numeroTrastero, cantidad,i=0;
