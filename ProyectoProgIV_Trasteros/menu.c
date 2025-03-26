@@ -3,7 +3,7 @@
 #include <string.h>
 #include "usuario.h"
 #include "trastero.h"
-
+#include "bbdd.h"
 
 
 #define ADMIN_USER "admin"
@@ -127,8 +127,9 @@ int autenticarAdministrador() {
     if (strcmp(contrasena, confirmarContrasena) == 0 ) {
     	Usuario u ={nombre,apellido,atoi(dni),atoi(apellido),email,direccion,contrasena};
     	visualizarPerfilUsuario(u);
-           printf("Usuario registrado\n");
 
+           printf("Usuario registrado\n");
+           aniadirUsuarioABBDD(NOMBRE_BBDD,u);
            return 0;
        }else return 1;
 
@@ -204,23 +205,39 @@ void manejarAdministrador() {
             switch (opcion) {
                 case '1': {
                     Trastero nuevo;
+                    char input[50];
                     printf("Ingrese Numero de Trastero: ");
-                    scanf("%d", &nuevo.numeroTrastero);
+                    fflush(stdout);
+                    gets(input);
+                    nuevo.numeroTrastero = atoi(input);
+
                     printf("Ingrese Metros Cuadrados: ");
-                    scanf("%d", &nuevo.metrosCuadrados);
+                    fflush(stdout);
+                    gets(input);
+                    nuevo.metrosCuadrados = atoi(input);
+
                     printf("Ingrese Valoracion: ");
-                    scanf("%d", &nuevo.valoracion);
+                    fflush(stdout);
+                    gets(input);
+                    nuevo.valoracion = atoi(input);
+
                     printf("Ingrese Precio: ");
-                    scanf("%d", &nuevo.precio);
+                    fflush(stdout);
+                    gets(input);
+                    nuevo.precio = atoi(input);
+
                     nuevo.disponible = 1;
                     aniadirTrastero(&listaTrasteros, nuevo);
-                    printf("%s", nuevo);
+                    printf("Trastero agregado correctamente.\n");
                     break;
                 }
                 case '2': {
-                    int num;
+                    char input[50];
                     printf("Ingrese Numero de Trastero a eliminar: ");
-                    scanf("%d", &num);
+                    fflush(stdout);
+                    gets(input);
+                    int num = atoi(input);
+
                     Trastero t;
                     t.numeroTrastero = num;
                     eliminarTrastero(&listaTrasteros, t);
@@ -230,9 +247,12 @@ void manejarAdministrador() {
                     visualizarTrasterosDisponibles(listaTrasteros);
                     break;
                 case '4': {
-                    int num;
+                    char input[50];
                     printf("Ingrese Numero de Trastero a alquilar: ");
-                    scanf("%d", &num);
+                    fflush(stdout);
+                    gets(input);
+                    int num = atoi(input);
+
                     int pos = buscarTrastero(listaTrasteros, num);
                     if (pos != -1) {
                         alquilarTrastero(&listaTrasteros.aTrasteros[pos]);
@@ -242,9 +262,12 @@ void manejarAdministrador() {
                     break;
                 }
                 case '5': {
-                    int num;
+                    char input[50];
                     printf("Ingrese Numero de Trastero a devolver: ");
-                    scanf("%d", &num);
+                    fflush(stdout);
+                    gets(input);
+                    int num = atoi(input);
+
                     int pos = buscarTrastero(listaTrasteros, num);
                     if (pos != -1) {
                         devolverTrastero(&listaTrasteros.aTrasteros[pos]);
@@ -262,3 +285,4 @@ void manejarAdministrador() {
         } while (opcion != '0');
     }
 }
+
