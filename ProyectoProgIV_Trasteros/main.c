@@ -23,7 +23,7 @@ int main() {
     mostrarMenuPrincipal();
 
     printf("Presiona Enter para salir...\n");
-    getchar();  // Espera entrada antes de cerrar
+    getchar();  // Espera entrada antes de cerrar.
 
     printf("Fin del programa\n");
 
