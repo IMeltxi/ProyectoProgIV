@@ -45,11 +45,17 @@ void eliminarTrastero(ListaTrasteros *lt, Trastero t) {
 }
 
 void visualizarTrastero(Trastero t) {
-    printf("%20d%20d%20d%20d%20d\n", t.numeroTrastero, t.metrosCuadrados, t.valoracion, t.precio, t.disponible);
+	char* disponible;
+	if(t.disponible==0){
+		printf("%20d%20d%20d%20d%20d\n", t.numeroTrastero, t.metrosCuadrados, t.valoracion, t.precio, "NO");
+	}else{
+		printf("%20d%20d%20d%20d%20d\n", t.numeroTrastero, t.metrosCuadrados, t.valoracion, t.precio, "SI");
+	}
+
 }
 void visualizarTrasteroDisponible(Trastero t) {
 	if (t.disponible==0){
-	    printf("%20d%20d%20d%20d%20d\n", t.numeroTrastero, t.metrosCuadrados, t.valoracion, t.precio, t.disponible);
+	    printf("%20d%20d%20d%20d%20d\n", t.numeroTrastero, t.metrosCuadrados, t.valoracion, t.precio, "SI");
 	}
 }
 
