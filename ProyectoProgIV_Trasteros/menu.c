@@ -39,21 +39,53 @@ char menuIniReg() {
     return opcion;
 }
 
-char menuCliente() {
-    char opcion;
-    printf("Menu CLIENTE\n");
-    printf("1. Perfil\n");
-    printf("2. Catalogo\n");
-    printf("3. Alquilar trastero\n");
-    printf("4. Devolver trastero\n");
-    printf("0. Cerrar Sesion\n");
-    printf("Seleccione una opcion\n: ");
-    fflush(stdout);
-    fflush(stdin);
-    scanf(" %c", &opcion);
-    return opcion;
-}
+void menuCliente(Usuario u) {
+	char opcion;
+	do{
+		printf("Menu CLIENTE\n");
+		printf("1. Perfil\n");
+		printf("2. Catalogo\n");
+		printf("3. Alquilar trastero\n");
+		printf("4. Devolver trastero\n");
+		printf("0. Cerrar Sesion\n");
+		printf("Seleccione una opcion\n: ");
+		fflush(stdout);
+		fflush(stdin);
+		scanf(" %c", &opcion);
+		switch (opcion) {
+			case '1':
+				menuPerfil(u);
+				break;
+			default:
+				break;
+		}
+    }while (opcion != '0');
 
+
+
+}
+void menuPerfil(Usuario u){
+	char opcion;
+	printf("DATOS DEL USUARIO");fflush(stdout);
+	printf("- Nombre: %s",u.nombre);fflush(stdout);
+	printf("- Apellido: %s",u.apellido);fflush(stdout);
+	printf("- DNI: %i",u.dni);fflush(stdout);
+	printf("-------------------------------------");fflush(stdout);
+	printf("DATOS DE CONTACTO");fflush(stdout);
+	printf("- Telefono: %i",u.telefono);fflush(stdout);
+	printf("- Email: %s",u.email);fflush(stdout);
+	printf("- Direccion: %s",u.direccion);fflush(stdout);
+	printf("-------------------------------------");fflush(stdout);
+	printf("Pulse 0 para volver atras \n: ");
+	fflush(stdout);
+	fflush(stdin);
+	scanf(" %c", &opcion);
+	if(opcion==0){
+		menuCliente(u); //Si pulsa 0 vuelve a la pestaña anterior
+	}else{
+		menuPerfil(u); //Si pulsa cualquier otra cosa le volvera a llevar a la misma pestaña
+	}
+}
 
 char menuAdministrador() {
     char opcion;
@@ -90,7 +122,7 @@ int autenticarAdministrador() {
         return 0;
     }
 }
- int registrarUsuario(){
+void registrarUsuario(){
 	char nombre[50],apellido[50],email[50],direccion[50], contrasena[50],confirmarContrasena[50],telefono[9],dni[9];
 	printf("Introduce el nomre:");
 	fflush(stdout);
@@ -127,17 +159,17 @@ int autenticarAdministrador() {
     //Esta ya registrado?
     if(usuarioRegistrado(NOMBRE_BBDD,dni)==1){
     	printf("Este DNI ya esta registrado");fflush(stdout);
-    	return 1;
+    	registrarUsuario();
     }else if (strcmp(contrasena, confirmarContrasena) == 0 ) {
     	Usuario u ={nombre,apellido,atoi(dni),atoi(apellido),email,direccion,contrasena};
     	visualizarPerfilUsuario(u);
     	aniadirUsuarioABBDD(NOMBRE_BBDD,u);
            printf("Usuario registrado\n");
            aniadirUsuarioABBDD(NOMBRE_BBDD,u);
-           return 0;
+           menuCliente(u);
        }else {
     	   printf("Las contraseñas no coinciden");fflush(stdout);
-    	   return 1;
+    	   registrarUsuario();
        }
 
 }
@@ -172,7 +204,7 @@ void manejarCliente() {
                 printf("Iniciando sesión...\n");
             	}break;
             case '2':
-            	if(registrarUsuario()){
+            	if(registrarUsuario()){ DA ERROR
             		printf("Usuario Registrado...\n");
             	}
                 break;
