@@ -188,6 +188,14 @@ Trastero buscarTrasteroDDBB(sqlite3 *db, int numeroTrastero){
 
     return t;
 }
+void eliminarTrasteroDDBB(sqlite3 *db,int numeroTrastero){
+	sqlite3_stmt *stmt;
+	char sql[100];
+	sprintf(sql, "DELETE FROM Trasteros WHERE numeroTrastero = %i", numeroTrastero);
+	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
+	sqlite3_step(stmt); //Ejecutar la sentencia
+	sqlite3_finalize(stmt); //Cerrar la sentencia
+}
 //TODO: Modificar la funcion para que cumpla con su nombre
 void obtenerListaTrasterosAlquiladosCSV(sqlite3 *db) {
     sqlite3_stmt *stmt;

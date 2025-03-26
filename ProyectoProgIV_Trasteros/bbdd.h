@@ -24,6 +24,7 @@ void guardarTrasteroEnHistorial(sqlite3 *db, Trastero t);
 Usuario obtenerUsuario(sqlite3 *db,int dni);
 int usuarioRegistrado(sqlite3 *db,int dni);
 Trastero buscarTrasteroDDBB(sqlite3 *db, int numeroTrastero);
+void eliminarTrasteroDDBB(sqlite3 *db,int numeroTrastero);
 void obtenerListaTrasterosAlquiladosCSV(sqlite3 *db);
 
 #endif /* BBDD_H_ */

@@ -211,30 +211,31 @@ void manejarAdministrador() {
             opcion = menuAdministrador();
             switch (opcion) {
                 case '1': {
-                    Trastero nuevo;
+                    Trastero t;
                     char input[50];
                     printf("Ingrese Numero de Trastero: ");
                     fflush(stdout);
                     gets(input);
-                    nuevo.numeroTrastero = atoi(input);
+                    t.numeroTrastero = atoi(input);
 
                     printf("Ingrese Metros Cuadrados: ");
                     fflush(stdout);
                     gets(input);
-                    nuevo.metrosCuadrados = atoi(input);
+                    t.metrosCuadrados = atoi(input);
 
                     printf("Ingrese Valoracion: ");
                     fflush(stdout);
                     gets(input);
-                    nuevo.valoracion = atoi(input);
+                    t.valoracion = atoi(input);
 
                     printf("Ingrese Precio: ");
                     fflush(stdout);
                     gets(input);
-                    nuevo.precio = atoi(input);
+                    t.precio = atoi(input);
 
-                    nuevo.disponible = 1;
-                    aniadirTrastero(&listaTrasteros, nuevo);
+                    t.disponible = 1;
+                    aniadirTrastero(&listaTrasteros, t);
+                    aniadirTrasteroABBDD(NOMBRE_BBDD,t);
                     printf("Trastero agregado correctamente.\n");
                     break;
                 }
@@ -248,6 +249,7 @@ void manejarAdministrador() {
                     Trastero t;
                     t.numeroTrastero = num;
                     eliminarTrastero(&listaTrasteros, t);
+                    eliminarTrasteroDDBB(NOMBRE_BBDD,t.numeroTrastero);
                     break;
                 }
                 case '3':
