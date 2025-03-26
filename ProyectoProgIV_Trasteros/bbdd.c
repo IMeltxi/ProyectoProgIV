@@ -185,11 +185,11 @@ Trastero buscarTrasteroDDBB(sqlite3 *db, int numeroTrastero){
     return t;
 }
 
-Trastero* obtenerListaTrasterosAlquilados(sqlite3 *db) {
+void obtenerListaTrasterosAlquilados(sqlite3 *db) {
     sqlite3_stmt *stmt;
     char sql[100];
     int numeroTrastero, cantidad,i=0;
-    Trastero t,*listaTrasteros;
+    Trastero t;
 
     // Contamos el numero de trasteros
     sprintf(sql, "SELECT COUNT(*) FROM Alquilados");
@@ -202,26 +202,17 @@ Trastero* obtenerListaTrasterosAlquilados(sqlite3 *db) {
     }
     sqlite3_finalize(stmt);
 
-    // Reservamos memoria para la lista de trasteros
-    // 3️⃣ Reservamos memoria para la lista de trasteros
-    listaTrasteros = (Trastero*)malloc(cantidad * sizeof(Trastero));
-
     // 3️⃣ Consultamos los trasteros
     sprintf(sql, "SELECT numeroTrastero FROM Alquilados");
     sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 
-
-
-
     while (sqlite3_step(stmt) == SQLITE_ROW && i < cantidad) {
         numeroTrastero = sqlite3_column_int(stmt, 0);
         t=buscarTrasteroDDBB(NOMBRE_BBDD,numeroTrastero);
-		listaTrasteros[i] = t;
+		visualizarTrastero(t);
         i++;
     }
-
     sqlite3_finalize(stmt);
-    return listaTrasteros;
 }
 
 
