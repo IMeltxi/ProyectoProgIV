@@ -1,6 +1,10 @@
 #include "menu.h"
 #include <stdio.h>
-
+#include "usuario.h"
+#define ADMIN_USER "admin"
+#define ADMIN_PASS "1234"
+#define USER1 "user"
+#define USER_PASS "1234"
 char mostrarMenuPrincipal() {
     char opcion;
     printf("Menu PRINCIPAL\n");
@@ -55,4 +59,131 @@ char menuAdministrador() {
     fflush(stdin);
     scanf(" %c", &opcion);
     return opcion;
+}
+
+int autenticarAdministrador() {
+    char usuario[50], contrasena[50];
+    printf("Ingrese usuario: ");
+	fflush(stdout);
+	fflush(stdin);
+    gets(usuario);
+
+    printf("Ingrese contrasena: ");
+	fflush(stdout);
+	fflush(stdin);
+    gets(contrasena);
+
+    if (strcmp(usuario, ADMIN_USER) == 0 && strcmp(contrasena, ADMIN_PASS) == 0) {
+        printf("Acceso concedido.\n");
+        return 1;
+    } else {
+        printf("Acceso denegado.\n");
+        return 0;
+    }
+}
+int registrarUsuario(){
+	char nombre[50],apellido[50],email[50],direccion[50], contrasena[50],confirmarContrasena[50],telefono[9],dni[9];
+	printf("Introduce el nomre:");
+	fflush(stdout);
+	fflush(stdin);
+    gets(nombre);
+	printf("Introduce el apellido:");
+	fflush(stdout);
+	fflush(stdin);
+    gets(apellido);
+	printf("Introduce el email:");
+	fflush(stdout);
+	fflush(stdin);
+    gets(email);
+	printf("Introduce el direccion:");
+	fflush(stdout);
+	fflush(stdin);
+    gets(direccion);
+	printf("Introduce el dni:");
+	fflush(stdout);
+	fflush(stdin);
+    gets(dni);
+	printf("Introduce el telefono:");
+	fflush(stdout);
+	fflush(stdin);
+    gets(telefono);
+	printf("Introducela contraseña:");
+	fflush(stdout);
+	fflush(stdin);
+    gets(contrasena);
+	printf("Confirma Contraseña:");
+	fflush(stdout);
+	fflush(stdin);
+    gets(confirmarContrasena);
+    if (strcmp(contrasena, confirmarContrasena) == 0 ) {
+    	Usuario u ={nombre,apellido,atoi(dni),atoi(apellido),email,direccion,contrasena};
+    	visualizarPerfilUsuario(u);
+           printf("Usuario registrado\n");
+
+           return 0;
+       }else return 1;
+
+}
+int autenticarUsuario() {
+    char usuario[50], contrasena[50];
+    printf("Ingrese usuario: ");
+	fflush(stdout);
+	fflush(stdin);
+    gets(usuario);
+
+    printf("Ingrese contrasena: ");
+	fflush(stdout);
+	fflush(stdin);
+    gets(contrasena);
+
+    if (strcmp(usuario, USER1) == 0 && strcmp(contrasena, USER_PASS) == 0) {
+        printf("Acceso concedido.\n");
+        return 1;
+    } else {
+        printf("Acceso denegado.\n");
+        return 0;
+    }
+}
+
+void manejarCliente() {
+    char opcion;
+    do {
+        opcion = menuIniReg();
+        switch (opcion) {
+            case '1':
+            	if(autenticarUsuario()){
+                printf("Iniciando sesión...\n");
+            	}break;
+            case '2':
+            	if(registrarUsuario()){
+            		printf("Usuario Registrado...\n");
+            	}
+                break;
+            default:
+                printf("Opción inválida.\n");
+        }
+    } while (opcion != '1' && opcion != '2');
+
+    do {
+        opcion = menuCliente();
+        switch (opcion) {
+            case '1':
+                printf("Mostrando perfil...\n");
+                break;
+            case '2':
+                printf("Mostrando catálogo...\n");
+                break;
+            case '3':
+                printf("Alquilando trastero...\n");
+                break;
+            case '4':
+                printf("Devolviendo trastero...\n");
+                break;
+            case '0':
+                printf("Cerrando sesión...\n");
+                break;
+            default:
+                printf("ERROR.\n");
+        }
+    } while (opcion != '0');
 }

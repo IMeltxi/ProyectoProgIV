@@ -5,5 +5,8 @@ char mostrarMenuPrincipal();
 char menuCliente();
 char menuAdministrador();
 char menuharmenuIniReg();
+int registrarUsuario();
+int autenticarUsuario();
+void manejarCliente();
 
 #endif /* MENU_H_ */
