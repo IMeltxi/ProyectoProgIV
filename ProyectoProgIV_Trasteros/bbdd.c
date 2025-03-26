@@ -1,5 +1,6 @@
 //#include "bbdd.h"
 //#include <stdio.h>
+#include <sqlite3.h>
 //#include <time.h>
 //int inicializarBBDD(sqlite3 **db){
 //	int result;
