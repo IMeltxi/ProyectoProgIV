@@ -136,6 +136,7 @@ char menuAdministrador() {
     fflush(stdout);
     fflush(stdin);
     scanf(" %c", &opcion);
+    while(getchar() != '\n');
     return opcion;
 }
 
@@ -160,39 +161,48 @@ int autenticarAdministrador() {
     }
 }
 int registrarUsuario(){
-	char nombre[50],apellido[50],email[50],direccion[50], contrasena[50],confirmarContrasena[50],telefono[9],dni[9];
+	char nombre[50],apellido[50],email[50],direccion[50],
+		contrasena[50],confirmarContrasena[50],telefono[9],dni[9];
 	printf("Introduce el nomre:");
 	fflush(stdout);
 	fflush(stdin);
     gets(nombre);
+
 	printf("Introduce el apellido:");
 	fflush(stdout);
 	fflush(stdin);
     gets(apellido);
+
 	printf("Introduce el email:");
 	fflush(stdout);
 	fflush(stdin);
     gets(email);
+
 	printf("Introduce el direccion:");
 	fflush(stdout);
 	fflush(stdin);
     gets(direccion);
+
 	printf("Introduce el dni:");
 	fflush(stdout);
 	fflush(stdin);
     gets(dni);
+
 	printf("Introduce el telefono:");
 	fflush(stdout);
 	fflush(stdin);
     gets(telefono);
+
 	printf("Introducela contraseña:");
 	fflush(stdout);
 	fflush(stdin);
     gets(contrasena);
+
 	printf("Confirma Contraseña:");
 	fflush(stdout);
 	fflush(stdin);
     gets(confirmarContrasena);
+
     //Esta ya registrado?
     if(usuarioRegistrado(NOMBRE_BBDD,dni)==1){
     	printf("Este DNI ya esta registrado");fflush(stdout);
@@ -233,7 +243,7 @@ int autenticarUsuario() {
 
 void manejarCliente(ListaUsuarios *lu) {
     char opcion;
-    Usuario *usuarioActual = NULL;
+    Usuario usuarioActual;
 
     do {
         opcion = menuIniReg();
@@ -241,7 +251,12 @@ void manejarCliente(ListaUsuarios *lu) {
             case '1':
             	if(autenticarUsuario()){
                 printf("Iniciando sesión...\n");
-            	}break;
+                strcpy(usuarioActual.nombre, "Usuario");
+                strcpy(usuarioActual.apellido, "Prueba");
+                usuarioActual.dni = 12345678;
+                menuCliente(usuarioActual);
+            	}
+            	break;
             case '2':
             	if(registrarUsuario()){
             		printf("Usuario Registrado...\n");
@@ -252,28 +267,6 @@ void manejarCliente(ListaUsuarios *lu) {
         }
     } while (opcion != '1' && opcion != '2');
 
-    do {
-        opcion = menuCliente(Usuario u);
-        switch (opcion) {
-            case '1':
-                printf("Mostrando perfil...\n");
-                break;
-            case '2':
-                printf("Mostrando catálogo...\n");
-                break;
-            case '3':
-                printf("Alquilando trastero...\n");
-                break;
-            case '4':
-                printf("Devolviendo trastero...\n");
-                break;
-            case '0':
-                printf("Cerrando sesión...\n");
-                break;
-            default:
-                printf("ERROR.\n");
-        }
-    } while (opcion != '0');
 }
 void manejarAdministrador() {
     char opcion;
@@ -282,31 +275,50 @@ void manejarAdministrador() {
             opcion = menuAdministrador();
             switch (opcion) {
                 case '1': {
-                    Trastero t;
-                    char input[50];
-                    printf("Ingrese Numero de Trastero: ");
-                    fflush(stdout);
-                    gets(input);
-                    t.numeroTrastero = atoi(input);
+                    Trastero t = {0};
+                    char input[50]={0};
 
-                    printf("Ingrese Metros Cuadrados: ");
+                    fprintf( stdout,"Ingrese Numero de Trastero: ");
                     fflush(stdout);
-                    gets(input);
-                    t.metrosCuadrados = atoi(input);
+                    if (fgets(input, sizeof(input), stdin) != NULL) {
+                    	 input[strcspn(input, "\n")] = 0;
+                    	t.numeroTrastero = atoi(input);
 
-                    printf("Ingrese Valoracion: ");
-                    fflush(stdout);
-                    gets(input);
-                    t.valoracion = atoi(input);
+                    	printf("Numero de Trastero ingresado: %d\n", t.numeroTrastero);
+                    }
 
-                    printf("Ingrese Precio: ");
+                   fprintf(stdout,"Ingrese Metros Cuadrados: ");
+                   fflush(stdout);
+                   if (fgets(input, sizeof(input), stdin) != NULL) {
+                	   input[strcspn(input, "\n")] = 0;
+                       t.metrosCuadrados = atoi(input);
+
+                       printf("Metros Cuadrados ingresados: %d\n", t.metrosCuadrados);
+                    }
+
+                    fprintf(stdout,"Ingrese Valoracion: ");
                     fflush(stdout);
-                    gets(input);
-                    t.precio = atoi(input);
+                    if (fgets(input, sizeof(input), stdin) != NULL) {
+                        input[strcspn(input, "\n")] = 0;
+                        t.valoracion = atoi(input);
+
+                        printf("Valoracion ingresada: %d\n", t.valoracion);
+
+                    }
+
+                    fprintf(stdout,"Ingrese Precio: ");
+                    fflush(stdout);
+                    if (fgets(input, sizeof(input), stdin) != NULL) {
+                    	input[strcspn(input, "\n")] = 0;
+                        t.precio = atoi(input);
+
+                        printf("Precio ingresado: %d\n", t.precio);
+                    }
 
                     t.disponible = 1;
+
                     aniadirTrastero(&listaTrasteros, t);
-                    aniadirTrasteroABBDD(NOMBRE_BBDD,t);
+                    aniadirTrasteroABBDD(NOMBRE_BBDD, t);
                     printf("Trastero agregado correctamente.\n");
                     break;
                 }
