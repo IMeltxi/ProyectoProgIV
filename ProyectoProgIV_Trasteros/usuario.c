@@ -55,9 +55,9 @@ Usuario* iniciarSesion(ListaUsuarios lu, char* email, char* contra) {
 }
 void visualizarPerfilUsuario(Usuario u){
 	printf("- Nombre: %s",u.nombre);
-	printf("- Apellido: %s",u.apellido);
-	printf("- DNI: %i",u.dni);
-	printf("- Telefono: %i",u.telefono);
-	printf("- Email: %s",u.email);
-	printf("- Direccion: %s",u.direccion);
+	printf("\n- Apellido: %s",u.apellido);
+	printf("\n- DNI: %i",u.dni);
+	printf("\n- Telefono: %i",u.telefono);
+	printf("\n- Email: %s",u.email);
+	printf("\n- Direccion: %s",u.direccion);
 }

@@ -11,18 +11,21 @@
 int main() {
     ListaUsuarios lu;
     ListaTrasteros lt;
-    Usuario u={0};
     sqlite3 *db; //Acceso a la bbdd
     int result;
-    printf("Iniciando el programa...\n");
-
+    printf("Iniciando el programa...\n");fflush(stdout);
+    sleep(1);
     result = inicializarBBDD(&db);
     	if(result == SQLITE_OK){
+    		printf("Estableciendo la conexion con base de datos...");fflush(stdout);
     		crearTablas(db);
     	}else{
     		printf("No se ha establecido la conexi�n con la BBDD\n");
     		fflush(stdout);
+    		return 0;
     	}
+    sleep(2);
+    limpiarConsola();
     inicializarListaUsuarios(&lu);
     inicializarListaTrasteros(&lt);
 
@@ -73,5 +76,6 @@ int main() {
     printf("Presiona Enter para salir...\n");
     getchar();
     printf("Fin del programa\n");
+    sqlite3_close(db);
     return 0;
 }

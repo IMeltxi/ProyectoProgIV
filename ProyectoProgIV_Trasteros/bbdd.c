@@ -8,18 +8,11 @@
 
 int inicializarBBDD(sqlite3 **db) {
     int result = sqlite3_open(NOMBRE_BBDD, db);
-    if (result != SQLITE_OK) {
-        printf("Error al abrir la base de datos: %s\n", sqlite3_errmsg(*db));
-        fflush(stdout);
-    } else {
-        printf("Base de datos abierta correctamente.\n");
-        fflush(stdout);
-    }
+
     return result;
 }
 
 void crearTablas(sqlite3 *db){
-	printf("Crear tablas abierto\n");fflush(stdout);
 	sqlite3_stmt *stmt;
 	char sql[300];
 	sprintf(sql, "CREATE TABLE IF NOT EXISTS Usuario "
@@ -53,17 +46,34 @@ void crearTablas(sqlite3 *db){
 
 }
 void aniadirUsuarioABBDD(sqlite3 *db, Usuario u){
-	sqlite3_stmt *stmt; //Acceso a ejecuci�n de sentencias
-	char sql[100];
-	sprintf(sql, "INSERT INTO Usuario VALUES('%s','%s',%i,%i,'%s','%s','%s')",
-				u.nombre,u.apellido,u.dni,u.telefono,u.email,u.direccion,u.contrasenia);
-	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
-	sqlite3_step(stmt); //Ejecutar la sentencia
-	sqlite3_finalize(stmt); //Cerrar la sentencia
+	sqlite3_stmt *stmt; // Acceso a ejecución de sentencias
+	    char sql[300]; // Aumenta el tamaño del buffer para la sentencia SQL
+	    sprintf(sql, "INSERT INTO Usuario (nombre, apellido, dni, telefono, email, direccion, contrasenia) "
+	                 "VALUES('%s','%s',%i,%i,'%s','%s','%s')",
+	            u.nombre, u.apellido, u.dni, u.telefono, u.email, u.direccion, u.contrasenia);
+
+	    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); // Preparar la sentencia
+	    if (rc != SQLITE_OK) {
+	        printf("Error al preparar la sentencia: %s\n", sqlite3_errmsg(db));
+	        sqlite3_close(db);
+	        sleep(1);
+	        return;
+	    }
+
+	    rc = sqlite3_step(stmt); // Ejecutar la sentencia
+	    if (rc != SQLITE_DONE) {
+	        printf("Error al insertar datos: %s\n", sqlite3_errmsg(db));
+	        sqlite3_close(db);
+	        sleep(1);
+	    } else {
+	        printf("Usuario añadido correctamente.\n");
+	    }
+
+	    sqlite3_finalize(stmt); // Cerrar la sentencia
 }
 void aniadirTrasteroABBDD(sqlite3 *db, Trastero t){
 	sqlite3_stmt *stmt; //Acceso a ejecuci�n de sentencias
-	char sql[100];
+	char sql[500];
 	sprintf(sql, "INSERT INTO Trastero VALUES(%i,%i,%.2f,%i,%i)",
 				t.numeroTrastero,t.metrosCuadrados,t.precio,t.valoracion,t.disponible);
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
@@ -93,9 +103,15 @@ void aniadirTrasteroAlquilado(sqlite3 *db, Trastero t, Usuario u){
 
 	obtenerFechaActual(fecha, sizeof(fecha)); // Obtener la fecha actual
 
-	// Construir la consulta SQL con sprintf
+
 	sprintf(sql, "INSERT INTO Alquilados (numeroTrastero, dni, valoracion, diaInicio) VALUES (%i, %i, %i, '%s')",
 			t.numeroTrastero, u.dni, t.valoracion, fecha);
+	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
+	sqlite3_step(stmt); //Ejecutar la sentencia
+	sqlite3_finalize(stmt); //Cerrar la sentencia
+
+	// Construir la consulta SQL con sprintf
+	sprintf(sql, "UPDATE Trasteros SET disponible = 0 WHERE numeroTrastero = %i", t.numeroTrastero);
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
 	sqlite3_step(stmt); //Ejecutar la sentencia
 	sqlite3_finalize(stmt); //Cerrar la sentencia
@@ -147,23 +163,33 @@ Usuario obtenerUsuario(sqlite3 *db, int dni) {
 }
 int usuarioRegistrado(sqlite3 *db,int dni){
 	sqlite3_stmt *stmt;
-	char sql[100];
-	int result;
-	sprintf(sql, "SELECT COUNT(*) FROM Usuario WHERE dni = %d", dni);
+	    char sql[100];
+	    int result = 0;  // Inicializamos el resultado a 0 (por defecto)
 
-	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-	result = sqlite3_column_int(stmt, 0);
-	if(result!=0){
-		return 1;//Esta registrado
-	}else{
-		return 0;//No esta registrado
-	}
-	sqlite3_finalize(stmt);
-	return result;
+	    // Preparamos la consulta SQL para verificar si el usuario está registrado
+	    sprintf(sql, "SELECT COUNT(*) FROM Usuario WHERE dni = %d", dni);
+
+	    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+	    if (rc != SQLITE_OK) {
+	        printf("Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
+	        return 0;  // Retorna 0 si hay un error al preparar la consulta
+	    }
+
+	    // Ejecutamos la consulta
+	    rc = sqlite3_step(stmt);
+	    if (rc == SQLITE_ROW) {
+	        result = sqlite3_column_int(stmt, 0);  // Si hay resultados, obtenemos el conteo
+	    } else {
+	        printf("Error al ejecutar la consulta: %s\n", sqlite3_errmsg(db));
+	    }
+
+	    sqlite3_finalize(stmt);  // Siempre finaliza la sentencia después de usarla
+
+	    return result != 0;  // Si el resultado es mayor que 0, el usuario está registrado
 }
 Trastero buscarTrasteroDDBB(sqlite3 *db, int numeroTrastero){
     sqlite3_stmt *stmt;
-    char sql[100];
+    char sql[500];
     Trastero t = {0};  // Inicializamos la estructura Trastero con valores por defecto.
 
 

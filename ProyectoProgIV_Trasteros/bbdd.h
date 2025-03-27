@@ -22,6 +22,7 @@ void aniadirTrasteroAlquilado(sqlite3 *db, Trastero t,Usuario u);
 void guardarTrasteroEnHistorial(sqlite3 *db, Trastero t);
 //Funciones de extraccion de datos
 Usuario obtenerUsuario(sqlite3 *db,int dni);
+void aniadirTrasteroAlquilado(sqlite3 *db, Trastero t, Usuario u);
 int usuarioRegistrado(sqlite3 *db,int dni);
 Trastero buscarTrasteroDDBB(sqlite3 *db, int numeroTrastero);
 void eliminarTrasteroDDBB(sqlite3 *db,int numeroTrastero);

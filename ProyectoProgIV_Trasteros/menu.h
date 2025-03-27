@@ -2,10 +2,12 @@
 #define MENU_H_
 #include "usuario.h"
 
+void limpiarConsola();
 char mostrarMenuPrincipal();
 char menuIniReg();
 void menuCliente(Usuario u);
 void menuPerfil(Usuario u);
+void menuAlquilarTrastero(Usuario u);
 char menuAdministrador();
 int autenticarAdministrador();
 int registrarUsuario();

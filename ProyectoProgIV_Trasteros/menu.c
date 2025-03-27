@@ -12,11 +12,16 @@
 #define USER_PASS "1234"
 
 ListaTrasteros listaTrasteros;
-
-
+//Simula que limpia la consola empujando el contenido para arriba
+void limpiarConsola() {
+    for (int i = 0; i < 15; i++) {
+        printf("\n");
+    }
+    fflush(stdout);
+}
 char mostrarMenuPrincipal() {
     char opcion;
-    printf("Menu PRINCIPAL\n");
+    printf("---Menu PRINCIPAL----\n");
     printf("1. Area Administrador\n");
     printf("2. Area Cliente\n");
     printf("0. Cerrar Programa\n");
@@ -42,7 +47,9 @@ char menuIniReg() {
 void menuCliente(Usuario u) {
 	char opcion;
 	do{
-		printf("Menu CLIENTE\n");
+		sleep(1);
+		limpiarConsola();
+		printf("MENÚ\n");
 		printf("1. Perfil\n");
 		printf("2. Catalogo\n");
 		printf("3. Alquilar trastero\n");
@@ -60,18 +67,7 @@ void menuCliente(Usuario u) {
 	    	visualizarTrasterosDisponibles(listaTrasteros);
 	    	break;
 		case '3': {// Alquilar un trastero
-			char input[10];
-			printf("Ingrese el número de trastero a alquilar: ");
-			fflush(stdout);
-			gets(input);
-			int num = atoi(input);
-			int pos = buscarTrastero(listaTrasteros, num);
-			if (pos != -1) {
-				alquilarTrastero(&listaTrasteros.aTrasteros[pos]);
-				printf("Trastero alquilado con éxito.\n");
-			} else {
-				printf("Trastero no encontrado.\n");
-			}
+			menuAlquilarTrastero(u);
 			break;
 		}
 		case '4': {
@@ -103,27 +99,70 @@ void menuCliente(Usuario u) {
 }
 void menuPerfil(Usuario u){
 	char opcion;
-	printf("DATOS DEL USUARIO");fflush(stdout);
-	printf("- Nombre: %s",u.nombre);fflush(stdout);
-	printf("- Apellido: %s",u.apellido);fflush(stdout);
-	printf("- DNI: %i",u.dni);fflush(stdout);
+	sleep(1);
+	limpiarConsola();
 	printf("-------------------------------------");fflush(stdout);
-	printf("DATOS DE CONTACTO");fflush(stdout);
-	printf("- Telefono: %i",u.telefono);fflush(stdout);
-	printf("- Email: %s",u.email);fflush(stdout);
-	printf("- Direccion: %s",u.direccion);fflush(stdout);
-	printf("-------------------------------------");fflush(stdout);
-	printf("Pulse 0 para volver atras \n: ");
+	printf("\nPERFIL");fflush(stdout);
+	printf("\n-------------------------------------");fflush(stdout);
+	printf("\nDATOS DEL USUARIO");fflush(stdout);
+	printf("\n- Nombre: %s",u.nombre);fflush(stdout);
+	printf("\n- Apellido: %s",u.apellido);fflush(stdout);
+	printf("\n- DNI: %i",u.dni);fflush(stdout);
+	printf("\n-------------------------------------");fflush(stdout);
+	printf("\nDATOS DE CONTACTO");fflush(stdout);
+	printf("\n- Telefono: %i",u.telefono);fflush(stdout);
+	printf("\n- Email: %s",u.email);fflush(stdout);
+	printf("\n- Direccion: %s",u.direccion);fflush(stdout);
+	printf("\nPulse 0 para volver atras \n: ");
 	fflush(stdout);
 	fflush(stdin);
-	scanf(" %c", &opcion);
-	if(opcion==0){
+	scanf("%c", &opcion);
+
+
+	if(opcion=='0'){
 		menuCliente(u); //Si pulsa 0 vuelve a la pestaña anterior
 	}else{
 		menuPerfil(u); //Si pulsa cualquier otra cosa le volvera a llevar a la misma pestaña
 	}
 }
-
+void menuAlquilarTrastero(Usuario u){
+	int numTrastero;
+	char opcionRetorno;
+	printf("Inserte el numero del trastero: ");
+	fflush(stdout);
+	fflush(stdin);
+	scanf("%i",numTrastero);
+	//Buscamos el trastero por su nombre
+	Trastero t=buscarTrasteroDDBB(NOMBRE_BBDD,numTrastero);
+	visualizarTrastero(t);
+	if(t.numeroTrastero==0){ //El trastero seleccionado no existe
+		printf("Este trastero no existe en nuestro catalogo, prueba con otro\n");fflush(stdout);
+		menuAlquilarTrastero(u);
+	}else if(t.disponible!=0){//El trastero seleccionado esta disponible
+		//añadimos trastero a la BD
+		aniadirTrasteroAlquilado(NOMBRE_BBDD,t,u);
+		printf("Trastero alquilado a nombre de %s\n", u.nombre);fflush(stdout);
+		//Le devolvemos al menu
+		menuCliente(u);
+	}else{//El trastero seleccionado no esta disponible
+		printf("Este trastero ya esta alquilado por otra persona\n\n");fflush(stdout);
+		printf("Quieres intentar alquilar otro trastero trastero?(0=NO/1=SI)");
+		do {
+					fflush(stdout);
+					fflush(stdin);
+					scanf("%c",opcionRetorno);
+					if (opcionRetorno!=1 || opcionRetorno!=0){
+						printf("Caracter incorrecto, seleccione entre\n"
+								"- 0: Volver al menu cliente\n"
+								"- 1: Volver a insertar un numero de trastero");
+					}else continue;
+		} while (opcionRetorno!=1 || opcionRetorno!=0);
+		if(opcionRetorno==1){
+			//Si desea volver le abrimos otra vez el menu de alquiler
+			menuAlquilarTrastero(u);
+		}else menuCliente(u);//Si desea volver atras le devolvemos al menu cliente
+	}
+}
 char menuAdministrador() {
     char opcion;
     printf("Menu ADMINISTRADOR\n");
@@ -154,72 +193,93 @@ int autenticarAdministrador() {
 
     if (strcmp(usuario, ADMIN_USER) == 0 && strcmp(contrasena, ADMIN_PASS) == 0) {
         printf("Acceso concedido.\n");
+        sleep(1);
         return 1;
     } else {
-        printf("Acceso denegado.\n");
+        sleep(0.5);
+    	printf("Acceso denegado.\n");fflush(stdout);
+        sleep(1);
+        limpiarConsola();
         return 0;
     }
 }
-int registrarUsuario(){
-	char nombre[50],apellido[50],email[50],direccion[50],
-		contrasena[50],confirmarContrasena[50],telefono[9],dni[9];
-	printf("Introduce el nomre:");
-	fflush(stdout);
-	fflush(stdin);
-    gets(nombre);
+int registrarUsuario() {
+    char nombre[50], apellido[50], email[50], direccion[50];
+    char contrasena[50], confirmarContrasena[50], telefono[9], dni[9];
+    int c,dniComp;
+    while ((c = getchar()) != '\n' && c != EOF);//Limpiar el buffer
+    printf("Introduce el nombre: ");
+    fflush(stdout);
+    fgets(nombre, sizeof(nombre), stdin);
+    nombre[strcspn(nombre, "\n")] = 0;
 
-	printf("Introduce el apellido:");
-	fflush(stdout);
-	fflush(stdin);
-    gets(apellido);
+    printf("Introduce el apellido: ");
+    fflush(stdout);
+    fgets(apellido, sizeof(apellido), stdin);
+    apellido[strcspn(apellido, "\n")] = 0;
 
-	printf("Introduce el email:");
-	fflush(stdout);
-	fflush(stdin);
-    gets(email);
+    printf("Introduce el email: ");
+    fflush(stdout);
+    fgets(email, sizeof(email), stdin);
+    email[strcspn(email, "\n")] = 0;
 
-	printf("Introduce el direccion:");
-	fflush(stdout);
-	fflush(stdin);
-    gets(direccion);
+    printf("Introduce la dirección: ");
+    fflush(stdout);
+    fgets(direccion, sizeof(direccion), stdin);
+    direccion[strcspn(direccion, "\n")] = 0;
 
-	printf("Introduce el dni:");
-	fflush(stdout);
-	fflush(stdin);
-    gets(dni);
+    printf("Introduce el DNI: ");
+    fflush(stdout);
+    fgets(dni, sizeof(dni), stdin);
+    dni[strcspn(dni, "\n")] = 0;
 
-	printf("Introduce el telefono:");
-	fflush(stdout);
-	fflush(stdin);
-    gets(telefono);
+    printf("Introduce el teléfono: ");
+    fflush(stdout);
+    fgets(telefono, sizeof(telefono), stdin);
+    telefono[strcspn(telefono, "\n")] = 0;
 
-	printf("Introducela contraseña:");
-	fflush(stdout);
-	fflush(stdin);
-    gets(contrasena);
+    printf("Introduce la contraseña: ");
+    fflush(stdout);
+    fgets(contrasena, sizeof(contrasena), stdin);
+    contrasena[strcspn(contrasena, "\n")] = 0;
 
-	printf("Confirma Contraseña:");
-	fflush(stdout);
-	fflush(stdin);
-    gets(confirmarContrasena);
+    printf("Confirma la contraseña: ");
+    fflush(stdout);
+    fgets(confirmarContrasena, sizeof(confirmarContrasena), stdin);
+    confirmarContrasena[strcspn(confirmarContrasena, "\n")] = 0;
 
-    //Esta ya registrado?
-    if(usuarioRegistrado(NOMBRE_BBDD,dni)==1){
-    	printf("Este DNI ya esta registrado");fflush(stdout);
-    	registrarUsuario();
-    }else if (strcmp(contrasena, confirmarContrasena) == 0 ) {
-    	Usuario u ={nombre,apellido,atoi(dni),atoi(apellido),email,direccion,contrasena};
-    	visualizarPerfilUsuario(u);
-    	aniadirUsuarioABBDD(NOMBRE_BBDD,u);
-           printf("Usuario registrado\n");
-           aniadirUsuarioABBDD(NOMBRE_BBDD,u);
-           menuCliente(u);
-       }else {
-    	   printf("Las contraseñas no coinciden");fflush(stdout);
-    	   registrarUsuario();
-       }
-
+    printf("%i devuelve usuarioRegistrado\n", usuarioRegistrado(NOMBRE_BBDD, dni));
+    fflush(stdout);
+    dniComp = atoi(dni);
+    if (usuarioRegistrado(NOMBRE_BBDD, dniComp) == 1) {
+        printf("Este DNI ya está registrado\n");
+        fflush(stdout);
+        sleep(1);
+        return 0;
+    } else if (strcmp(contrasena, confirmarContrasena) == 0) {
+        Usuario u;
+        strcpy(u.nombre, nombre);
+        strcpy(u.apellido, apellido);
+        u.dni = atoi(dni);
+        u.telefono = atoi(telefono);
+        strcpy(u.email, email);
+        strcpy(u.direccion, direccion);
+        strcpy(u.contrasenia, contrasena);
+        sleep(1);
+        aniadirUsuarioABBDD(NOMBRE_BBDD, u);
+        printf("Usuario registrado\n");
+        sleep(1);
+        fflush(stdout);
+        menuCliente(u);
+        return 1;
+    } else {
+        printf("Las contraseñas no coinciden\n");
+        fflush(stdout);
+        registrarUsuario();
+        return 0;
+    }
 }
+
 int autenticarUsuario() {
     char usuario[50], contrasena[50];
     printf("Ingrese usuario: ");
