@@ -93,3 +93,52 @@ void visualizarTrasterosAlquilados(ListaTrasteros lt) {
     	 visualizarTrasteroAlquilado(lt.aTrasteros[i]);
      }
 }
+
+void ordenarPorPrecio(ListaTrasteros *lt) {
+    for (int i = 0; i < lt->numeroTrasteros - 1; i++) {
+        for (int j = 0; j < lt->numeroTrasteros - i - 1; j++) {
+            if (lt->aTrasteros[j].precio > lt->aTrasteros[j + 1].precio) {
+                Trastero temp = lt->aTrasteros[j];
+                lt->aTrasteros[j] = lt->aTrasteros[j + 1];
+                lt->aTrasteros[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void ordenarPorMetrosCuadrados(ListaTrasteros *lt) {
+    for (int i = 0; i < lt->numeroTrasteros - 1; i++) {
+        for (int j = 0; j < lt->numeroTrasteros - i - 1; j++) {
+            if (lt->aTrasteros[j].metrosCuadrados > lt->aTrasteros[j + 1].metrosCuadrados) {
+                Trastero temp = lt->aTrasteros[j];
+                lt->aTrasteros[j] = lt->aTrasteros[j + 1];
+                lt->aTrasteros[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void ordenarPorValoracion(ListaTrasteros *lt) {
+    for (int i = 0; i < lt->numeroTrasteros - 1; i++) {
+        for (int j = 0; j < lt->numeroTrasteros - i - 1; j++) {
+            if (lt->aTrasteros[j].valoracion < lt->aTrasteros[j + 1].valoracion) { // De mayor a menor
+                Trastero temp = lt->aTrasteros[j];
+                lt->aTrasteros[j] = lt->aTrasteros[j + 1];
+                lt->aTrasteros[j + 1] = temp;
+            }
+        }
+    }
+}
+void ordenarPorNumeroTrastero(ListaTrasteros *lt) {
+    int i, j;
+    for (i = 0; i < lt->numeroTrasteros - 1; i++) {
+        for (j = 0; j < lt->numeroTrasteros - i - 1; j++) {
+            if (lt->aTrasteros[j].numeroTrastero > lt->aTrasteros[j + 1].numeroTrastero) {
+                // Intercambiar los trasteros
+                Trastero temp = lt->aTrasteros[j];
+                lt->aTrasteros[j] = lt->aTrasteros[j + 1];
+                lt->aTrasteros[j + 1] = temp;
+            }
+        }
+    }
+}

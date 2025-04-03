@@ -34,7 +34,9 @@ void visualizarTrasteroDisponible(Trastero t);
 void visualizarTrasterosAlquilados(ListaTrasteros lt);
 void visualizarTrasteroAlquilado(Trastero t);
 
-
-
+void ordenarPorPrecio(ListaTrasteros *lt);
+void ordenarPorMetrosCuadrados(ListaTrasteros *lt);
+void ordenarPorValoracion(ListaTrasteros *lt);
+void ordenarPorNumeroTrastero(ListaTrasteros *lt);
 
 #endif /* TRASTERO_H_ */

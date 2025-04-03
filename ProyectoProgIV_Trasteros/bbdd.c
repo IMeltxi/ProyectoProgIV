@@ -163,7 +163,7 @@ Usuario obtenerUsuario(sqlite3 *db, int dni) {
 }
 int usuarioRegistrado(sqlite3 *db,int dni){
 	sqlite3_stmt *stmt;
-	    char sql[100];
+	    char sql[500];
 	    int result = 0;  // Inicializamos el resultado a 0 (por defecto)
 
 	    // Preparamos la consulta SQL para verificar si el usuario está registrado
