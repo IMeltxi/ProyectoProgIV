@@ -16,6 +16,7 @@ int main() {
     char opcionPrincipal,opcionAdmin,opcionVisualizarTrasterosAdmin;
     Trastero t;
     Usuario u;
+
     printf("Iniciando el programa...\n");fflush(stdout);
     sleep(1);
     result = inicializarBBDD(&db);
@@ -31,7 +32,8 @@ int main() {
     limpiarConsola();
     inicializarListaUsuarios(&lu);
     inicializarListaTrasteros(&lt);
-    cargarTrasterosDesdeCSV(&lt, NOM_ARCHIVO);
+    cargarTrasterosDesdeCSV(&lt, NOM_ARCHIVO_TRASTEROS);
+    cargarUsuariosDesdeCSV(&lu,NOM_ARCHIVO_USUARIOS);
 
 
     do {

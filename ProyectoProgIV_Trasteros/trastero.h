@@ -2,7 +2,7 @@
 #ifndef TRASTERO_H_
 #define TRASTERO_H_
 #define MAX_TRASTEROS 100
-#define NOM_ARCHIVO "trasteros.csv"
+#define NOM_ARCHIVO_TRASTEROS "trasteros.csv"
 
 typedef struct{
 	int numeroTrastero;
@@ -23,7 +23,6 @@ void devolverTrastero(Trastero *t);
 int buscarTrastero(ListaTrasteros lt, int numeroTrastero);
 void aniadirTrastero(ListaTrasteros *lt, Trastero t);
 void eliminarTrastero(ListaTrasteros *lt, Trastero t);
-void imprimirTrasterosDisponibles(ListaTrasteros lt);
 
 void visualizarTrasteros(ListaTrasteros lt);
 void visualizarTrastero(Trastero t);

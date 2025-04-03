@@ -61,3 +61,55 @@ void visualizarPerfilUsuario(Usuario u){
 	printf("\n- Email: %s",u.email);
 	printf("\n- Direccion: %s",u.direccion);
 }
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void cargarUsuariosDesdeCSV(ListaUsuarios *lu, char *nombreArchivo) {
+    FILE *pf;
+    char linea[200];
+    Usuario u;
+
+    pf = fopen(nombreArchivo, "r");
+    if (pf == NULL) {
+        printf("Error al abrir el archivo %s\n", nombreArchivo);
+        return;
+    }
+
+    while (fgets(linea, sizeof(linea), pf) != NULL) {
+        char *nombre = strtok(linea, ";");
+        char *apellido = strtok(NULL, ";");
+        char *dni = strtok(NULL, ";");
+        char *telefono = strtok(NULL, ";");
+        char *email = strtok(NULL, ";");
+        char *direccion = strtok(NULL, ";");
+        char *contrasenia = strtok(NULL, ";\n");  // Para evitar el salto de línea
+
+        if (nombre && apellido && dni && telefono && email && direccion && contrasenia) {
+            strcpy(u.nombre, nombre);
+            strcpy(u.apellido, apellido);
+            u.dni = atoi(dni);
+            u.telefono = atoi(telefono);
+            strcpy(u.email, email);
+            strcpy(u.direccion, direccion);
+            strcpy(u.contrasenia, contrasenia);
+
+            // Redimensionar array dinámico para agregar el nuevo usuario
+            lu->numUsuarios++;
+            lu->aUsuarios = realloc(lu->aUsuarios, lu->numUsuarios * sizeof(Usuario));
+
+            if (lu->aUsuarios == NULL) {
+                printf("Error al asignar memoria\n");
+                fclose(pf);
+                return;
+            }
+
+            // Agregar usuario a la lista
+            lu->aUsuarios[lu->numUsuarios - 1] = u;
+        }
+    }
+
+    fclose(pf);
+}
+

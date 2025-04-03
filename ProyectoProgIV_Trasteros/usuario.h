@@ -1,5 +1,6 @@
 #ifndef USUARIO_H_
 #define USUARIO_H_
+#define NOM_ARCHIVO_USUARIOS "usuarios.csv"
 typedef struct{
 	char nombre[30];
 	char apellido[30];
@@ -22,5 +23,7 @@ void visualizarListaUsuarios(ListaUsuarios lu);
 
 Usuario* iniciarSesion(ListaUsuarios lu,char* email, char* contra);
 void visualizarPerfilUsuario(Usuario u);
+
+void cargarUsuariosDesdeCSV(ListaUsuarios *lu, char *nombreArchivo);
 
 #endif
