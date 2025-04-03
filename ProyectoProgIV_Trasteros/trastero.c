@@ -1,5 +1,7 @@
 #include "trastero.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 void inicializarListaTrasteros(ListaTrasteros* lt){
 	lt->numeroTrasteros=0;
 }
@@ -142,3 +144,42 @@ void ordenarPorNumeroTrastero(ListaTrasteros *lt) {
         }
     }
 }
+
+void cargarTrasterosDesdeCSV(ListaTrasteros *lt, char *nombreArchivo) {
+     FILE *pf;
+     char linea[200];
+     Trastero t;
+
+     pf = fopen(nombreArchivo, "r");
+     if (pf != NULL) {
+         while (fgets(linea, sizeof(linea), pf) != NULL) { // Cambié fscanf por fgets
+             // Eliminamos el salto de línea al final
+             linea[strcspn(linea, "\n")] = 0;
+
+             char *numT = strtok(linea, ";");
+             char *m2 = strtok(NULL, ";");
+             char *val = strtok(NULL, ";");
+             char *pre = strtok(NULL, ";");
+             char *disp = strtok(NULL, ";");
+
+             if (numT && m2 && val && pre && disp) { // Aseguramos que los valores se extraen correctamente
+                 t.numeroTrastero = atoi(numT);
+                 t.metrosCuadrados = atoi(m2);
+                 t.valoracion = atoi(val);
+                 t.precio = atoi(pre);
+                 t.disponible = atoi(disp);
+
+                 // Añadimos el trastero a la lista
+                 if (lt->numeroTrasteros < 100) {
+                     lt->aTrasteros[lt->numeroTrasteros] = t;
+                     lt->numeroTrasteros++;
+                 } else {
+                     printf("No se pueden añadir más trasteros\n");
+                 }
+             }
+         }
+         fclose(pf);
+     } else {
+         printf("Error al abrir el archivo %s\n", nombreArchivo);
+     }
+ }

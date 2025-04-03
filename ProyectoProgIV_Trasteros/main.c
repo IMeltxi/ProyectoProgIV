@@ -13,31 +13,9 @@ int main() {
     ListaTrasteros lt;
     sqlite3 *db; //Acceso a la bbdd
     int result;
-
-
-    lt.numeroTrasteros = 5;  // Número de trasteros en la lista
-
-       lt.aTrasteros[0] = (Trastero){1, 10, 4, 200, 1};
-       lt.aTrasteros[1] = (Trastero){2, 20, 5, 350, 1};
-       lt.aTrasteros[2] = (Trastero){3, 15, 3, 250, 0};
-       lt.aTrasteros[3] = (Trastero){4, 30, 2, 500, 1};
-       lt.aTrasteros[4] = (Trastero){5, 25, 5, 400, 0};
-
-       printf("Lista de trasteros inicial:\n");
-       visualizarTrasteros(lt);
-       ordenarPorMetrosCuadrados(&lt);
-       visualizarTrasteros(lt);
-       ordenarPorPrecio(&lt);
-       visualizarTrasteros(lt);
-       ordenarPorValoracion(&lt);
-       visualizarTrasteros(lt);
-
-
-
-
-
-
-
+    char opcionPrincipal,opcionAdmin,opcionMenuAdmin;
+    Trastero t;
+    Usuario u;
     printf("Iniciando el programa...\n");fflush(stdout);
     sleep(1);
     result = inicializarBBDD(&db);
@@ -53,20 +31,30 @@ int main() {
     limpiarConsola();
     inicializarListaUsuarios(&lu);
     inicializarListaTrasteros(&lt);
+    cargarTrasterosDesdeCSV(&lt, NOM_ARCHIVO);
 
 
-    char opcionPrincipal;
     do {
         opcionPrincipal = mostrarMenuPrincipal();
         switch (opcionPrincipal) {
             case '1':
             	if (autenticarAdministrador()) {
-            		char opcionAdmin;
             		do {
             			opcionAdmin = menuAdministrador();
             			switch (opcionAdmin) {
                         	case '1':
-                        		printf("Aniadiendo trastero...\n");
+                        		do{
+                        			opcionMenuAdmin = menuAdministrador();
+                        			switch (opcionMenuAdmin) {
+										case '1':
+											t= menuAniadirTrastero();
+											aniadirTrastero(&lt,t);
+											break;
+										default:
+											break;
+									}
+                        		}while(opcionAdmin!=0);
+
                         		break;
                         	case '2':
                         		printf("Eliminando trastero...\n");

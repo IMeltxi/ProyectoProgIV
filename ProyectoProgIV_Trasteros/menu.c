@@ -64,7 +64,7 @@ void menuCliente(Usuario u) {
 			menuPerfil(u);
 			break;
 	    case '2': // Mostrar catálogo de trasteros (aquí necesitarías implementar la función que muestra el catálogo de trasteros disponibles)
-	    	visualizarTrasterosDisponibles(listaTrasteros);
+	    	//menuCatalogo(u,lt);
 	    	break;
 		case '3': {// Alquilar un trastero
 			menuAlquilarTrastero(u);
@@ -96,6 +96,57 @@ void menuCliente(Usuario u) {
 
 
 
+}
+void menuCatalogo(Usuario u,ListaTrasteros *lt){
+	char opcion;
+		do{
+			sleep(1);
+			limpiarConsola();
+			printf("MENÚ\n");
+			printf("1. Ver todo el Catatalogo\n");
+			printf("2. Filtrar por Precio\n");
+			printf("3. Filtrar por Metros Cuadrados\n");
+			printf("4. Filtrar por Valoracion\n");
+			printf("0. Volver atras\n");
+			printf("Seleccione una opcion\n: ");
+			fflush(stdout);
+			fflush(stdin);
+			scanf(" %c", &opcion);
+			switch (opcion) {
+			case '1': // Ver el perfil del usuario
+				ordenarPorNumeroTrastero(lt);
+
+				break;
+		    case '2': // Mostrar catálogo de trasteros (aquí necesitarías implementar la función que muestra el catálogo de trasteros disponibles)
+		    	menuCatalogo(u,lt);
+		    	break;
+			case '3': {// Alquilar un trastero
+				menuAlquilarTrastero(u);
+				break;
+			}
+			case '4': {
+				char input[10];
+				printf("Ingrese el número de trastero a devolver: ");
+				fflush(stdout);
+				gets(input);
+				int num = atoi(input);
+				int pos = buscarTrastero(listaTrasteros, num);
+				if (pos != -1) {
+					devolverTrastero(&listaTrasteros.aTrasteros[pos]);
+					printf("Trastero devuelto con éxito.\n");
+				} else {
+					printf("Trastero no encontrado.\n");
+				}
+				break;
+			}
+			case '0':
+				// Cerrar sesión
+				printf("Cerrando sesión...\n");
+				break;
+				default:
+					printf("Opción inválida. Intente nuevamente.\n");
+			        }
+	    }while (opcion != '0');
 }
 void menuPerfil(Usuario u){
 	char opcion;
@@ -203,6 +254,33 @@ int autenticarAdministrador() {
         return 0;
     }
 }
+
+Trastero menuAniadirTrastero(){
+	Trastero t;
+	printf("AÑADIR TRASTERO");
+	printf("\n-----------------\n");
+	printf("Numero del trastero: ");
+	fflush(stdout);
+	fflush(stdin);
+	scanf("%d", &t.numeroTrastero);
+	printf("Metros Cuadrados: ");
+	fflush(stdout);
+	fflush(stdin);
+	scanf("%d", &t.numeroTrastero);
+	printf("Precio: ");
+	fflush(stdout);
+	fflush(stdin);
+	scanf("%d", &t.numeroTrastero);
+	t.disponible=1;
+	t.valoracion=0;
+	return t;
+}
+
+
+
+
+
+
 int registrarUsuario() {
     char nombre[50], apellido[50], email[50], direccion[50];
     char contrasena[50], confirmarContrasena[50], telefono[9], dni[9];
