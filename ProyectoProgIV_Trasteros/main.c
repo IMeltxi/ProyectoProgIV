@@ -1,8 +1,8 @@
 // main.c
-#include "menu.h"
-#include "usuario.h"
-#include "trastero.h"
-#include "bbdd.h"
+#include "domain/menu.h"
+#include "domain/usuario.h"
+#include "domain/trastero.h"
+#include "db/bbdd.h"
 #include <stdio.h>
 #include <stdlib.h>
 

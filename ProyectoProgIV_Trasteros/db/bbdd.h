@@ -1,8 +1,8 @@
 #ifndef BBDD_H_
 #define BBDD_H_
 #include "sqlite3.h"
-#include "usuario.h"
-#include "trastero.h"
+#include "../domain/usuario.h"
+#include "../domain/trastero.h"
 #define NOMBRE_BBDD "TrasterosDeusto.db"
 
 //Funciones para la ejecucion de la bd
