@@ -257,6 +257,8 @@ int autenticarAdministrador() {
 
 Trastero menuAniadirTrastero(){
 	Trastero t;
+	sleep(1);
+	limpiarConsola();
 	printf("AÑADIR TRASTERO");
 	printf("\n-----------------\n");
 	printf("Numero del trastero: ");
@@ -275,6 +277,35 @@ Trastero menuAniadirTrastero(){
 	t.valoracion=0;
 	return t;
 }
+int menuEliminarTrastero(){
+	int numTrastero;
+	sleep(1);
+	limpiarConsola();
+	printf("ELIMINAR TRASTERO");
+	printf("\n-----------------\n");
+	printf("Numero del trastero: ");
+	fflush(stdout);
+	fflush(stdin);
+	scanf("%d", &numTrastero);
+	return numTrastero;
+}
+
+char menuTrasterosAdmin(){
+	char opcion;
+	    printf("VISUALIZAR TRASTEROS\n");
+	    printf("1. VER TODOS LOS TRASTEROS\n");
+	    printf("2. VER TRASTEROS ALQUILADOS\n");
+	    printf("3. VER TRASTEROS DISPONIBLES\n");
+	    printf("0. Salir\n");
+	    printf("Seleccione una opcion\n: ");
+	    fflush(stdout);
+	    fflush(stdin);
+	    scanf(" %c", &opcion);
+	    while(getchar() != '\n');
+	    return opcion;
+}
+
+
 
 
 

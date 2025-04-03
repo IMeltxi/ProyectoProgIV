@@ -12,8 +12,8 @@ int main() {
     ListaUsuarios lu;
     ListaTrasteros lt;
     sqlite3 *db; //Acceso a la bbdd
-    int result;
-    char opcionPrincipal,opcionAdmin,opcionMenuAdmin;
+    int result,trasteroAEliminar;
+    char opcionPrincipal,opcionAdmin,opcionVisualizarTrasterosAdmin;
     Trastero t;
     Usuario u;
     printf("Iniciando el programa...\n");fflush(stdout);
@@ -43,27 +43,44 @@ int main() {
             			opcionAdmin = menuAdministrador();
             			switch (opcionAdmin) {
                         	case '1':
-                        		do{
-                        			opcionMenuAdmin = menuAdministrador();
-                        			switch (opcionMenuAdmin) {
-										case '1':
-											t= menuAniadirTrastero();
-											aniadirTrastero(&lt,t);
-											break;
-										default:
-											break;
-									}
-                        		}while(opcionAdmin!=0);
-
+                        		t= menuAniadirTrastero();
+                        		aniadirTrastero(&lt,t);
+                        		aniadirTrasteroABBDD(NOMBRE_BBDD,t);
                         		break;
                         	case '2':
-                        		printf("Eliminando trastero...\n");
+                        		trasteroAEliminar = menuEliminarTrastero();
+                        		t = buscarTrastero(lt,trasteroAEliminar);
+                        		eliminarTrastero(&lt,t);
+                        		eliminarTrasteroDDBB(NOMBRE_BBDD,trasteroAEliminar);
                         		break;
                         	case '3':
-                        		printf("Mostrando clientes...\n");
+                        		sleep(1);
+                        		limpiarConsola();
+                        		visualizarListaUsuarios(lu);
                         		break;
                         	case '4':
-                            printf("Mostrando trasteros disponibles...\n");
+                        			do{
+                        				opcionVisualizarTrasterosAdmin = menuTrasterosAdmin();
+                        				switch (opcionVisualizarTrasterosAdmin) {
+											case '1':
+												sleep(1);
+												limpiarConsola();
+												visualizarTrasteros(lt);
+												break;
+											case '2';
+												sleep(1);
+												limpiarConsola();
+												visualizarTrasterosAlquilados(lt);
+												break;
+											case '3':
+												sleep(1);
+												limpiarConsola();
+												visualizarTrasterosDisponibles(lt);
+												break;
+											default:
+												break;
+										}
+                        			}while(opcionVisualizarTrasterosAdmin!='0');
                             break;
                         	case '0':
                         		printf("Saliendo del menú administrador...\n");

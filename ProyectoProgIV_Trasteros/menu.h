@@ -15,6 +15,8 @@ void menuAlquilarTrastero(Usuario u);
 char menuAdministrador();
 int autenticarAdministrador();
 Trastero menuAniadirTrastero();
+int menuEliminarTrastero();
+char menuTrasterosAdmin();
 //Cambiar metodo
 int registrarUsuario();
 int autenticarUsuario();
