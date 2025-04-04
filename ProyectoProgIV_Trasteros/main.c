@@ -17,6 +17,8 @@ int main() {
     Trastero t;
     Usuario u;
 
+
+
     printf("Iniciando el programa...\n");fflush(stdout);
     sleep(1);
     result = inicializarBBDD(&db);
@@ -34,6 +36,8 @@ int main() {
     inicializarListaTrasteros(&lt);
     cargarTrasterosDesdeCSV(&lt, NOM_ARCHIVO_TRASTEROS);
     cargarUsuariosDesdeCSV(&lu,NOM_ARCHIVO_USUARIOS);
+    visualizarTrasteros(lt);
+    visualizarListaUsuarios(lu);
 
 
     do {
@@ -50,10 +54,10 @@ int main() {
                         		aniadirTrasteroABBDD(NOMBRE_BBDD,t);
                         		break;
                         	case '2':
-                        		trasteroAEliminar = menuEliminarTrastero();
-                        		t = buscarTrastero(lt,trasteroAEliminar);
-                        		eliminarTrastero(&lt,t);
-                        		eliminarTrasteroDDBB(NOMBRE_BBDD,trasteroAEliminar);
+//                        		trasteroAEliminar = menuEliminarTrastero();
+//                        		t = buscarTrastero(lt,trasteroAEliminar);
+//                        		eliminarTrastero(&lt,t);
+//                        		eliminarTrasteroDDBB(NOMBRE_BBDD,trasteroAEliminar);
                         		break;
                         	case '3':
                         		sleep(1);
@@ -69,7 +73,7 @@ int main() {
 												limpiarConsola();
 												visualizarTrasteros(lt);
 												break;
-											case '2';
+											case '2':
 												sleep(1);
 												limpiarConsola();
 												visualizarTrasterosAlquilados(lt);

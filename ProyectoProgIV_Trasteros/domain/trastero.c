@@ -50,9 +50,9 @@ void eliminarTrastero(ListaTrasteros *lt, Trastero t) {
 
 void visualizarTrastero(Trastero t) {
 	if(t.disponible==0){
-		printf("%20d%20d%20d%20d%20d\n", t.numeroTrastero, t.metrosCuadrados, t.valoracion, t.precio, "NO");
+		printf("%20d%20d%20d%20d%20s\n", t.numeroTrastero, t.metrosCuadrados, t.valoracion, t.precio, "NO");
 	}else{
-		printf("%20d%20d%20d%20d%20d\n", t.numeroTrastero, t.metrosCuadrados, t.valoracion, t.precio, "SI");
+		printf("%20d%20d%20d%20d%20s\n", t.numeroTrastero, t.metrosCuadrados, t.valoracion, t.precio, "SI");
 	}
 
 }
@@ -73,7 +73,7 @@ void visualizarTrasteros(ListaTrasteros lt) {
     printf("%20s%20s%20s%20s%20s\n", "NºTRASTERO", "m²", "VALORACION", "PRECIO", "DISPONIBILIDAD");
     fflush(stdout);
     for (i = 0; i < lt.numeroTrasteros; i++) {
-        visualizarTrastero(lt.aTrasteros[i]);
+        visualizarTrastero(lt.aTrasteros[i]);fflush(stdout);
     }
 }
 
@@ -167,7 +167,6 @@ void cargarTrasterosDesdeCSV(ListaTrasteros *lt, char *nombreArchivo) {
                  t.valoracion = atoi(val);
                  t.precio = atoi(pre);
                  t.disponible = atoi(disp);
-
                  // Añadimos el trastero a la lista
                  if (lt->numeroTrasteros < 100) {
                      lt->aTrasteros[lt->numeroTrasteros] = t;

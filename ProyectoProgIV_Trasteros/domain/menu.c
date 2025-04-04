@@ -3,7 +3,7 @@
 #include <string.h>
 #include "usuario.h"
 #include "trastero.h"
-#include "bbdd.h"
+#include "../db/bbdd.h"
 
 
 #define ADMIN_USER "admin"
