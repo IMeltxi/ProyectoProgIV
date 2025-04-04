@@ -6,10 +6,10 @@
 void limpiarConsola();
 char mostrarMenuPrincipal();
 char menuIniReg();
-void menuCliente(Usuario u);
+void menuCliente(Usuario u, ListaTrasteros *lt);
 void menuCatalogo(Usuario u,ListaTrasteros *lt);
-void menuPerfil(Usuario u);
-void menuAlquilarTrastero(Usuario u);
+void menuPerfil(Usuario u, ListaTrasteros *lt);
+void menuAlquilarTrastero(Usuario u, ListaTrasteros *lt);
 
 
 char menuAdministrador();

@@ -97,8 +97,8 @@ int main() {
             	} while (opcionAdmin != '0');
             	break;
             case '2': {
-            	manejarCliente();
-            	break;
+                manejarCliente(&lu, &lt);
+                break;
             }
             case '0':
                 printf("Saliendo del programa...\n");

@@ -44,7 +44,7 @@ char menuIniReg() {
     return opcion;
 }
 
-void menuCliente(Usuario u) {
+void menuCliente(Usuario u, ListaTrasteros *lt) {
 	char opcion;
 	do{
 		sleep(1);
@@ -61,13 +61,13 @@ void menuCliente(Usuario u) {
 		scanf(" %c", &opcion);
 		switch (opcion) {
 		case '1': // Ver el perfil del usuario
-			menuPerfil(u);
+			menuPerfil(u , lt);
 			break;
 	    case '2': // Mostrar catálogo de trasteros (aquí necesitarías implementar la función que muestra el catálogo de trasteros disponibles)
 	    	//menuCatalogo(u,lt);
 	    	break;
 		case '3': {// Alquilar un trastero
-			menuAlquilarTrastero(u);
+			menuAlquilarTrastero(u, lt);
 			break;
 		}
 		case '4': {
@@ -121,7 +121,7 @@ void menuCatalogo(Usuario u,ListaTrasteros *lt){
 		    	menuCatalogo(u,lt);
 		    	break;
 			case '3': {// Alquilar un trastero
-				menuAlquilarTrastero(u);
+				menuAlquilarTrastero(u, lt);
 				break;
 			}
 			case '4': {
@@ -148,7 +148,7 @@ void menuCatalogo(Usuario u,ListaTrasteros *lt){
 			        }
 	    }while (opcion != '0');
 }
-void menuPerfil(Usuario u){
+void menuPerfil(Usuario u, ListaTrasteros *lt){
 	char opcion;
 	sleep(1);
 	limpiarConsola();
@@ -171,47 +171,54 @@ void menuPerfil(Usuario u){
 
 
 	if(opcion=='0'){
-		menuCliente(u); //Si pulsa 0 vuelve a la pestaña anterior
+		menuCliente(u, lt); //Si pulsa 0 vuelve a la pestaña anterior
 	}else{
-		menuPerfil(u); //Si pulsa cualquier otra cosa le volvera a llevar a la misma pestaña
+		menuPerfil(u, lt); //Si pulsa cualquier otra cosa le volvera a llevar a la misma pestaña
 	}
 }
-void menuAlquilarTrastero(Usuario u){
+void menuAlquilarTrastero(Usuario u, ListaTrasteros *lt){
 	int numTrastero;
 	char opcionRetorno;
+
 	printf("Inserte el numero del trastero: ");
 	fflush(stdout);
-	fflush(stdin);
-	scanf("%i",numTrastero);
+
+	 if (scanf("%d", &numTrastero) != 1) {
+	        printf("Error al leer el número de trastero.\n");
+	        while (getchar() != '\n'); // Limpiar buffer
+	        return;
+	    }
+
+	 getchar();
 	//Buscamos el trastero por su nombre
 	Trastero t=buscarTrasteroDDBB(NOMBRE_BBDD,numTrastero);
-	visualizarTrastero(t);
+
 	if(t.numeroTrastero==0){ //El trastero seleccionado no existe
 		printf("Este trastero no existe en nuestro catalogo, prueba con otro\n");fflush(stdout);
-		menuAlquilarTrastero(u);
-	}else if(t.disponible!=0){//El trastero seleccionado esta disponible
+		return;
+	}
+
+    visualizarTrastero(t);
+
+
+	if(t.disponible!=0){//El trastero seleccionado esta disponible
 		//añadimos trastero a la BD
 		aniadirTrasteroAlquilado(NOMBRE_BBDD,t,u);
 		printf("Trastero alquilado a nombre de %s\n", u.nombre);fflush(stdout);
-		//Le devolvemos al menu
-		menuCliente(u);
+
 	}else{//El trastero seleccionado no esta disponible
 		printf("Este trastero ya esta alquilado por otra persona\n\n");fflush(stdout);
 		printf("Quieres intentar alquilar otro trastero trastero?(0=NO/1=SI)");
-		do {
-					fflush(stdout);
-					fflush(stdin);
-					scanf("%c",opcionRetorno);
-					if (opcionRetorno!=1 || opcionRetorno!=0){
-						printf("Caracter incorrecto, seleccione entre\n"
-								"- 0: Volver al menu cliente\n"
-								"- 1: Volver a insertar un numero de trastero");
-					}else continue;
-		} while (opcionRetorno!=1 || opcionRetorno!=0);
-		if(opcionRetorno==1){
-			//Si desea volver le abrimos otra vez el menu de alquiler
-			menuAlquilarTrastero(u);
-		}else menuCliente(u);//Si desea volver atras le devolvemos al menu cliente
+        fflush(stdout);
+
+        scanf(" %c", &opcionRetorno);
+        getchar();
+
+		if(opcionRetorno == '1') {
+					menuAlquilarTrastero(u, lt);
+				} else {
+					menuCliente(u, lt);
+				}
 	}
 }
 char menuAdministrador() {
@@ -312,10 +319,11 @@ char menuTrasterosAdmin(){
 
 
 
-int registrarUsuario() {
+int registrarUsuario(Usuario *u) {
     char nombre[50], apellido[50], email[50], direccion[50];
     char contrasena[50], confirmarContrasena[50], telefono[9], dni[9];
     int c,dniComp;
+
     while ((c = getchar()) != '\n' && c != EOF);//Limpiar el buffer
     printf("Introduce el nombre: ");
     fflush(stdout);
@@ -357,8 +365,7 @@ int registrarUsuario() {
     fgets(confirmarContrasena, sizeof(confirmarContrasena), stdin);
     confirmarContrasena[strcspn(confirmarContrasena, "\n")] = 0;
 
-    printf("%i devuelve usuarioRegistrado\n", usuarioRegistrado(NOMBRE_BBDD, dni));
-    fflush(stdout);
+
     dniComp = atoi(dni);
     if (usuarioRegistrado(NOMBRE_BBDD, dniComp) == 1) {
         printf("Este DNI ya está registrado\n");
@@ -366,25 +373,22 @@ int registrarUsuario() {
         sleep(1);
         return 0;
     } else if (strcmp(contrasena, confirmarContrasena) == 0) {
-        Usuario u;
-        strcpy(u.nombre, nombre);
-        strcpy(u.apellido, apellido);
-        u.dni = atoi(dni);
-        u.telefono = atoi(telefono);
-        strcpy(u.email, email);
-        strcpy(u.direccion, direccion);
-        strcpy(u.contrasenia, contrasena);
+        strcpy(u->nombre, nombre);
+        strcpy(u->apellido, apellido);
+        u->dni = atoi(dni);
+        u->telefono = atoi(telefono);
+        strcpy(u->email, email);
+        strcpy(u->direccion, direccion);
+        strcpy(u->contrasenia, contrasena);
         sleep(1);
-        aniadirUsuarioABBDD(NOMBRE_BBDD, u);
+        aniadirUsuarioABBDD(NOMBRE_BBDD, *u);
         printf("Usuario registrado\n");
         sleep(1);
         fflush(stdout);
-        menuCliente(u);
         return 1;
     } else {
         printf("Las contraseñas no coinciden\n");
         fflush(stdout);
-        registrarUsuario();
         return 0;
     }
 }
@@ -410,7 +414,7 @@ int autenticarUsuario() {
     }
 }
 
-void manejarCliente(ListaUsuarios *lu) {
+void manejarCliente(ListaUsuarios *lu, ListaTrasteros *lt) {
     char opcion;
     Usuario usuarioActual;
 
@@ -423,12 +427,13 @@ void manejarCliente(ListaUsuarios *lu) {
                 strcpy(usuarioActual.nombre, "Usuario");
                 strcpy(usuarioActual.apellido, "Prueba");
                 usuarioActual.dni = 12345678;
-                menuCliente(usuarioActual);
+                menuCliente(usuarioActual, lt);
             	}
             	break;
             case '2':
-            	if(registrarUsuario()){
+					if(registrarUsuario(&usuarioActual)){
             		printf("Usuario Registrado...\n");
+            		menuCliente(usuarioActual, lt);
             	}
                 break;
             default:
