@@ -10,6 +10,7 @@ typedef struct{
 	int valoracion;
 	int precio;
 	int disponible;
+	int numeroDeValoraciones;
 }Trastero;
 
 typedef struct{

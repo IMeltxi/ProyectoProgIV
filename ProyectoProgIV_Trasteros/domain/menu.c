@@ -37,6 +37,7 @@ char menuIniReg() {
     printf("\n--- MENÚ CLIENTE ---\n");
     printf("1. Iniciar Sesión\n");
     printf("2. Registrarse\n");
+    printf("0. Cerrar\n");
     printf("Seleccione una opción: ");
     fflush(stdout);
     fflush(stdin);
@@ -44,112 +45,40 @@ char menuIniReg() {
     return opcion;
 }
 
-void menuCliente(Usuario u, ListaTrasteros *lt) {
+char menuCliente() {
 	char opcion;
-	do{
-		sleep(1);
-		limpiarConsola();
-		printf("MENÚ\n");
-		printf("1. Perfil\n");
-		printf("2. Catalogo\n");
-		printf("3. Alquilar trastero\n");
-		printf("4. Devolver trastero\n");
-		printf("0. Cerrar Sesion\n");
-		printf("Seleccione una opcion\n: ");
-		fflush(stdout);
-		fflush(stdin);
-		scanf(" %c", &opcion);
-		switch (opcion) {
-		case '1': // Ver el perfil del usuario
-			menuPerfil(u , lt);
-			break;
-	    case '2': // Mostrar catálogo de trasteros (aquí necesitarías implementar la función que muestra el catálogo de trasteros disponibles)
-	    	//menuCatalogo(u,lt);
-	    	break;
-		case '3': {// Alquilar un trastero
-			menuAlquilarTrastero(u, lt);
-			break;
-		}
-		case '4': {
-			char input[10];
-			printf("Ingrese el número de trastero a devolver: ");
-			fflush(stdout);
-			gets(input);
-			int num = atoi(input);
-			int pos = buscarTrastero(listaTrasteros, num);
-			if (pos != -1) {
-				devolverTrastero(&listaTrasteros.aTrasteros[pos]);
-				printf("Trastero devuelto con éxito.\n");
-			} else {
-				printf("Trastero no encontrado.\n");
-			}
-			break;
-		}
-		case '0':
-			// Cerrar sesión
-			printf("Cerrando sesión...\n");
-			break;
-			default:
-				printf("Opción inválida. Intente nuevamente.\n");
-		        }
-    }while (opcion != '0');
-
-
-
+	sleep(1);
+	limpiarConsola();
+	printf("MENÚ\n");
+	printf("1. Perfil\n");
+	printf("2. Catalogo\n");
+	printf("3. Alquilar trastero\n");
+	printf("4. Devolver trastero\n");
+	printf("0. Cerrar Sesion\n");
+	printf("Seleccione una opcion\n: ");
+	fflush(stdout);
+	fflush(stdin);
+	scanf(" %c", &opcion);
+	return opcion;
 }
-void menuCatalogo(Usuario u,ListaTrasteros *lt){
+char menuCatalogo(){
 	char opcion;
-		do{
-			sleep(1);
-			limpiarConsola();
-			printf("MENÚ\n");
-			printf("1. Ver todo el Catatalogo\n");
-			printf("2. Filtrar por Precio\n");
-			printf("3. Filtrar por Metros Cuadrados\n");
-			printf("4. Filtrar por Valoracion\n");
-			printf("0. Volver atras\n");
-			printf("Seleccione una opcion\n: ");
-			fflush(stdout);
-			fflush(stdin);
-			scanf(" %c", &opcion);
-			switch (opcion) {
-			case '1': // Ver el perfil del usuario
-				ordenarPorNumeroTrastero(lt);
-
-				break;
-		    case '2': // Mostrar catálogo de trasteros (aquí necesitarías implementar la función que muestra el catálogo de trasteros disponibles)
-		    	menuCatalogo(u,lt);
-		    	break;
-			case '3': {// Alquilar un trastero
-				menuAlquilarTrastero(u, lt);
-				break;
-			}
-			case '4': {
-				char input[10];
-				printf("Ingrese el número de trastero a devolver: ");
-				fflush(stdout);
-				gets(input);
-				int num = atoi(input);
-				int pos = buscarTrastero(listaTrasteros, num);
-				if (pos != -1) {
-					devolverTrastero(&listaTrasteros.aTrasteros[pos]);
-					printf("Trastero devuelto con éxito.\n");
-				} else {
-					printf("Trastero no encontrado.\n");
-				}
-				break;
-			}
-			case '0':
-				// Cerrar sesión
-				printf("Cerrando sesión...\n");
-				break;
-				default:
-					printf("Opción inválida. Intente nuevamente.\n");
-			        }
-	    }while (opcion != '0');
+	sleep(1);
+	limpiarConsola();
+	printf("CATALOGO\n");
+	printf("----------------------------------------\n");
+	printf("1. Ver todo el Catatalogo\n");
+	printf("2. Filtrar por Precio\n");
+	printf("3. Filtrar por Metros Cuadrados\n");
+	printf("4. Filtrar por Valoracion\n");
+	printf("0. Volver atras\n");
+	printf("Seleccione una opcion\n: ");
+	fflush(stdout);
+	fflush(stdin);
+	scanf(" %c", &opcion);
+	return opcion;
 }
-void menuPerfil(Usuario u, ListaTrasteros *lt){
-	char opcion;
+void menuPerfil(Usuario u){
 	sleep(1);
 	limpiarConsola();
 	printf("-------------------------------------");fflush(stdout);
@@ -164,61 +93,63 @@ void menuPerfil(Usuario u, ListaTrasteros *lt){
 	printf("\n- Telefono: %i",u.telefono);fflush(stdout);
 	printf("\n- Email: %s",u.email);fflush(stdout);
 	printf("\n- Direccion: %s",u.direccion);fflush(stdout);
+}
+char volverAtras(){
+	char opcion;
 	printf("\nPulse 0 para volver atras \n: ");
 	fflush(stdout);
 	fflush(stdin);
 	scanf("%c", &opcion);
-
-
-	if(opcion=='0'){
-		menuCliente(u, lt); //Si pulsa 0 vuelve a la pestaña anterior
-	}else{
-		menuPerfil(u, lt); //Si pulsa cualquier otra cosa le volvera a llevar a la misma pestaña
-	}
+	return opcion;
 }
-void menuAlquilarTrastero(Usuario u, ListaTrasteros *lt){
+void valoracionTrasteroDevuelto(Trastero t){
+	int valoracion;
+	do{
+	printf("\nPulse 0 para volver atras \n: ");
+	fflush(stdout);
+	fflush(stdin);
+	scanf("%d", &valoracion);
+	if((valoracion<0||valoracion>5)){
+		printf("La valoracion debe ser un numero 1-5");
+	}
+	}while(valoracion<0||valoracion>5);
+}
+void menuAlquilarTrastero(Usuario u, sqlite3 *db){
 	int numTrastero;
 	char opcionRetorno;
-
 	printf("Inserte el numero del trastero: ");
 	fflush(stdout);
-
-	 if (scanf("%d", &numTrastero) != 1) {
-	        printf("Error al leer el número de trastero.\n");
-	        while (getchar() != '\n'); // Limpiar buffer
-	        return;
-	    }
-
-	 getchar();
+	fflush(stdin);
+	scanf("%i",&numTrastero);
 	//Buscamos el trastero por su nombre
-	Trastero t=buscarTrasteroDDBB(NOMBRE_BBDD,numTrastero);
-
+	Trastero t=buscarTrasteroDDBB(db,numTrastero);
+	visualizarTrastero(t);
 	if(t.numeroTrastero==0){ //El trastero seleccionado no existe
 		printf("Este trastero no existe en nuestro catalogo, prueba con otro\n");fflush(stdout);
-		return;
-	}
-
-    visualizarTrastero(t);
-
-
-	if(t.disponible!=0){//El trastero seleccionado esta disponible
+		menuAlquilarTrastero(u, db);
+	}else if(t.disponible!=0){//El trastero seleccionado esta disponible
 		//añadimos trastero a la BD
-		aniadirTrasteroAlquilado(NOMBRE_BBDD,t,u);
+		aniadirTrasteroAlquilado(db,t,u);
 		printf("Trastero alquilado a nombre de %s\n", u.nombre);fflush(stdout);
-
+		//Le devolvemos al menu
+		menuCliente(u, db);
 	}else{//El trastero seleccionado no esta disponible
 		printf("Este trastero ya esta alquilado por otra persona\n\n");fflush(stdout);
 		printf("Quieres intentar alquilar otro trastero trastero?(0=NO/1=SI)");
-        fflush(stdout);
-
-        scanf(" %c", &opcionRetorno);
-        getchar();
-
-		if(opcionRetorno == '1') {
-					menuAlquilarTrastero(u, lt);
-				} else {
-					menuCliente(u, lt);
-				}
+		do {
+					fflush(stdout);
+					fflush(stdin);
+					scanf("%c",&opcionRetorno);
+					if (opcionRetorno!=1 || opcionRetorno!=0){
+						printf("Caracter incorrecto, seleccione entre\n"
+								"- 0: Volver al menu cliente\n"
+								"- 1: Volver a insertar un numero de trastero");
+					}else continue;
+		} while (opcionRetorno!=1 || opcionRetorno!=0);
+		if(opcionRetorno==1){
+			//Si desea volver le abrimos otra vez el menu de alquiler
+			menuAlquilarTrastero(u, db);
+		}else menuCliente(u, db);//Si desea volver atras le devolvemos al menu cliente
 	}
 }
 char menuAdministrador() {
@@ -282,6 +213,7 @@ Trastero menuAniadirTrastero(){
 	scanf("%d", &t.numeroTrastero);
 	t.disponible=1;
 	t.valoracion=0;
+	t.numeroDeValoraciones=0;
 	return t;
 }
 int menuEliminarTrastero(){
@@ -319,10 +251,11 @@ char menuTrasterosAdmin(){
 
 
 
-int registrarUsuario(Usuario *u) {
+void registrarUsuario(sqlite3 *db) {
     char nombre[50], apellido[50], email[50], direccion[50];
     char contrasena[50], confirmarContrasena[50], telefono[9], dni[9];
-    int c,dniComp;
+    int dniComp;
+    char c;
 
     while ((c = getchar()) != '\n' && c != EOF);//Limpiar el buffer
     printf("Introduce el nombre: ");
@@ -365,56 +298,67 @@ int registrarUsuario(Usuario *u) {
     fgets(confirmarContrasena, sizeof(confirmarContrasena), stdin);
     confirmarContrasena[strcspn(confirmarContrasena, "\n")] = 0;
 
-
+    fflush(stdout);
     dniComp = atoi(dni);
-    if (usuarioRegistrado(NOMBRE_BBDD, dniComp) == 1) {
+    if (usuarioRegistrado(db, dniComp) == 1) {
         printf("Este DNI ya está registrado\n");
         fflush(stdout);
         sleep(1);
-        return 0;
     } else if (strcmp(contrasena, confirmarContrasena) == 0) {
-        strcpy(u->nombre, nombre);
-        strcpy(u->apellido, apellido);
-        u->dni = atoi(dni);
-        u->telefono = atoi(telefono);
-        strcpy(u->email, email);
-        strcpy(u->direccion, direccion);
-        strcpy(u->contrasenia, contrasena);
+        Usuario u;
+        strcpy(u.nombre, nombre);
+        strcpy(u.apellido, apellido);
+        u.dni = atoi(dni);
+        u.telefono = atoi(telefono);
+        strcpy(u.email, email);
+        strcpy(u.direccion, direccion);
+        strcpy(u.contrasenia, contrasena);
         sleep(1);
-        aniadirUsuarioABBDD(NOMBRE_BBDD, *u);
+        aniadirUsuarioABBDD(db, u);
         printf("Usuario registrado\n");
         sleep(1);
         fflush(stdout);
-        return 1;
+        menuCliente(u, db);
     } else {
         printf("Las contraseñas no coinciden\n");
         fflush(stdout);
-        return 0;
+        registrarUsuario(db);
     }
 }
 
-int autenticarUsuario() {
-    char usuario[50], contrasena[50];
-    printf("Ingrese usuario: ");
-	fflush(stdout);
-	fflush(stdin);
-    gets(usuario);
+int autenticarUsuario(sqlite3 *db) {
+	char dni[50], contrasena[50];
+	int intentos=0;
+	do{
+		Usuario u;
+		printf("Ingrese dni: ");
+		fflush(stdout);
+		fflush(stdin);
+		gets(dni);
 
-    printf("Ingrese contrasena: ");
-	fflush(stdout);
-	fflush(stdin);
-    gets(contrasena);
+		printf("Ingrese contrasena: ");
+		fflush(stdout);
+		fflush(stdin);
+		gets(contrasena);
 
-    if (strcmp(usuario, USER1) == 0 && strcmp(contrasena, USER_PASS) == 0) {
-        printf("Acceso concedido.\n");
-        return 1;
-    } else {
-        printf("Acceso denegado.\n");
-        return 0;
-    }
+		u = obtenerUsuario(db,dni);
+		if(u.dni!=-1){
+			//Usuario encontrado
+			if (atoi(dni)==u.dni&& strcmp(contrasena, u.contrasenia) == 0) {
+				printf("Acceso concedido.\n");
+				sleep(1);
+				return u.dni;
+				}
+		}
+		intentos++;
+		printf("El dni o la contraseña son incorrectas.\n"
+				"Intentos restantes: %d",3-intentos);
+	}while(intentos<3);
+	printf("Has superado el numero maximo de intentos.\nAcceso denegado.\n");
+	return -1;
 }
 
-void manejarCliente(ListaUsuarios *lu, ListaTrasteros *lt) {
+char manejarCliente(sqlite3 *db) {
     char opcion;
     Usuario usuarioActual;
 
@@ -422,27 +366,26 @@ void manejarCliente(ListaUsuarios *lu, ListaTrasteros *lt) {
         opcion = menuIniReg();
         switch (opcion) {
             case '1':
-            	if(autenticarUsuario()){
+            	if(autenticarUsuario(db)){
                 printf("Iniciando sesión...\n");
                 strcpy(usuarioActual.nombre, "Usuario");
                 strcpy(usuarioActual.apellido, "Prueba");
                 usuarioActual.dni = 12345678;
-                menuCliente(usuarioActual, lt);
+                menuCliente(usuarioActual, db);
             	}
             	break;
             case '2':
-					if(registrarUsuario(&usuarioActual)){
-            		printf("Usuario Registrado...\n");
-            		menuCliente(usuarioActual, lt);
-            	}
+//            	if(registrarUsuario(db)){
+//            		printf("Usuario Registrado...\n");
+//            	}
                 break;
             default:
                 printf("Opción inválida.\n");
         }
     } while (opcion != '1' && opcion != '2');
-
+    return opcion;
 }
-void manejarAdministrador() {
+void manejarAdministrador(sqlite3 *db) {
     char opcion;
     if (autenticarAdministrador()) {
         do {
@@ -492,7 +435,7 @@ void manejarAdministrador() {
                     t.disponible = 1;
 
                     aniadirTrastero(&listaTrasteros, t);
-                    aniadirTrasteroABBDD(NOMBRE_BBDD, t);
+                    aniadirTrasteroABBDD(db, t);
                     printf("Trastero agregado correctamente.\n");
                     break;
                 }
@@ -506,7 +449,7 @@ void manejarAdministrador() {
                     Trastero t;
                     t.numeroTrastero = num;
                     eliminarTrastero(&listaTrasteros, t);
-                    eliminarTrasteroDDBB(NOMBRE_BBDD,t.numeroTrastero);
+                    eliminarTrasteroDDBB(db,t.numeroTrastero);
                     break;
                 }
                 case '3':
@@ -551,4 +494,25 @@ void manejarAdministrador() {
         } while (opcion != '0');
     }
 }
+
+void cerrarPrograma(sqlite3 *db, ListaUsuarios *lu, ListaTrasteros *lt) {
+    // Liberar la memoria de las listas
+	if (lu->aUsuarios != NULL) {
+	        free(lu->aUsuarios);
+	        lu->aUsuarios = NULL;  // Establecer a NULL después de liberar la memoria
+	    }
+	    lu->numUsuarios = 0;
+
+    // Cerrar la base de datos
+    if (db != NULL) {
+        sqlite3_close(db);
+        printf("Base de datos cerrada correctamente.\n");
+    }
+
+    // Aquí puedes agregar otras tareas de limpieza si es necesario
+    // Por ejemplo, cerrar archivos, liberar memoria adicional, etc.
+
+    printf("Fin del programa\n");
+}
+
 

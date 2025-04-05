@@ -13,35 +13,39 @@ int inicializarBBDD(sqlite3 **db) {
 }
 
 void crearTablas(sqlite3 *db){
-	sqlite3_stmt *stmt;
+	sqlite3_stmt *stmt1,*stmt2,*stmt3,*stmt4;
 	char sql[300];
 	sprintf(sql, "CREATE TABLE IF NOT EXISTS Usuario "
 			"(nombre varchar(30), apellido varchar(30), dni int, telefono int, "
 			"email varchar(30), direccion varchar(30), contrasenia varchar(30))");
-	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
-	sqlite3_step(stmt); //Ejecutar la sentencia
-	sqlite3_finalize(stmt); //Cerrar la sentencia
+	sqlite3_prepare_v2(db, sql, -1, &stmt1, NULL); //Preparar la sentencia
+	sqlite3_step(stmt1); //Ejecutar la sentencia
+
+	sqlite3_finalize(stmt1); //Cerrar la sentencia
 
 	//TABLA TRASTERO
 	sprintf(sql, "CREATE TABLE IF NOT EXISTS Trastero "
-				"(numeroTrastero int,metrosCuadrados int, precio float, valoracion int, disponible TINYINT(1))");//TINYINT(1) = boolean (1=true)
-	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
-	sqlite3_step(stmt); //Ejecutar la sentencia
-	sqlite3_finalize(stmt); //Cerrar la sentencia
+				"(numeroTrastero int,metrosCuadrados int, precio float, valoracion int,numeroValoraciones int, disponible TINYINT(1))");//TINYINT(1) = boolean (1=true)
+	sqlite3_prepare_v2(db, sql, -1, &stmt2, NULL); //Preparar la sentencia
+	sqlite3_step(stmt2); //Ejecutar la sentencia
+
+	sqlite3_finalize(stmt2); //Cerrar la sentencia
 
 	//TABLA HISTORIAL (HISTORIAL DE LOS TRASTEROS RENTADOS)
 	sprintf(sql, "CREATE TABLE IF NOT EXISTS Historial "
 					"(numeroTrastero int, dni int, valoracion int,diaInicio varchar(20),diaFinal varchar(20))");
-	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
-	sqlite3_step(stmt); //Ejecutar la sentencia
-	sqlite3_finalize(stmt); //Cerrar la sentencia
+	sqlite3_prepare_v2(db, sql, -1, &stmt3, NULL); //Preparar la sentencia
+	sqlite3_step(stmt3); //Ejecutar la sentencia
+
+	sqlite3_finalize(stmt3); //Cerrar la sentencia
 
 	//TABLA DE TRASTEROS ACTUALMENTE ALQUILADOS
 	sprintf(sql, "CREATE TABLE IF NOT EXISTS Alquilados "
 						"(numeroTrastero int, dni int, valoracion int,diaInicio varchar(20))");
-	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
-	sqlite3_step(stmt); //Ejecutar la sentencia
-	sqlite3_finalize(stmt); //Cerrar la sentencia
+	sqlite3_prepare_v2(db, sql, -1, &stmt4, NULL); //Preparar la sentencia
+	sqlite3_step(stmt4); //Ejecutar la sentencia
+
+	sqlite3_finalize(stmt4); //Cerrar la sentencia
 
 
 }
@@ -74,16 +78,8 @@ void aniadirUsuarioABBDD(sqlite3 *db, Usuario u){
 void aniadirTrasteroABBDD(sqlite3 *db, Trastero t){
 	sqlite3_stmt *stmt; //Acceso a ejecuci�n de sentencias
 	char sql[500];
-	sprintf(sql, "INSERT INTO Trastero VALUES(%i,%i,%.2f,%i,%i)",
-				t.numeroTrastero,t.metrosCuadrados,t.precio,t.valoracion,t.disponible);
-	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
-	sqlite3_step(stmt); //Ejecutar la sentencia
-	sqlite3_finalize(stmt); //Cerrar la sentencia
-}
-void modificarDisponibilidadTrasteroABBDD(sqlite3 *db, Trastero t){
-	sqlite3_stmt *stmt; //Acceso a ejecuci�n de sentencias
-	char sql[100];
-	sprintf(sql, "UPDATE Trastero SET DISPONIBLE=%i WHERE numeroTrastero=%i",t.disponible,t.numeroTrastero);
+	sprintf(sql, "INSERT INTO Trastero VALUES(%i,%i,%.2f,%i,%i,%i)",
+				t.numeroTrastero,t.metrosCuadrados,t.precio,0,0,t.disponible);
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
 	sqlite3_step(stmt); //Ejecutar la sentencia
 	sqlite3_finalize(stmt); //Cerrar la sentencia
@@ -97,7 +93,7 @@ void obtenerFechaActual(char *buffer, int buffer_size) {
 }
 
 void aniadirTrasteroAlquilado(sqlite3 *db, Trastero t, Usuario u){
-	sqlite3_stmt *stmt;
+	sqlite3_stmt *stmt1,*stmt2;
 	char sql[100];
 	char fecha[11]; // Buffer para la fecha
 
@@ -106,19 +102,19 @@ void aniadirTrasteroAlquilado(sqlite3 *db, Trastero t, Usuario u){
 
 	sprintf(sql, "INSERT INTO Alquilados (numeroTrastero, dni, valoracion, diaInicio) VALUES (%i, %i, %i, '%s')",
 			t.numeroTrastero, u.dni, t.valoracion, fecha);
-	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
-	sqlite3_step(stmt); //Ejecutar la sentencia
-	sqlite3_finalize(stmt); //Cerrar la sentencia
+	sqlite3_prepare_v2(db, sql, -1, &stmt1, NULL); //Preparar la sentencia
+	sqlite3_step(stmt1); //Ejecutar la sentencia
+	sqlite3_finalize(stmt1); //Cerrar la sentencia
 
 	// Construir la consulta SQL con sprintf
 	sprintf(sql, "UPDATE Trasteros SET disponible = 0 WHERE numeroTrastero = %i", t.numeroTrastero);
-	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
-	sqlite3_step(stmt); //Ejecutar la sentencia
-	sqlite3_finalize(stmt); //Cerrar la sentencia
+	sqlite3_prepare_v2(db, sql, -1, &stmt2, NULL); //Preparar la sentencia
+	sqlite3_step(stmt2); //Ejecutar la sentencia
+	sqlite3_finalize(stmt2); //Cerrar la sentencia
 }
 //Funcion que al devolver el trastero se guarde la operacion de quiern y que a reservao
-void guardarTrasteroEnHistorial(sqlite3 *db, Trastero t) {
-    sqlite3_stmt *stmt;
+void devolverTrasteroBBDD(sqlite3 *db, Trastero t) {
+    sqlite3_stmt *stmt1,*stmt2,*stmt3;
     char sql[200];
     char fechaDevolucion[11];
 
@@ -128,22 +124,28 @@ void guardarTrasteroEnHistorial(sqlite3 *db, Trastero t) {
     sprintf(sql, "INSERT INTO Historial (numeroTrastero, dni, valoracion, diaInicio, diaFinal) "
                  "SELECT numeroTrastero, dni, valoracion, diaInicio, '%s' FROM Alquilados "
                  "WHERE numeroTrastero = %i", fechaDevolucion, t.numeroTrastero);
-	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
-	sqlite3_step(stmt); //Ejecutar la sentencia
-	sqlite3_finalize(stmt); //Cerrar la sentencia
+	sqlite3_prepare_v2(db, sql, -1, &stmt1, NULL); //Preparar la sentencia
+	sqlite3_step(stmt1); //Ejecutar la sentencia
+	sqlite3_finalize(stmt1); //Cerrar la sentencia
 
     // Eliminar el trastero de la tabla Alquilados ya que se ha devuelto
     sprintf(sql, "DELETE FROM Alquilados WHERE numeroTrastero = %i", t.numeroTrastero);
-	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
-	sqlite3_step(stmt); //Ejecutar la sentencia
-	sqlite3_finalize(stmt); //Cerrar la sentencia
+	sqlite3_prepare_v2(db, sql, -1, &stmt2, NULL); //Preparar la sentencia
+	sqlite3_step(stmt2); //Ejecutar la sentencia
+	sqlite3_finalize(stmt2); //Cerrar la sentencia
+
+	//Modificar el estado del trastero a disponible
+	sprintf(sql, "UPDATE Trasteros SET disponible = 1 WHERE numeroTrastero = %i", t.numeroTrastero);
+	sqlite3_prepare_v2(db, sql, -1, &stmt3, NULL); //Preparar la sentencia
+	sqlite3_step(stmt3); //Ejecutar la sentencia
+	sqlite3_finalize(stmt3); //Cerrar la sentencia
 
 }
 Usuario obtenerUsuario(sqlite3 *db, int dni) {
     sqlite3_stmt *stmt;
     char sql[100];
-    Usuario u = {0}; // Inicializamos el usuario a valores por defecto
-
+    Usuario u; // Inicializamos el usuario a valores por defecto
+    u.dni=-1;
     sprintf(sql, "SELECT nombre, apellido, telefono, email, direccion, contrasenia FROM Usuario WHERE dni = %d", dni);
 
     sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
@@ -168,7 +170,6 @@ int usuarioRegistrado(sqlite3 *db,int dni){
 
 	    // Preparamos la consulta SQL para verificar si el usuario está registrado
 	    sprintf(sql, "SELECT COUNT(*) FROM Usuario WHERE dni = %d", dni);
-
 	    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 	    if (rc != SQLITE_OK) {
 	        printf("Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
@@ -190,8 +191,8 @@ int usuarioRegistrado(sqlite3 *db,int dni){
 Trastero buscarTrasteroDDBB(sqlite3 *db, int numeroTrastero){
     sqlite3_stmt *stmt;
     char sql[500];
-    Trastero t = {0};  // Inicializamos la estructura Trastero con valores por defecto.
-
+    Trastero t;  // Inicializamos la estructura Trastero con valores por defecto.
+    t.numeroTrastero=-1;
 
     sprintf(sql, "SELECT numeroTrastero, metrosCuadrados, precio, valoracion, disponible FROM Trastero WHERE numeroTrastero = %i",numeroTrastero);
     sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
@@ -224,33 +225,29 @@ void eliminarTrasteroDDBB(sqlite3 *db,int numeroTrastero){
 }
 //TODO: Modificar la funcion para que cumpla con su nombre
 void obtenerListaTrasterosAlquiladosCSV(sqlite3 *db) {
-    sqlite3_stmt *stmt;
-    char sql[100];
-    int numeroTrastero, cantidad,i=0;
-    Trastero t;
 
-    // Contamos el numero de trasteros
-    sprintf(sql, "SELECT COUNT(*) FROM Alquilados");
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-
-    if (sqlite3_step(stmt) == SQLITE_ROW) {
-        cantidad = sqlite3_column_int(stmt, 0);
-    } else {
-        cantidad = 0;
-    }
-    sqlite3_finalize(stmt);
-
-    sprintf(sql, "SELECT numeroTrastero FROM Alquilados");
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-
-    while (sqlite3_step(stmt) == SQLITE_ROW && i < cantidad) {
-        numeroTrastero = sqlite3_column_int(stmt, 0);
-        t=buscarTrasteroDDBB(NOMBRE_BBDD,numeroTrastero);
-		visualizarTrastero(t);
-        i++;
-    }
-    sqlite3_finalize(stmt);
 }
+int verificarAlquiler(sqlite3 *db, int numeroTrastero, int dni){
+		sqlite3_stmt *stmt;
+		char sql[150];
+		int encontrado = -1;
 
+		// Crear la consulta SQL
+		sprintf(sql, "SELECT 1 FROM Alquilados WHERE numeroTrastero = %i AND dni = %i LIMIT 1", numeroTrastero, dni);
+
+		// Preparar la sentencia
+		sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+
+		// Ejecutar la sentencia
+		if (sqlite3_step(stmt) == SQLITE_ROW){
+			encontrado = 1; // Existe el alquiler
+		}
+
+		// Cerrar la sentencia
+		sqlite3_finalize(stmt);
+
+		return encontrado;
+
+}
 
 

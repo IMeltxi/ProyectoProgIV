@@ -2,24 +2,29 @@
 #define MENU_H_
 #include "usuario.h"
 #include "trastero.h"
+#include "../db/bbdd.h"
 
 void limpiarConsola();
 char mostrarMenuPrincipal();
 char menuIniReg();
-void menuCliente(Usuario u, ListaTrasteros *lt);
-void menuCatalogo(Usuario u,ListaTrasteros *lt);
-void menuPerfil(Usuario u, ListaTrasteros *lt);
-void menuAlquilarTrastero(Usuario u, ListaTrasteros *lt);
+char menuCliente();
+char menuCatalogo();
+void menuPerfil(Usuario u);
+void menuAlquilarTrastero(Usuario u, sqlite3 *db);
 
-
+char volverAtras();
+void valoracionTrasteroDevuelto(Trastero t);
 char menuAdministrador();
 int autenticarAdministrador();
 Trastero menuAniadirTrastero();
 int menuEliminarTrastero();
 char menuTrasterosAdmin();
 //Cambiar metodo
-int registrarUsuario();
-int autenticarUsuario();
-void manejarCliente();
-void manejarAdminiistrador();
+
+int autenticarUsuario(sqlite3 *db);
+
+void registrarUsuario(sqlite3 *db);
+char manejarCliente(sqlite3 *db);
+void manejarAdministrador(sqlite3 *db);
+void cerrarPrograma(sqlite3 *db, ListaUsuarios *lu, ListaTrasteros *lt);
 #endif /* MENU_H_ */
