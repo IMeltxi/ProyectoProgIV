@@ -12,46 +12,17 @@ int main() {
     ListaUsuarios lu;
     ListaTrasteros lt;
     sqlite3 *db; //Acceso a la bbdd
-    int result,numTrastero,dniUser;
-    char opcionPrincipal,opcionAdmin,opcionVisualizarTrasterosAdmin,
+    int result,numTrastero,dniUser,trasteroAEliminar;
+    char opcionPrincipal,opcionAdmin,opcionAdmin2,opcionVolverAtrasAdmin,
 	opcionUsuarioInicio,opcionCliente,opcionVolverAtrasPerfil,opcionCatalogo,opcionVolverAtrasCat;
     Trastero t;
     Usuario u;
-
-
-
-    int borrarTablaTrasteros(sqlite3 *db) {
-        sqlite3_stmt *stmt;
-        char sql[100];
-
-        // Sentencia SQL para borrar la tabla Trastero
-        sprintf(sql, "DROP TABLE IF EXISTS Trastero");
-
-        // Preparar la sentencia SQL
-        if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) {
-            fprintf(stderr, "Error al preparar la sentencia SQL para borrar la tabla: %s\n", sqlite3_errmsg(db));
-            return -1; // Retornar error
-        }
-
-        // Ejecutar la sentencia SQL
-        if (sqlite3_step(stmt) != SQLITE_DONE) {
-            fprintf(stderr, "Error al ejecutar la sentencia SQL para borrar la tabla: %s\n", sqlite3_errmsg(db));
-            sqlite3_finalize(stmt);
-            return -1; // Retornar error
-        }
-
-        // Finalizar la sentencia
-        sqlite3_finalize(stmt);
-        return 0; // Todo ha salido bien
-    }
-
 
     printf("Iniciando el programa...\n");fflush(stdout);
     sleep(1);
     result = inicializarBBDD(&db);
     	if(result == SQLITE_OK){
     		printf("Estableciendo la conexion con base de datos...");fflush(stdout);
-    		borrarTablaTrasteros(db);
     		crearTablas(db);
     	}else{
     		printf("No se ha establecido la conexi�n con la BBDD\n");
@@ -59,55 +30,84 @@ int main() {
     		return 0;
     	}
 
+
+
     sleep(2);
     limpiarConsola();
+    //INICIALIZAMOS LAS LISTAS
     inicializarListaUsuarios(&lu);
     inicializarListaTrasteros(&lt);
+    //CARGAMOS LAS LISTAS CON LOS VALORES DEL ARCHIVO
+    //TODO: CARGAR LAS LISTAS CON LOS VALORES DE LA BD (FALTAN METER PRIMERO LOS VALORES)
+
     cargarTrasterosDesdeCSV(&lt, NOM_ARCHIVO_TRASTEROS);
     cargarUsuariosDesdeCSV(&lu,NOM_ARCHIVO_USUARIOS);
-    visualizarTrasteros(lt);
-    visualizarListaUsuarios(lu);
-
 
     do {
         opcionPrincipal = mostrarMenuPrincipal();
         switch (opcionPrincipal) {
+        //PERFIL ADMIN
             case '1':
             	if (autenticarAdministrador()) {
             		do {
             			opcionAdmin = menuAdministrador();
             			switch (opcionAdmin) {
                         	case '1':
+                        		//AÑADIR TRASTERO
                         		t= menuAniadirTrastero();
-                        		aniadirTrastero(&lt,t);
-                        		aniadirTrasteroABBDD(NOMBRE_BBDD,t);
+                        		if(t.numeroTrastero<=0){ //Verificar que el numero sea mayor a 0 para evitar problemas con los flags creados
+                        			printf("El numero del trastero debe ser mayor a 0");
+                        		}else if(buscarTrastero(lt,t.numeroTrastero)==-1){ //Verificar si el trastero ya existe
+                        			aniadirTrastero(&lt,t);
+                        			aniadirTrasteroABBDD(NOMBRE_BBDD,t);
+                        		}else{
+                        			printf("El trastero con numero %d ya existe.",t.numeroTrastero);
+                        		}
                         		break;
                         	case '2':
-//                        		trasteroAEliminar = menuEliminarTrastero();
-//                        		t = buscarTrastero(lt,trasteroAEliminar);
-//                        		eliminarTrastero(&lt,t);
-//                        		eliminarTrasteroDDBB(NOMBRE_BBDD,trasteroAEliminar);
+                        		//ELIMINAR TRASTERO
+                        		trasteroAEliminar = menuEliminarTrastero();
+                        		t=obtenerTrastero(lt,trasteroAEliminar);
+                        		if(t.numeroTrastero!=-1){
+                        			eliminarTrastero(&lt,t);
+                        			eliminarTrasteroDDBB(db,trasteroAEliminar);
+                        		}else{
+                        			printf("El trastero con numero %d no existe.",trasteroAEliminar);
+                        		}
+
                         		break;
                         	case '3':
+                        		//VER CLIENTES
+                        		do{
                         		sleep(1);
                         		limpiarConsola();
                         		visualizarListaUsuarios(lu);
+                        		opcionVolverAtrasAdmin= volverAtras();
+                        		if(opcionVolverAtrasAdmin=='0'){
+                        			printf("Caracter invalido\n: ");
+                        		}
+                        		}while(opcionVolverAtrasAdmin=='0');
+
                         		break;
                         	case '4':
+                        		//VER TRASTEROS
                         			do{
-                        				opcionVisualizarTrasterosAdmin = menuTrasterosAdmin();
-                        				switch (opcionVisualizarTrasterosAdmin) {
+                        				opcionAdmin2 = menuTrasterosAdmin();
+                        				switch (opcionAdmin2) {
 											case '1':
+												//VER TODOS LOS TRASTEROS
 												sleep(1);
 												limpiarConsola();
 												visualizarTrasteros(lt);
 												break;
 											case '2':
+												//VER LOS ALQUILADOS
 												sleep(1);
 												limpiarConsola();
 												visualizarTrasterosAlquilados(lt);
 												break;
 											case '3':
+												//VER LOS DISPONIBLES
 												sleep(1);
 												limpiarConsola();
 												visualizarTrasterosDisponibles(lt);
@@ -115,8 +115,31 @@ int main() {
 											default:
 												break;
 										}
-                        			}while(opcionVisualizarTrasterosAdmin!='0');
+                        			}while(opcionAdmin2!='0');
                             break;
+                        	case '5':
+                        		//OBTENER FICHEROS
+                        		opcionAdmin2=menuFicherosAdmin();
+                        		do{
+                        			switch (opcionAdmin2) {
+										case '1':
+											//OBTENER FICHERO DE LOS TRASTEROS ACTUALMENTE ALQUILADOS
+											//TODO: FUNCIONES
+											break;
+										case '2':
+											//OBTENER FICHERO DE TODOS LOS TRASTEROS QUE HAN SIDO ALQUILADOS
+											//TODO: FUNCIONES
+											break;
+			                        	case '0':
+			                        		printf("Saliendo de la opcion ficheros...\n");
+			                        		break;
+										default:
+											printf("Opción invalida. Por favor, ingrese una opción válida.\n");
+											fflush(stdout);
+											break;
+									}
+                        		}while(opcionAdmin2!='0');
+                        		break;
                         	case '0':
                         		printf("Saliendo del menú administrador...\n");
                         		break;
@@ -127,6 +150,7 @@ int main() {
             			}
             	} while (opcionAdmin != '0');
             	break;
+            	//PERFIL USUARIO
             case '2': {
             	do{
             		 opcionUsuarioInicio = menuIniReg();
@@ -256,7 +280,7 @@ int main() {
 													printf("Lo sentimos, este trastero ya esta disponible en nuestro catalogo.\n");
 												}else if(verificarAlquiler(db,numTrastero,u.dni)==1){ //Verificamos que este usuario es el que ha alquilado el trastero
 													//Marcamos como disponible en local
-													devolverTrastero(&lt);
+													devolverTrastero(&t);
 													//Marcamos como no disponible en la BD
 													devolverTrasteroBBDD(db,t);
 													printf("El trastero con numero %d ha sido correctamente devuelto por %s.\n",t.numeroTrastero,u.nombre);
@@ -268,6 +292,7 @@ int main() {
 											}else{
 												printf("No existe este trastero en nuestro catalogo.\n");
 											}
+											actualizarValoracion();
 											break;
 										case '0':
 											//CERRAR SESION

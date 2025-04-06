@@ -18,7 +18,7 @@ void aniadirTrastero(ListaTrasteros *lt, Trastero t) {
         lt->aTrasteros[lt->numeroTrasteros] = t;
         lt->numeroTrasteros++;
     } else {
-        printf("No se pueden añadir más trasteros\n");
+        printf("No se puede añadir más trasteros. Límite de 100 alcanzado.\n");
         fflush(stdout);
     }
 }
@@ -48,29 +48,52 @@ void eliminarTrastero(ListaTrasteros *lt, Trastero t) {
     }
 }
 
+Trastero obtenerTrastero(ListaTrasteros lt, int numeroTrastero){
+	Trastero t;
+	int pos = buscarTrastero(lt, numeroTrastero);
+
+	if (pos != -1) {
+		t = lt.aTrasteros[pos];
+	} else {
+		// Indicamos que no se ha encontrado
+		t.numeroTrastero = -1;
+	}
+
+	return t;
+}
+
+void actualizarValoracion(Trastero t){
+	int valoracion;
+	do{
+	printf("\nComo valoraria este trastero?(1-5): \n");
+	fflush(stdout);
+	fflush(stdin);
+	scanf("%d", &valoracion);
+	if(valoracion<1||valoracion>5){
+		printf("Seleccione un valor entre el 1 y el 5.\n");
+	}else{
+		t.valoracion= (t.valoracion+valoracion)/2;
+		t.numeroDeValoraciones++;
+	}
+	}while(valoracion<1||valoracion>5);
+
+}
+
+
 void visualizarTrastero(Trastero t) {
 	if(t.disponible==0){
-		printf("%20d%20d%20d%20d%20s\n", t.numeroTrastero, t.metrosCuadrados, t.valoracion, t.precio, "NO");
+		printf("%d%20d%20.2f%20.2f%20d%20s\n", t.numeroTrastero, t.metrosCuadrados, t.precio, t.valoracion, t.numeroDeValoraciones, "NO");
 	}else{
-		printf("%20d%20d%20d%20d%20s\n", t.numeroTrastero, t.metrosCuadrados, t.valoracion, t.precio, "SI");
+		printf("%d%20d%20.2f%20.2f%20d%20s\n", t.numeroTrastero, t.metrosCuadrados, t.precio, t.valoracion, t.numeroDeValoraciones, "SI");
 	}
 
 }
-void visualizarTrasteroDisponible(Trastero t) {
-	if (t.disponible==0){
-	    printf("%20d%20d%20d%20d%20d\n", t.numeroTrastero, t.metrosCuadrados, t.valoracion, t.precio, "SI");
-	}
-}
 
-void visualizarTrasteroAlquilado(Trastero t) {
-	if (t.disponible==1){
-	    printf("%20d%20d%20d%20d%20d\n", t.numeroTrastero, t.metrosCuadrados, t.valoracion, t.precio, "NO");
-	}
-}
+
 
 void visualizarTrasteros(ListaTrasteros lt) {
     int i;
-    printf("%20s%20s%20s%20s%20s\n", "NºTRASTERO", "m²", "VALORACION", "PRECIO", "DISPONIBILIDAD");
+    printf("%s%20s%20s%20s%20s%20s\n", "NºTRASTERO", "m²", "PRECIO", "VALORACION","NUMERO DE VALORACIONES","DISPONIBILIDAD");
     fflush(stdout);
     for (i = 0; i < lt.numeroTrasteros; i++) {
         visualizarTrastero(lt.aTrasteros[i]);fflush(stdout);
@@ -79,19 +102,23 @@ void visualizarTrasteros(ListaTrasteros lt) {
 
 void visualizarTrasterosDisponibles(ListaTrasteros lt) {
      int i;
-     printf("%20s%20s%20s%20s%20s\n", "NºTRASTERO", "m²", "VALORACION", "PRECIO", "DISPONIBILIDAD");
+     printf("%s%20s%20s%20s%20s%20s\n", "NºTRASTERO", "m²", "PRECIO", "VALORACION","NUMERO DE VALORACIONES","DISPONIBILIDAD");
      fflush(stdout);
      for (i = 0; i < lt.numeroTrasteros; i++) {
-    	 visualizarTrasteroDisponible(lt.aTrasteros[i]);
+    	 if(lt.aTrasteros[i].disponible==1){
+			 visualizarTrastero(lt.aTrasteros[i]);
+		 }
      }
 }
 
 void visualizarTrasterosAlquilados(ListaTrasteros lt) {
      int i;
-     printf("%20s%20s%20s%20s%20s\n", "NºTRASTERO", "m²", "VALORACION", "PRECIO", "DISPONIBILIDAD");
+     printf("%s%20s%20s%20s%20s%20s\n", "NºTRASTERO", "m²", "PRECIO", "VALORACION","NUMERO DE VALORACIONES","DISPONIBILIDAD");
      fflush(stdout);
      for (i = 0; i < lt.numeroTrasteros; i++) {
-    	 visualizarTrasteroAlquilado(lt.aTrasteros[i]);
+    	 if(lt.aTrasteros[i].disponible==0){
+    		 visualizarTrastero(lt.aTrasteros[i]);
+    	 }
      }
 }
 
@@ -157,15 +184,17 @@ void cargarTrasterosDesdeCSV(ListaTrasteros *lt, char *nombreArchivo) {
 
              char *numT = strtok(linea, ";");
              char *m2 = strtok(NULL, ";");
-             char *val = strtok(NULL, ";");
              char *pre = strtok(NULL, ";");
+             char *val = strtok(NULL, ";");
+             char *numVal = strtok(NULL, ";");
              char *disp = strtok(NULL, ";");
 
              if (numT && m2 && val && pre && disp) { // Aseguramos que los valores se extraen correctamente
                  t.numeroTrastero = atoi(numT);
                  t.metrosCuadrados = atoi(m2);
-                 t.valoracion = atoi(val);
-                 t.precio = atoi(pre);
+                 t.precio = atof(pre);
+                 t.valoracion = atof(val);
+                 t.numeroDeValoraciones = atoi(numVal);
                  t.disponible = atoi(disp);
                  // Añadimos el trastero a la lista
                  if (lt->numeroTrasteros < 100) {

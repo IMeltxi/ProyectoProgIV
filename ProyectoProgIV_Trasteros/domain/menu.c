@@ -1,5 +1,6 @@
 #include "menu.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "usuario.h"
 #include "trastero.h"
@@ -154,6 +155,8 @@ void menuAlquilarTrastero(Usuario u, sqlite3 *db){
 }
 char menuAdministrador() {
     char opcion;
+    sleep(1);
+    limpiarConsola();
     printf("Menu ADMINISTRADOR\n");
     printf("1. Aniadir Trastero\n");
     printf("2. Eliminar Trastero\n");
@@ -181,11 +184,13 @@ int autenticarAdministrador() {
     gets(contrasena);
 
     if (strcmp(usuario, ADMIN_USER) == 0 && strcmp(contrasena, ADMIN_PASS) == 0) {
-        printf("Acceso concedido.\n");
         sleep(1);
+    	printf("Acceso concedido.\n");
+        sleep(1);
+        limpiarConsola();
         return 1;
     } else {
-        sleep(0.5);
+        sleep(1);
     	printf("Acceso denegado.\n");fflush(stdout);
         sleep(1);
         limpiarConsola();
@@ -244,7 +249,19 @@ char menuTrasterosAdmin(){
 	    return opcion;
 }
 
-
+char menuFicherosAdmin(){
+	char opcion;
+	    printf("OBTENER FICHERO.CSV\n");
+	    printf("1. OBTENER CSV CON LOS TRASTEROS ACTUALMENTE ALQUILADOS\n");
+	    printf("2. OBTENER CSV CON TODOS LOS TRASTEROS QUE HAN SIDO ALQUILADOS\n");
+	    printf("0. Salir\n");
+	    printf("Seleccione una opcion\n: ");
+	    fflush(stdout);
+	    fflush(stdin);
+	    scanf(" %c", &opcion);
+	    while(getchar() != '\n');
+	    return opcion;
+}
 
 
 
@@ -340,8 +357,7 @@ int autenticarUsuario(sqlite3 *db) {
 		fflush(stdout);
 		fflush(stdin);
 		gets(contrasena);
-
-		u = obtenerUsuario(db,dni);
+		u = obtenerUsuario(db,atoi(dni));
 		if(u.dni!=-1){
 			//Usuario encontrado
 			if (atoi(dni)==u.dni&& strcmp(contrasena, u.contrasenia) == 0) {
@@ -385,115 +401,6 @@ char manejarCliente(sqlite3 *db) {
     } while (opcion != '1' && opcion != '2');
     return opcion;
 }
-void manejarAdministrador(sqlite3 *db) {
-    char opcion;
-    if (autenticarAdministrador()) {
-        do {
-            opcion = menuAdministrador();
-            switch (opcion) {
-                case '1': {
-                    Trastero t = {0};
-                    char input[50]={0};
-
-                    fprintf( stdout,"Ingrese Numero de Trastero: ");
-                    fflush(stdout);
-                    if (fgets(input, sizeof(input), stdin) != NULL) {
-                    	 input[strcspn(input, "\n")] = 0;
-                    	t.numeroTrastero = atoi(input);
-
-                    	printf("Numero de Trastero ingresado: %d\n", t.numeroTrastero);
-                    }
-
-                   fprintf(stdout,"Ingrese Metros Cuadrados: ");
-                   fflush(stdout);
-                   if (fgets(input, sizeof(input), stdin) != NULL) {
-                	   input[strcspn(input, "\n")] = 0;
-                       t.metrosCuadrados = atoi(input);
-
-                       printf("Metros Cuadrados ingresados: %d\n", t.metrosCuadrados);
-                    }
-
-                    fprintf(stdout,"Ingrese Valoracion: ");
-                    fflush(stdout);
-                    if (fgets(input, sizeof(input), stdin) != NULL) {
-                        input[strcspn(input, "\n")] = 0;
-                        t.valoracion = atoi(input);
-
-                        printf("Valoracion ingresada: %d\n", t.valoracion);
-
-                    }
-
-                    fprintf(stdout,"Ingrese Precio: ");
-                    fflush(stdout);
-                    if (fgets(input, sizeof(input), stdin) != NULL) {
-                    	input[strcspn(input, "\n")] = 0;
-                        t.precio = atoi(input);
-
-                        printf("Precio ingresado: %d\n", t.precio);
-                    }
-
-                    t.disponible = 1;
-
-                    aniadirTrastero(&listaTrasteros, t);
-                    aniadirTrasteroABBDD(db, t);
-                    printf("Trastero agregado correctamente.\n");
-                    break;
-                }
-                case '2': {
-                    char input[50];
-                    printf("Ingrese Numero de Trastero a eliminar: ");
-                    fflush(stdout);
-                    gets(input);
-                    int num = atoi(input);
-
-                    Trastero t;
-                    t.numeroTrastero = num;
-                    eliminarTrastero(&listaTrasteros, t);
-                    eliminarTrasteroDDBB(db,t.numeroTrastero);
-                    break;
-                }
-                case '3':
-                    visualizarTrasterosDisponibles(listaTrasteros);
-                    break;
-                case '4': {
-                    char input[50];
-                    printf("Ingrese Numero de Trastero a alquilar: ");
-                    fflush(stdout);
-                    gets(input);
-                    int num = atoi(input);
-
-                    int pos = buscarTrastero(listaTrasteros, num);
-                    if (pos != -1) {
-                        alquilarTrastero(&listaTrasteros.aTrasteros[pos]);
-                    } else {
-                        printf("Trastero no encontrado.\n");
-                    }
-                    break;
-                }
-                case '5': {
-                    char input[50];
-                    printf("Ingrese Numero de Trastero a devolver: ");
-                    fflush(stdout);
-                    gets(input);
-                    int num = atoi(input);
-
-                    int pos = buscarTrastero(listaTrasteros, num);
-                    if (pos != -1) {
-                        devolverTrastero(&listaTrasteros.aTrasteros[pos]);
-                    } else {
-                        printf("Trastero no encontrado.\n");
-                    }
-                    break;
-                }
-                case '0':
-                    printf("Saliendo del administrador...\n");
-                    break;
-                default:
-                    printf("Opcion invalida.\n");
-            }
-        } while (opcion != '0');
-    }
-}
 
 void cerrarPrograma(sqlite3 *db, ListaUsuarios *lu, ListaTrasteros *lt) {
     // Liberar la memoria de las listas
@@ -514,5 +421,6 @@ void cerrarPrograma(sqlite3 *db, ListaUsuarios *lu, ListaTrasteros *lt) {
 
     printf("Fin del programa\n");
 }
+
 
 

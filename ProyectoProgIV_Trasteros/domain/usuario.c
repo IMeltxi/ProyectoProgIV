@@ -62,10 +62,6 @@ void visualizarPerfilUsuario(Usuario u){
 	printf("\n- Direccion: %s",u.direccion);
 }
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 void cargarUsuariosDesdeCSV(ListaUsuarios *lu, char *nombreArchivo) {
     FILE *pf;
     char linea[200];

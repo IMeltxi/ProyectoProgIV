@@ -7,8 +7,8 @@
 typedef struct{
 	int numeroTrastero;
 	int metrosCuadrados;
-	int valoracion;
-	int precio;
+	float valoracion;
+	float precio;
 	int disponible;
 	int numeroDeValoraciones;
 }Trastero;
@@ -24,15 +24,13 @@ void devolverTrastero(Trastero *t);
 int buscarTrastero(ListaTrasteros lt, int numeroTrastero);
 void aniadirTrastero(ListaTrasteros *lt, Trastero t);
 void eliminarTrastero(ListaTrasteros *lt, Trastero t);
-
+Trastero obtenerTrastero(ListaTrasteros lt, int numeroTrastero);
+void actualizarValoracion(Trastero t);
 void visualizarTrasteros(ListaTrasteros lt);
 void visualizarTrastero(Trastero t);
 
 void visualizarTrasterosDisponibles(ListaTrasteros lt);
-void visualizarTrasteroDisponible(Trastero t);
-
 void visualizarTrasterosAlquilados(ListaTrasteros lt);
-void visualizarTrasteroAlquilado(Trastero t);
 
 void ordenarPorPrecio(ListaTrasteros *lt);
 void ordenarPorMetrosCuadrados(ListaTrasteros *lt);

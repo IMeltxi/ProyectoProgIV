@@ -19,12 +19,12 @@ int autenticarAdministrador();
 Trastero menuAniadirTrastero();
 int menuEliminarTrastero();
 char menuTrasterosAdmin();
+char menuFicherosAdmin();
 //Cambiar metodo
 
 int autenticarUsuario(sqlite3 *db);
 
 void registrarUsuario(sqlite3 *db);
 char manejarCliente(sqlite3 *db);
-void manejarAdministrador(sqlite3 *db);
 void cerrarPrograma(sqlite3 *db, ListaUsuarios *lu, ListaTrasteros *lt);
 #endif /* MENU_H_ */
