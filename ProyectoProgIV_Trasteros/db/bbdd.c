@@ -79,7 +79,7 @@ void aniadirUsuarioABBDD(sqlite3 *db, Usuario u){
 void aniadirTrasteroABBDD(sqlite3 *db, Trastero t){
 	sqlite3_stmt *stmt1,*stmt2;
 	char sql[500];
-	int totalTrasteros = 0;
+	int totalTrasteros;
 	sprintf(sql, "SELECT COUNT(*) FROM Trastero");
 	if (sqlite3_prepare_v2(db, sql, -1, &stmt1, NULL) == SQLITE_OK) {
 		if (sqlite3_step(stmt1) == SQLITE_ROW) {
@@ -91,15 +91,18 @@ void aniadirTrasteroABBDD(sqlite3 *db, Trastero t){
 	if (totalTrasteros < 100) {
 		sprintf(sql, "INSERT INTO Trastero (numeroTrastero, metrosCuadrados, precio, valoracion, numeroDeValoraciones, disponible)"
 		        "VALUES (%d, %d, %.2f, %.2f, %d, %d)",
-				t.numeroTrastero, t.metrosCuadrados, t.precio, 0.0, 0, t.disponible);
+				t.numeroTrastero, t.metrosCuadrados, t.precio, t.valoracion, t.numeroDeValoraciones, t.disponible);
 		if (sqlite3_prepare_v2(db, sql, -1, &stmt2, NULL) == SQLITE_OK) {
 			sqlite3_step(stmt2); // Ejecutar la inserción
+			printf("\033[32mTrastero guardado a BD correctamente.\033[0m\n");
+			fflush(stdout);
 		} else {
 			fprintf(stderr, "Error al preparar la inserción: %s\n", sqlite3_errmsg(db));
 		}
 		sqlite3_finalize(stmt2);
 	} else {
-		printf("No se puede añadir más trasteros. Límite de 100 alcanzado.\n");
+		printf("\033[31mNo se puede añadir más trasteros a BD. Límite de 100 alcanzado.\033[0m\n");
+
 	}
 }
 // Función para obtener la fecha actual en formato "YYYY-MM-DD"
@@ -267,5 +270,93 @@ int verificarAlquiler(sqlite3 *db, int numeroTrastero, int dni){
 		return encontrado;
 
 }
+void crearFicheroAlquilados(sqlite3 *db) {
+    FILE *f;
+    sqlite3_stmt *stmt;
+    char sql[250];
+
+    // Abrir el archivo para escritura
+    f = fopen("TrasterosAlquilados.txt", "w");
+    if (f == NULL) {
+        fprintf(stderr, "Error al abrir el archivo para escribir.\n");
+        return;
+    }
+
+    // Escribir los encabezados en el archivo
+    fprintf(f, "NUMERO DE TRASTERO;DNI;DIA INICIO\n");
+
+    // Consulta SQL para obtener los valores de la tabla ALQUILADOS
+    sprintf(sql, "SELECT numeroTrastero, dni, diaInicio FROM Alquilados");
+
+    // Preparar la consulta
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) {
+        fprintf(stderr, "Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
+        fclose(f);
+        return;
+    }
+
+    // Ejecutar la consulta y escribir los resultados en el archivo
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        // Obtener los valores de cada columna
+        int numeroTrastero = sqlite3_column_int(stmt, 0);
+        const char *dni = (const char*)sqlite3_column_text(stmt, 1);
+        const char *diaInicio = (const char*)sqlite3_column_text(stmt, 2);
+
+        // Escribir los valores en el archivo
+        fprintf(f, "%d;%s;%s\n", numeroTrastero, dni, diaInicio);
+    }
+
+    // Finalizar el statement y cerrar el archivo
+    sqlite3_finalize(stmt);
+    fclose(f);
+}
+void crearFicheroHistorial(sqlite3 *db) {
+    FILE *f;
+    sqlite3_stmt *stmt;
+    char sql[250];
+
+    // Abrir el archivo para escribir los datos
+    f = fopen("TrasterosHistorial.txt", "w");
+    if (f == NULL) {
+        fprintf(stderr, "Error al abrir el archivo TrasterosHistorial.txt\n");
+        return;
+    }
+
+    // Escribir los encabezados del archivo
+    fprintf(f, "NUMERO DE TRASTERO;DNI;VALORACION;NUMERO DE VALORACIONES;DIA INICIO;DIA FINAL\n");
+
+    // Consulta para obtener los datos de la tabla historial
+    snprintf(sql, sizeof(sql), "SELECT numeroTrastero, dni, valoracion, numeroDeValoraciones, diaInicio, diaFinal FROM historial");
+
+    // Preparar la consulta
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) {
+        fprintf(stderr, "Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
+        fclose(f);
+        return;
+    }
+
+    // Ejecutar la consulta y escribir los resultados en el archivo
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        // Obtener los valores de cada columna
+        int numeroTrastero = sqlite3_column_int(stmt, 0);
+        int dni = sqlite3_column_int(stmt, 1);
+        float valoracion = (float)sqlite3_column_double(stmt, 2);
+        int numeroDeValoraciones = sqlite3_column_int(stmt, 3);
+        const char *diaInicio = (const char*)sqlite3_column_text(stmt, 4);
+        const char *diaFinal = (const char*)sqlite3_column_text(stmt, 5);
+
+        // Escribir los valores en el archivo
+        fprintf(f, "%d;%d;%.2f;%d;%s;%s\n", numeroTrastero, dni, valoracion, numeroDeValoraciones, diaInicio, diaFinal);
+    }
+
+    // Finalizar la consulta
+    sqlite3_finalize(stmt);
+
+    // Cerrar el archivo después de escribir
+    fclose(f);
+}
+
+
+
 
 

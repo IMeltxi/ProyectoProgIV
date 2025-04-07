@@ -20,6 +20,7 @@ Trastero menuAniadirTrastero();
 int menuEliminarTrastero();
 char menuTrasterosAdmin();
 char menuFicherosAdmin();
+
 //Cambiar metodo
 
 int autenticarUsuario(sqlite3 *db);

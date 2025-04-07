@@ -26,4 +26,7 @@ Trastero buscarTrasteroDDBB(sqlite3 *db, int numeroTrastero);
 void eliminarTrasteroDDBB(sqlite3 *db,int numeroTrastero);
 void obtenerListaTrasterosAlquiladosCSV(sqlite3 *db);
 int verificarAlquiler(sqlite3 *db, int numeroTrastero, int dni);
+
+void crearFicheroAlquilados(sqlite3 *db);
+void crearFicheroHistorial(sqlite3 *db);
 #endif /* BBDD_H_ */

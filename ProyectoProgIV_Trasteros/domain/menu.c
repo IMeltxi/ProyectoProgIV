@@ -158,10 +158,11 @@ char menuAdministrador() {
     sleep(1);
     limpiarConsola();
     printf("Menu ADMINISTRADOR\n");
-    printf("1. Aniadir Trastero\n");
+    printf("1. Añadir Trastero\n");
     printf("2. Eliminar Trastero\n");
     printf("3. Ver Clientes\n");
     printf("4. Ver Trasteros Disponibles\n");
+    printf("5. Obtener Ficheros sobre los trasteros.\n");
     printf("0. Salir\n");
     printf("Seleccione una opcion\n: ");
     fflush(stdout);
@@ -184,14 +185,13 @@ int autenticarAdministrador() {
     gets(contrasena);
 
     if (strcmp(usuario, ADMIN_USER) == 0 && strcmp(contrasena, ADMIN_PASS) == 0) {
-        sleep(1);
-    	printf("Acceso concedido.\n");
+        printf("\033[1;32mAcceso concedido.\033[0m\n");
         sleep(1);
         limpiarConsola();
         return 1;
     } else {
-        sleep(1);
-    	printf("Acceso denegado.\n");fflush(stdout);
+        printf("\033[1;31mAcceso denegado.\033[0m\n");
+    	fflush(stdout);
         sleep(1);
         limpiarConsola();
         return 0;
@@ -211,13 +211,13 @@ Trastero menuAniadirTrastero(){
 	printf("Metros Cuadrados: ");
 	fflush(stdout);
 	fflush(stdin);
-	scanf("%d", &t.numeroTrastero);
+	scanf("%d", &t.metrosCuadrados);
 	printf("Precio: ");
 	fflush(stdout);
 	fflush(stdin);
-	scanf("%d", &t.numeroTrastero);
+	scanf("%f", &t.precio);
 	t.disponible=1;
-	t.valoracion=0;
+	t.valoracion=0.0;
 	t.numeroDeValoraciones=0;
 	return t;
 }
@@ -264,13 +264,9 @@ char menuFicherosAdmin(){
 }
 
 
-
-
-
-
 void registrarUsuario(sqlite3 *db) {
     char nombre[50], apellido[50], email[50], direccion[50];
-    char contrasena[50], confirmarContrasena[50], telefono[9], dni[9];
+    char contrasena[50], confirmarContrasena[50], telefono[10], dni[10];
     int dniComp;
     char c;
 
@@ -335,11 +331,9 @@ void registrarUsuario(sqlite3 *db) {
         printf("Usuario registrado\n");
         sleep(1);
         fflush(stdout);
-        menuCliente(u, db);
     } else {
         printf("Las contraseñas no coinciden\n");
         fflush(stdout);
-        registrarUsuario(db);
     }
 }
 
@@ -407,8 +401,8 @@ void cerrarPrograma(sqlite3 *db, ListaUsuarios *lu, ListaTrasteros *lt) {
 	if (lu->aUsuarios != NULL) {
 	        free(lu->aUsuarios);
 	        lu->aUsuarios = NULL;  // Establecer a NULL después de liberar la memoria
-	    }
-	    lu->numUsuarios = 0;
+	 }
+	 lu->numUsuarios = 0;
 
     // Cerrar la base de datos
     if (db != NULL) {

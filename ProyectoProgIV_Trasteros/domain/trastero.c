@@ -17,8 +17,10 @@ void aniadirTrastero(ListaTrasteros *lt, Trastero t) {
     if (lt->numeroTrasteros < 100) {
         lt->aTrasteros[lt->numeroTrasteros] = t;
         lt->numeroTrasteros++;
+        printf("\033[32mTrastero añadido correctamente.\033[0m\n");
+        fflush(stdout);
     } else {
-        printf("No se puede añadir más trasteros. Límite de 100 alcanzado.\n");
+    	printf("\033[31mNo se puede añadir más trasteros. Límite de 100 alcanzado.\033[0m\n");
         fflush(stdout);
     }
 }
@@ -39,12 +41,14 @@ void eliminarTrastero(ListaTrasteros *lt, Trastero t) {
     int i;
     int pos = buscarTrastero(*lt, t.numeroTrastero);
     if (pos == -1) {
-        printf("ERROR: Ese trastero no existe\n");
+    	printf("\033[31mERROR: Ese trastero no existe\033[0m\n");
     } else {
         for (i = pos; i < lt->numeroTrasteros - 1; i++) {
             lt->aTrasteros[i] = lt->aTrasteros[i + 1];
         }
         lt->numeroTrasteros--;
+        printf("\033[32mTrastero eliminado correctamente.\033[0m\n");
+        fflush(stdout);
     }
 }
 
@@ -62,7 +66,7 @@ Trastero obtenerTrastero(ListaTrasteros lt, int numeroTrastero){
 	return t;
 }
 
-void actualizarValoracion(Trastero t){
+void actualizarValoracion(Trastero *t){
 	int valoracion;
 	do{
 	printf("\nComo valoraria este trastero?(1-5): \n");
@@ -72,8 +76,8 @@ void actualizarValoracion(Trastero t){
 	if(valoracion<1||valoracion>5){
 		printf("Seleccione un valor entre el 1 y el 5.\n");
 	}else{
-		t.valoracion= (t.valoracion+valoracion)/2;
-		t.numeroDeValoraciones++;
+		t->valoracion= (t->valoracion+valoracion)/2;
+		t->numeroDeValoraciones++;
 	}
 	}while(valoracion<1||valoracion>5);
 
@@ -93,7 +97,7 @@ void visualizarTrastero(Trastero t) {
 
 void visualizarTrasteros(ListaTrasteros lt) {
     int i;
-    printf("%s%20s%20s%20s%20s%20s\n", "NºTRASTERO", "m²", "PRECIO", "VALORACION","NUMERO DE VALORACIONES","DISPONIBILIDAD");
+    printf("%s%20s%20s%20s%30s%20s\n", "NºTRASTERO", "m²", "PRECIO", "VALORACION","NUMERO DE VALORACIONES","DISPONIBILIDAD");
     fflush(stdout);
     for (i = 0; i < lt.numeroTrasteros; i++) {
         visualizarTrastero(lt.aTrasteros[i]);fflush(stdout);
@@ -102,7 +106,7 @@ void visualizarTrasteros(ListaTrasteros lt) {
 
 void visualizarTrasterosDisponibles(ListaTrasteros lt) {
      int i;
-     printf("%s%20s%20s%20s%20s%20s\n", "NºTRASTERO", "m²", "PRECIO", "VALORACION","NUMERO DE VALORACIONES","DISPONIBILIDAD");
+     printf("%s%20s%20s%20s%30s%20s\n", "NºTRASTERO", "m²", "PRECIO", "VALORACION","NUMERO DE VALORACIONES","DISPONIBILIDAD");
      fflush(stdout);
      for (i = 0; i < lt.numeroTrasteros; i++) {
     	 if(lt.aTrasteros[i].disponible==1){
@@ -113,7 +117,7 @@ void visualizarTrasterosDisponibles(ListaTrasteros lt) {
 
 void visualizarTrasterosAlquilados(ListaTrasteros lt) {
      int i;
-     printf("%s%20s%20s%20s%20s%20s\n", "NºTRASTERO", "m²", "PRECIO", "VALORACION","NUMERO DE VALORACIONES","DISPONIBILIDAD");
+     printf("%s%20s%20s%20s%30s%20s\n", "NºTRASTERO", "m²", "PRECIO", "VALORACION","NUMERO DE VALORACIONES","DISPONIBILIDAD");
      fflush(stdout);
      for (i = 0; i < lt.numeroTrasteros; i++) {
     	 if(lt.aTrasteros[i].disponible==0){

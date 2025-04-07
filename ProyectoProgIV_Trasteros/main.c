@@ -13,19 +13,20 @@ int main() {
     ListaTrasteros lt;
     sqlite3 *db; //Acceso a la bbdd
     int result,numTrastero,dniUser,trasteroAEliminar;
-    char opcionPrincipal,opcionAdmin,opcionAdmin2,opcionVolverAtrasAdmin,
-	opcionUsuarioInicio,opcionCliente,opcionVolverAtrasPerfil,opcionCatalogo,opcionVolverAtrasCat;
+    char opcionPrincipal,opcionAdmin,opcionAdmin2,
+	opcionUsuarioInicio,opcionCliente,opcionCatalogo,opcionVolverAtrasCat;
     Trastero t;
     Usuario u;
 
-    printf("Iniciando el programa...\n");fflush(stdout);
+    printf("\033[1;32mIniciando el programa...\033[0m\n");fflush(stdout);
     sleep(1);
     result = inicializarBBDD(&db);
     	if(result == SQLITE_OK){
-    		printf("Estableciendo la conexion con base de datos...");fflush(stdout);
+    		printf("\033[1;32mEstableciendo la conexion con base de datos...\033[0m\n");
+    		fflush(stdout);
     		crearTablas(db);
     	}else{
-    		printf("No se ha establecido la conexi�n con la BBDD\n");
+    		printf("\033[1;31mNo se ha establecido la conexión con la BBDD\033[0m\n");
     		fflush(stdout);
     		return 0;
     	}
@@ -56,12 +57,12 @@ int main() {
                         		//AÑADIR TRASTERO
                         		t= menuAniadirTrastero();
                         		if(t.numeroTrastero<=0){ //Verificar que el numero sea mayor a 0 para evitar problemas con los flags creados
-                        			printf("El numero del trastero debe ser mayor a 0");
+                        			printf("\033[1;33mEl numero del trastero debe ser mayor a 0\033[0m");
                         		}else if(buscarTrastero(lt,t.numeroTrastero)==-1){ //Verificar si el trastero ya existe
                         			aniadirTrastero(&lt,t);
-                        			aniadirTrasteroABBDD(NOMBRE_BBDD,t);
+                        			aniadirTrasteroABBDD(db,t);
                         		}else{
-                        			printf("El trastero con numero %d ya existe.",t.numeroTrastero);
+                        			printf("\033[38;5;214mEl trastero con numero %d ya existe.\033[0m\n", t.numeroTrastero);
                         		}
                         		break;
                         	case '2':
@@ -72,21 +73,15 @@ int main() {
                         			eliminarTrastero(&lt,t);
                         			eliminarTrasteroDDBB(db,trasteroAEliminar);
                         		}else{
-                        			printf("El trastero con numero %d no existe.",trasteroAEliminar);
+                        			printf("\033[31mEl trastero con numero %d no existe.\033[0m\n", trasteroAEliminar);
                         		}
 
                         		break;
                         	case '3':
                         		//VER CLIENTES
-                        		do{
                         		sleep(1);
                         		limpiarConsola();
                         		visualizarListaUsuarios(lu);
-                        		opcionVolverAtrasAdmin= volverAtras();
-                        		if(opcionVolverAtrasAdmin=='0'){
-                        			printf("Caracter invalido\n: ");
-                        		}
-                        		}while(opcionVolverAtrasAdmin=='0');
 
                         		break;
                         	case '4':
@@ -124,11 +119,11 @@ int main() {
                         			switch (opcionAdmin2) {
 										case '1':
 											//OBTENER FICHERO DE LOS TRASTEROS ACTUALMENTE ALQUILADOS
-											//TODO: FUNCIONES
+											crearFicheroAlquilados(db);
 											break;
 										case '2':
 											//OBTENER FICHERO DE TODOS LOS TRASTEROS QUE HAN SIDO ALQUILADOS
-											//TODO: FUNCIONES
+											crearFicheroHistorial(db);
 											break;
 			                        	case '0':
 			                        		printf("Saliendo de la opcion ficheros...\n");
@@ -162,19 +157,13 @@ int main() {
 							if(dniUser!=-1){
 								//Obtenemos el Usuario logeado
 								u = obtenerUsuario(db,dniUser);
-								opcionCliente = menuCliente();
+
 								do{
+									opcionCliente = menuCliente();
 									switch (opcionCliente) {
 										case '1':
 											//PERFIL
-											do{
 												menuPerfil(u);
-												opcionVolverAtrasPerfil= volverAtras();
-												if(opcionVolverAtrasPerfil=='0'){
-												printf("Caracter invalido\n: ");
-												}
-											}while(opcionVolverAtrasPerfil!='0');
-
 											break;
 										case '2':
 											//CATALOGO
@@ -292,7 +281,7 @@ int main() {
 											}else{
 												printf("No existe este trastero en nuestro catalogo.\n");
 											}
-											actualizarValoracion();
+											actualizarValoracion(&t);
 											break;
 										case '0':
 											//CERRAR SESION

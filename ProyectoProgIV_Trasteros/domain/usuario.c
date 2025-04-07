@@ -29,12 +29,12 @@ void aniadirUsuarioAListaUsuarios(ListaUsuarios *lu, Usuario u){
 }
 //Para listar los clientes
 void visualizarUsuario(Usuario u){
-	printf("%s%15s%15i%15i%20s%15s%15s\n",u.nombre,u.apellido,u.dni,u.telefono,u.email,u.direccion,u.contrasenia);
+	printf("\033[34m%s%15s%15i%15i%20s%15s%15s\033[0m\n", u.nombre, u.apellido, u.dni, u.telefono, u.email, u.direccion, u.contrasenia);
 	fflush(stdout);
 }
 void visualizarListaUsuarios(ListaUsuarios lu){
 	int i;
-	printf("%s%15s%15s%15s%20s%15s%15s\n","NOMBRE","APELLIDOS","DNI","TELEFONO","EMAIL","DIRECCION","CONTRASEÑA");
+	printf("\033[34m%s%15s%15s%15s%20s%15s%15s\033[0m\n", "NOMBRE", "APELLIDOS", "DNI", "TELEFONO", "EMAIL", "DIRECCION", "CONTRASEÑA");
 	fflush(stdout);
 	for(i=0;i<lu.numUsuarios;i++){
 		visualizarUsuario(lu.aUsuarios[i]);
@@ -49,18 +49,11 @@ Usuario* iniciarSesion(ListaUsuarios lu, char* email, char* contra) {
             return &lu.aUsuarios[i];  // Devolvemos un puntero al usuario encontrado
         }
     }
-    printf("NO SE HA ENCONTRADO AL USUARIO\n");
+    printf("\033[31mNO SE HA ENCONTRADO AL USUARIO\033[0m\n");
 
     return 0;
 }
-void visualizarPerfilUsuario(Usuario u){
-	printf("- Nombre: %s",u.nombre);
-	printf("\n- Apellido: %s",u.apellido);
-	printf("\n- DNI: %i",u.dni);
-	printf("\n- Telefono: %i",u.telefono);
-	printf("\n- Email: %s",u.email);
-	printf("\n- Direccion: %s",u.direccion);
-}
+
 
 void cargarUsuariosDesdeCSV(ListaUsuarios *lu, char *nombreArchivo) {
     FILE *pf;
@@ -69,7 +62,7 @@ void cargarUsuariosDesdeCSV(ListaUsuarios *lu, char *nombreArchivo) {
 
     pf = fopen(nombreArchivo, "r");
     if (pf == NULL) {
-        printf("Error al abrir el archivo %s\n", nombreArchivo);
+    	printf("\033[31mError al abrir el archivo %s\033[0m\n", nombreArchivo);
         return;
     }
 
@@ -96,7 +89,7 @@ void cargarUsuariosDesdeCSV(ListaUsuarios *lu, char *nombreArchivo) {
             lu->aUsuarios = realloc(lu->aUsuarios, lu->numUsuarios * sizeof(Usuario));
 
             if (lu->aUsuarios == NULL) {
-                printf("Error al asignar memoria\n");
+            	printf("\033[31mError al asignar memoria\033[0m\n");
                 fclose(pf);
                 return;
             }
