@@ -176,41 +176,42 @@ void ordenarPorNumeroTrastero(ListaTrasteros *lt) {
 }
 
 void cargarTrasterosDesdeCSV(ListaTrasteros *lt, char *nombreArchivo) {
-     FILE *pf;
-     char linea[200];
-     Trastero t;
+    FILE *pf;
+    char linea[200];
+    Trastero t;
 
-     pf = fopen(nombreArchivo, "r");
-     if (pf != NULL) {
-         while (fgets(linea, sizeof(linea), pf) != NULL) { // Cambié fscanf por fgets
-             // Eliminamos el salto de línea al final
-             linea[strcspn(linea, "\n")] = 0;
+    pf = fopen(nombreArchivo, "r");
+    if (pf != NULL) {
+        while (fgets(linea, sizeof(linea), pf) != NULL) { // Cambié fscanf por fgets
+            // Eliminamos el salto de línea al final
+            linea[strcspn(linea, "\n")] = 0;
 
-             char *numT = strtok(linea, ";");
-             char *m2 = strtok(NULL, ";");
-             char *pre = strtok(NULL, ";");
-             char *val = strtok(NULL, ";");
-             char *numVal = strtok(NULL, ";");
-             char *disp = strtok(NULL, ";");
+            char *numT = strtok(linea, ";");
+            char *m2 = strtok(NULL, ";");
+            char *pre = strtok(NULL, ";");
+            char *val = strtok(NULL, ";");
+            char *numVal = strtok(NULL, ";");
+            char *disp = strtok(NULL, ";");
 
-             if (numT && m2 && val && pre && disp) { // Aseguramos que los valores se extraen correctamente
-                 t.numeroTrastero = atoi(numT);
-                 t.metrosCuadrados = atoi(m2);
-                 t.precio = atof(pre);
-                 t.valoracion = atof(val);
-                 t.numeroDeValoraciones = atoi(numVal);
-                 t.disponible = atoi(disp);
-                 // Añadimos el trastero a la lista
-                 if (lt->numeroTrasteros < 100) {
-                     lt->aTrasteros[lt->numeroTrasteros] = t;
-                     lt->numeroTrasteros++;
-                 } else {
-                     printf("No se pueden añadir más trasteros\n");
-                 }
-             }
-         }
-         fclose(pf);
-     } else {
-         printf("Error al abrir el archivo %s\n", nombreArchivo);
-     }
- }
+            if (numT && m2 && val && pre && disp) { // Aseguramos que los valores se extraen correctamente
+                t.numeroTrastero = atoi(numT);
+                t.metrosCuadrados = atoi(m2);
+                t.precio = atof(pre);
+                t.valoracion = atof(val);
+                t.numeroDeValoraciones = atoi(numVal);
+                t.disponible = atoi(disp);
+                // Añadimos el trastero a la lista
+                if (lt->numeroTrasteros < 100) {
+                    lt->aTrasteros[lt->numeroTrasteros] = t;
+                    lt->numeroTrasteros++;
+                } else {
+                    printf("No se pueden añadir más trasteros\n");
+                }
+            }
+        }
+        fclose(pf);
+    } else {
+        printf("Error al abrir el archivo %s\n", nombreArchivo);
+    }
+}
+
