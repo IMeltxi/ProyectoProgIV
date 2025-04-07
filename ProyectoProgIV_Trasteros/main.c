@@ -256,15 +256,14 @@ int main() {
 
 											    printf("Número leído: %d\n", numTrastero);
 											t = buscarTrasteroDDBB(db, numTrastero);
-											printf("DEBUG: Después de buscarTrasteroDDBB\n");
 											if(t.numeroTrastero!=-1){
-												printf("DEBUG: Después de if\n");
+
 												if(t.disponible==0){
 													printf("\033[0;33mLo sentimos, este trastero no está disponible en nuestro catálogo.\n\033[0m");
-													printf("DEBUG: Después de if2\n");
+
 												}else{
 													alquilarTrastero(&t);
-													printf("DEBUG: Después de alquilar\n");
+
 													//Marcamos como no disponible en la BD
 													aniadirTrasteroAlquilado(db,t,u);
 													printf("\033[0;32mEl trastero con numero %d ha sido correctamente alquilado por %s.\033[0m\n", t.numeroTrastero, u.nombre);

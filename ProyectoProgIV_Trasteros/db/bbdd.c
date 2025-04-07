@@ -135,7 +135,7 @@ void aniadirTrasteroAlquilado(sqlite3 *db, Trastero t, Usuario u){
 //Funcion que al devolver el trastero se guarde la operacion de quiern y que a reservado
 void devolverTrasteroBBDD(sqlite3 *db, Trastero t) {
     sqlite3_stmt *stmt1,*stmt2,*stmt3;
-    char sql[200];
+    char sql[500];
     char fechaDevolucion[11];
 
     obtenerFechaActual(fechaDevolucion, sizeof(fechaDevolucion)); // Obtener la fecha actual como fecha de devolución
@@ -329,24 +329,43 @@ void crearFicheroHistorial(sqlite3 *db) {
     snprintf(sql, sizeof(sql), "SELECT numeroTrastero, dni, valoracion, numeroDeValoraciones, diaInicio, diaFinal FROM historial");
 
     // Preparar la consulta
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) {
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    if (rc != SQLITE_OK) {
         fprintf(stderr, "Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
         fclose(f);
         return;
     }
 
     // Ejecutar la consulta y escribir los resultados en el archivo
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
         // Obtener los valores de cada columna
         int numeroTrastero = sqlite3_column_int(stmt, 0);
         int dni = sqlite3_column_int(stmt, 1);
-        float valoracion = (float)sqlite3_column_double(stmt, 2);
+        double valoracion = sqlite3_column_double(stmt, 2);  // Cambio de float a double
         int numeroDeValoraciones = sqlite3_column_int(stmt, 3);
         const char *diaInicio = (const char*)sqlite3_column_text(stmt, 4);
         const char *diaFinal = (const char*)sqlite3_column_text(stmt, 5);
 
+        // Comprobar si las fechas son nulas (en caso de que se pueda dar el caso)
+        if (diaInicio == NULL) {
+            diaInicio = "N/A"; // Asignar un valor predeterminado en caso de que sea nulo
+        }
+        if (diaFinal == NULL) {
+            diaFinal = "N/A"; // Asignar un valor predeterminado en caso de que sea nulo
+        }
+
         // Escribir los valores en el archivo
         fprintf(f, "%d;%d;%.2f;%d;%s;%s\n", numeroTrastero, dni, valoracion, numeroDeValoraciones, diaInicio, diaFinal);
+    }
+
+    // Si no hubo filas, mostrar un mensaje
+    if (rc != SQLITE_DONE) {
+        fprintf(stderr, "Error al leer los resultados: %s\n", sqlite3_errmsg(db));
+    }
+
+    // Verificar si no se obtuvo ningún dato
+    if (rc == SQLITE_OK) {
+        fprintf(stderr, "No se encontraron datos para la consulta.\n");
     }
 
     // Finalizar la consulta
@@ -355,6 +374,8 @@ void crearFicheroHistorial(sqlite3 *db) {
     // Cerrar el archivo después de escribir
     fclose(f);
 }
+
+
 
 void cargarTrasterosDesdeDB(ListaTrasteros *lt, sqlite3 *db) {
     sqlite3_stmt *stmt;

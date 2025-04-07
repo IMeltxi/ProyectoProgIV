@@ -407,7 +407,7 @@ void cerrarPrograma(sqlite3 *db, ListaUsuarios *lu, ListaTrasteros *lt) {
     // Cerrar la base de datos
     if (db != NULL) {
         sqlite3_close(db);
-        printf("Base de datos cerrada correctamente.\n");
+        printf("\033[0;32mBase de datos cerrada correctamente.\033[0m\n");
     }
 
     // Aquí puedes agregar otras tareas de limpieza si es necesario
