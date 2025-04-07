@@ -34,11 +34,12 @@ int main() {
     //INICIALIZAMOS LAS LISTAS
     inicializarListaUsuarios(&lu);
     inicializarListaTrasteros(&lt);
-    //CARGAMOS LAS LISTAS CON LOS VALORES DEL ARCHIVO
-    //TODO: CARGAR LAS LISTAS CON LOS VALORES DE LA BD (FALTAN METER PRIMERO LOS VALORES)
+    //CARGAMOS LAS LISTAS CON LOS VALORES DE LA BD
 
-    cargarTrasterosDesdeCSV(&lt, NOM_ARCHIVO_TRASTEROS);
-    cargarUsuariosDesdeCSV(&lu,NOM_ARCHIVO_USUARIOS);
+    cargarTrasterosDesdeDB(&lt, db);
+    cargarUsuariosDesdeDB(&lu, db);
+//    cargarTrasterosDesdeCSV(&lt,NOM_ARCHIVO_TRASTEROS);
+//    cargarUsuariosDesdeCSV(&lu,NOM_ARCHIVO_USUARIOS);
 
 
 

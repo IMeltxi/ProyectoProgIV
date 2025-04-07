@@ -356,6 +356,93 @@ void crearFicheroHistorial(sqlite3 *db) {
     fclose(f);
 }
 
+void cargarTrasterosDesdeDB(ListaTrasteros *lt, sqlite3 *db) {
+    sqlite3_stmt *stmt;
+    char sql[500];
+    Trastero t;
+
+    // Consulta SQL para obtener todos los trasteros de la base de datos
+    sprintf(sql, "SELECT numeroTrastero, metrosCuadrados, precio, valoracion, numeroValoraciones, disponible FROM Trastero");
+
+    // Preparamos la consulta SQL
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) {
+        printf("Error al preparar la consulta SQL: %s\n", sqlite3_errmsg(db));
+        return;
+    }
+
+    // Ejecutamos la consulta y procesamos los resultados
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        // Obtener los valores de cada columna
+        t.numeroTrastero = sqlite3_column_int(stmt, 0);
+        t.metrosCuadrados = sqlite3_column_int(stmt, 1);
+        t.precio = sqlite3_column_double(stmt, 2);
+        t.valoracion = sqlite3_column_double(stmt, 3);
+        t.numeroDeValoraciones = sqlite3_column_int(stmt, 4);
+        t.disponible = sqlite3_column_int(stmt, 5);
+
+        // Añadir el trastero a la lista
+        if (lt->numeroTrasteros < 100) {
+            lt->aTrasteros[lt->numeroTrasteros] = t;
+            lt->numeroTrasteros++;
+        } else {
+            printf("No se pueden añadir más trasteros\n");
+        }
+    }
+
+    // Finalizar la sentencia SQL
+    sqlite3_finalize(stmt);
+}
+void cargarUsuariosDesdeDB(ListaUsuarios *lu, sqlite3 *db) {
+    sqlite3_stmt *stmt;
+    char sql[500];
+    Usuario u;
+
+    // Consulta SQL para obtener todos los usuarios de la base de datos
+    sprintf(sql, "SELECT nombre, apellido, dni, telefono, email, direccion, contrasenia FROM Usuario");
+
+    // Preparamos la consulta SQL
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) {
+        printf("Error al preparar la consulta SQL: %s\n", sqlite3_errmsg(db));
+        return;
+    }
+
+    // Ejecutamos la consulta y procesamos los resultados
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        // Obtener los valores de cada columna
+        const char *nombre = (const char *)sqlite3_column_text(stmt, 0);
+        const char *apellido = (const char *)sqlite3_column_text(stmt, 1);
+        u.dni = sqlite3_column_int(stmt, 2);
+        u.telefono = sqlite3_column_int(stmt, 3);
+        const char *email = (const char *)sqlite3_column_text(stmt, 4);
+        const char *direccion = (const char *)sqlite3_column_text(stmt, 5);
+        const char *contrasenia = (const char *)sqlite3_column_text(stmt, 6);
+
+        if (nombre && apellido && email && direccion && contrasenia) {
+            // Asignar los valores a la estructura Usuario
+            strcpy(u.nombre, nombre);
+            strcpy(u.apellido, apellido);
+            strcpy(u.email, email);
+            strcpy(u.direccion, direccion);
+            strcpy(u.contrasenia, contrasenia);
+
+            // Redimensionar el array dinámico para agregar el nuevo usuario
+            lu->numUsuarios++;
+            lu->aUsuarios = realloc(lu->aUsuarios, lu->numUsuarios * sizeof(Usuario));
+
+            if (lu->aUsuarios == NULL) {
+                printf("\033[31mError al asignar memoria\033[0m\n");
+                sqlite3_finalize(stmt);
+                return;
+            }
+
+            // Agregar usuario a la lista
+            lu->aUsuarios[lu->numUsuarios - 1] = u;
+        }
+    }
+
+    // Finalizar la sentencia SQL
+    sqlite3_finalize(stmt);
+}
 
 
 

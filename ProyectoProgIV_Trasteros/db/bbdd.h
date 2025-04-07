@@ -29,4 +29,7 @@ int verificarAlquiler(sqlite3 *db, int numeroTrastero, int dni);
 
 void crearFicheroAlquilados(sqlite3 *db);
 void crearFicheroHistorial(sqlite3 *db);
+
+void cargarTrasterosDesdeDB(ListaTrasteros *lt, sqlite3 *db);
+void cargarUsuariosDesdeDB(ListaUsuarios *lu, sqlite3 *db);
 #endif /* BBDD_H_ */
