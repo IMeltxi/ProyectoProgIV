@@ -15,8 +15,8 @@
 ListaTrasteros listaTrasteros;
 //Simula que limpia la consola empujando el contenido para arriba
 void limpiarConsola() {
-    for (int i = 0; i < 15; i++) {
-        printf("\n");
+    for (int i = 0; i < 3; i++) {
+        printf("...............................................................................................................\n");
     }
     fflush(stdout);
 }
@@ -48,7 +48,7 @@ char menuIniReg() {
 
 char menuCliente() {
 	char opcion;
-	sleep(1);
+
 	limpiarConsola();
 	printf("MENÚ\n");
 	printf("1. Perfil\n");
@@ -64,7 +64,7 @@ char menuCliente() {
 }
 char menuCatalogo(){
 	char opcion;
-	sleep(1);
+
 	limpiarConsola();
 	printf("CATALOGO\n");
 	printf("----------------------------------------\n");
@@ -80,7 +80,7 @@ char menuCatalogo(){
 	return opcion;
 }
 void menuPerfil(Usuario u){
-	sleep(1);
+
 	limpiarConsola();
 	printf("-------------------------------------");fflush(stdout);
 	printf("\nPERFIL");fflush(stdout);
@@ -155,7 +155,7 @@ void menuAlquilarTrastero(Usuario u, sqlite3 *db){
 }
 char menuAdministrador() {
     char opcion;
-    sleep(1);
+
     limpiarConsola();
     printf("Menu ADMINISTRADOR\n");
     printf("1. Añadir Trastero\n");
@@ -186,13 +186,13 @@ int autenticarAdministrador() {
 
     if (strcmp(usuario, ADMIN_USER) == 0 && strcmp(contrasena, ADMIN_PASS) == 0) {
         printf("\033[1;32mAcceso concedido.\033[0m\n");
-        sleep(1);
+
         limpiarConsola();
         return 1;
     } else {
         printf("\033[1;31mAcceso denegado.\033[0m\n");
     	fflush(stdout);
-        sleep(1);
+
         limpiarConsola();
         return 0;
     }
@@ -200,7 +200,7 @@ int autenticarAdministrador() {
 
 Trastero menuAniadirTrastero(){
 	Trastero t;
-	sleep(1);
+
 	limpiarConsola();
 	printf("AÑADIR TRASTERO");
 	printf("\n-----------------\n");
@@ -223,7 +223,7 @@ Trastero menuAniadirTrastero(){
 }
 int menuEliminarTrastero(){
 	int numTrastero;
-	sleep(1);
+
 	limpiarConsola();
 	printf("ELIMINAR TRASTERO");
 	printf("\n-----------------\n");
@@ -316,7 +316,7 @@ void registrarUsuario(sqlite3 *db) {
     if (usuarioRegistrado(db, dniComp) == 1) {
     	printf("\033[38;5;208mEste DNI ya está registrado\n\033[0m");
         fflush(stdout);
-        sleep(1);
+
     } else if (strcmp(contrasena, confirmarContrasena) == 0) {
         Usuario u;
         strcpy(u.nombre, nombre);
@@ -326,10 +326,10 @@ void registrarUsuario(sqlite3 *db) {
         strcpy(u.email, email);
         strcpy(u.direccion, direccion);
         strcpy(u.contrasenia, contrasena);
-        sleep(1);
+
         aniadirUsuarioABBDD(db, u);
         printf("\033[1;32mUsuario registrado\n\033[0m");
-        sleep(1);
+
         fflush(stdout);
     } else {
     	printf("\033[1;31mLas contraseñas no coinciden\n\033[0m");
@@ -356,15 +356,17 @@ int autenticarUsuario(sqlite3 *db) {
 			//Usuario encontrado
 			if (atoi(dni)==u.dni&& strcmp(contrasena, u.contrasenia) == 0) {
 				printf("\033[1;32mAcceso concedido.\n\033[0m");
-				sleep(1);
+
 				return u.dni;
 				}
 		}
 		intentos++;
 		printf("\033[1;33mEl dni o la contraseña son incorrectas.\nIntentos restantes: %d\n\033[0m", 3 - intentos);
 
+
 	}while(intentos<3);
 	printf("\033[1;31mHas superado el numero maximo de intentos.\nAcceso denegado.\n\033[0m");
+
 	return -1;
 }
 

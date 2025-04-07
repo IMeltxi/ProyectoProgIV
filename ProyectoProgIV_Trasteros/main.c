@@ -19,7 +19,7 @@ int main() {
     Usuario u;
 
     printf("\033[1;32mIniciando el programa...\033[0m\n");fflush(stdout);
-    sleep(1);
+
     result = inicializarBBDD(&db);
     	if(result == SQLITE_OK){
     		printf("\033[1;32mEstableciendo la conexion con base de datos...\033[0m\n");
@@ -33,7 +33,7 @@ int main() {
 
 
 
-    sleep(2);
+
     limpiarConsola();
     //INICIALIZAMOS LAS LISTAS
     inicializarListaUsuarios(&lu);
@@ -79,7 +79,7 @@ int main() {
                         		break;
                         	case '3':
                         		//VER CLIENTES
-                        		sleep(1);
+
                         		limpiarConsola();
                         		visualizarListaUsuarios(lu);
 
@@ -91,19 +91,19 @@ int main() {
                         				switch (opcionAdmin2) {
 											case '1':
 												//VER TODOS LOS TRASTEROS
-												sleep(1);
+
 												limpiarConsola();
 												visualizarTrasteros(lt);
 												break;
 											case '2':
 												//VER LOS ALQUILADOS
-												sleep(1);
+
 												limpiarConsola();
 												visualizarTrasterosAlquilados(lt);
 												break;
 											case '3':
 												//VER LOS DISPONIBLES
-												sleep(1);
+
 												limpiarConsola();
 												visualizarTrasterosDisponibles(lt);
 												break;
@@ -180,7 +180,7 @@ int main() {
 													case '1':
 														do{
 														//Ordenamos la lista por numero de trastero
-															sleep(1);
+															//(1);
 															limpiarConsola();
 															ordenarPorNumeroTrastero(&lt);
 															visualizarTrasteros(lt);
@@ -193,7 +193,6 @@ int main() {
 													case '2':
 														do{
 														//Ordenamos la lista por precio
-															sleep(1);
 															limpiarConsola();
 															ordenarPorPrecio(&lt);
 															visualizarTrasteros(lt);
@@ -207,7 +206,6 @@ int main() {
 														//VER METROS
 														do{
 														//Ordenamos la lista por Metros Cuadrados
-															sleep(1);
 															limpiarConsola();
 															ordenarPorMetrosCuadrados(&lt);
 															visualizarTrasteros(lt);
@@ -221,7 +219,7 @@ int main() {
 														//VER VALORACION
 														do{
 														//Ordenamos la lista por Valoracion
-															sleep(1);
+
 															limpiarConsola();
 															ordenarPorValoracion(&lt);
 															visualizarTrasteros(lt);
@@ -283,7 +281,7 @@ int main() {
 													//Marcamos como no disponible en la BD
 													devolverTrasteroBBDD(db,t);
 													printf("El trastero con numero %d ha sido correctamente devuelto por %s.\n",t.numeroTrastero,u.nombre);
-													sleep(1);
+
 												}else{
 													printf("Este trastero no ha sido alquilado por usted\n");
 												}
@@ -296,7 +294,7 @@ int main() {
 										case '0':
 											//CERRAR SESION
 											printf("Cerrando sesion...");
-											sleep(1);
+
 											break;
 										default:
 											printf("\033[1;31mOpción inválida. Por favor, ingrese una opción válida.\n\033[0m");
