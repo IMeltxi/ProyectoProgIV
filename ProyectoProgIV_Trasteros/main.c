@@ -30,10 +30,6 @@ int main() {
     		fflush(stdout);
     		return 0;
     	}
-
-
-
-
     limpiarConsola();
     //INICIALIZAMOS LAS LISTAS
     inicializarListaUsuarios(&lu);
@@ -43,6 +39,8 @@ int main() {
 
     cargarTrasterosDesdeCSV(&lt, NOM_ARCHIVO_TRASTEROS);
     cargarUsuariosDesdeCSV(&lu,NOM_ARCHIVO_USUARIOS);
+
+
 
     do {
         opcionPrincipal = mostrarMenuPrincipal();
