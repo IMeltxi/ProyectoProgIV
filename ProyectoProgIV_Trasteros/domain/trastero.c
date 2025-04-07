@@ -86,9 +86,9 @@ void actualizarValoracion(Trastero *t){
 
 void visualizarTrastero(Trastero t) {
 	if(t.disponible==0){
-		printf("%d%20d%20.2f%20.2f%20d%20s\n", t.numeroTrastero, t.metrosCuadrados, t.precio, t.valoracion, t.numeroDeValoraciones, "NO");
+		printf("\033[1;34m%d%20d%20.2f%20.2f%20d%20s\n\033[0m", t.numeroTrastero, t.metrosCuadrados, t.precio, t.valoracion, t.numeroDeValoraciones, "NO");
 	}else{
-		printf("%d%20d%20.2f%20.2f%20d%20s\n", t.numeroTrastero, t.metrosCuadrados, t.precio, t.valoracion, t.numeroDeValoraciones, "SI");
+		printf("\033[1;34m%d%20d%20.2f%20.2f%20d%20s\n\033[0m", t.numeroTrastero, t.metrosCuadrados, t.precio, t.valoracion, t.numeroDeValoraciones, "SI");
 	}
 
 }
@@ -97,7 +97,7 @@ void visualizarTrastero(Trastero t) {
 
 void visualizarTrasteros(ListaTrasteros lt) {
     int i;
-    printf("%s%20s%20s%20s%30s%20s\n", "NºTRASTERO", "m²", "PRECIO", "VALORACION","NUMERO DE VALORACIONES","DISPONIBILIDAD");
+    printf("\033[1;34m%s%20s%20s%20s%30s%20s\n\033[0m", "NºTRASTERO", "m²", "PRECIO", "VALORACION", "NUMERO DE VALORACIONES", "DISPONIBILIDAD");
     fflush(stdout);
     for (i = 0; i < lt.numeroTrasteros; i++) {
         visualizarTrastero(lt.aTrasteros[i]);fflush(stdout);
@@ -106,7 +106,7 @@ void visualizarTrasteros(ListaTrasteros lt) {
 
 void visualizarTrasterosDisponibles(ListaTrasteros lt) {
      int i;
-     printf("%s%20s%20s%20s%30s%20s\n", "NºTRASTERO", "m²", "PRECIO", "VALORACION","NUMERO DE VALORACIONES","DISPONIBILIDAD");
+     printf("\033[1;34m%s%20s%20s%20s%30s%20s\n\033[0m", "NºTRASTERO", "m²", "PRECIO", "VALORACION", "NUMERO DE VALORACIONES", "DISPONIBILIDAD");
      fflush(stdout);
      for (i = 0; i < lt.numeroTrasteros; i++) {
     	 if(lt.aTrasteros[i].disponible==1){
@@ -117,7 +117,7 @@ void visualizarTrasterosDisponibles(ListaTrasteros lt) {
 
 void visualizarTrasterosAlquilados(ListaTrasteros lt) {
      int i;
-     printf("%s%20s%20s%20s%30s%20s\n", "NºTRASTERO", "m²", "PRECIO", "VALORACION","NUMERO DE VALORACIONES","DISPONIBILIDAD");
+     printf("\033[1;34m%s%20s%20s%20s%30s%20s\n\033[0m", "NºTRASTERO", "m²", "PRECIO", "VALORACION", "NUMERO DE VALORACIONES", "DISPONIBILIDAD");
      fflush(stdout);
      for (i = 0; i < lt.numeroTrasteros; i++) {
     	 if(lt.aTrasteros[i].disponible==0){

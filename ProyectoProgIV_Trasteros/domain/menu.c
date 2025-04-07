@@ -314,7 +314,7 @@ void registrarUsuario(sqlite3 *db) {
     fflush(stdout);
     dniComp = atoi(dni);
     if (usuarioRegistrado(db, dniComp) == 1) {
-        printf("Este DNI ya está registrado\n");
+    	printf("\033[38;5;208mEste DNI ya está registrado\n\033[0m");
         fflush(stdout);
         sleep(1);
     } else if (strcmp(contrasena, confirmarContrasena) == 0) {
@@ -328,11 +328,11 @@ void registrarUsuario(sqlite3 *db) {
         strcpy(u.contrasenia, contrasena);
         sleep(1);
         aniadirUsuarioABBDD(db, u);
-        printf("Usuario registrado\n");
+        printf("\033[1;32mUsuario registrado\n\033[0m");
         sleep(1);
         fflush(stdout);
     } else {
-        printf("Las contraseñas no coinciden\n");
+    	printf("\033[1;31mLas contraseñas no coinciden\n\033[0m");
         fflush(stdout);
     }
 }
@@ -355,16 +355,16 @@ int autenticarUsuario(sqlite3 *db) {
 		if(u.dni!=-1){
 			//Usuario encontrado
 			if (atoi(dni)==u.dni&& strcmp(contrasena, u.contrasenia) == 0) {
-				printf("Acceso concedido.\n");
+				printf("\033[1;32mAcceso concedido.\n\033[0m");
 				sleep(1);
 				return u.dni;
 				}
 		}
 		intentos++;
-		printf("El dni o la contraseña son incorrectas.\n"
-				"Intentos restantes: %d",3-intentos);
+		printf("\033[1;33mEl dni o la contraseña son incorrectas.\nIntentos restantes: %d\n\033[0m", 3 - intentos);
+
 	}while(intentos<3);
-	printf("Has superado el numero maximo de intentos.\nAcceso denegado.\n");
+	printf("\033[1;31mHas superado el numero maximo de intentos.\nAcceso denegado.\n\033[0m");
 	return -1;
 }
 

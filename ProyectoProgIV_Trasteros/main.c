@@ -14,7 +14,7 @@ int main() {
     sqlite3 *db; //Acceso a la bbdd
     int result,numTrastero,dniUser,trasteroAEliminar;
     char opcionPrincipal,opcionAdmin,opcionAdmin2,
-	opcionUsuarioInicio,opcionCliente,opcionCatalogo,opcionVolverAtrasCat;
+	opcionUsuarioInicio,opcionCliente,opcionCatalogo,opcionVolverAtrasCat,opcionVolverAtrasPerfil;
     Trastero t;
     Usuario u;
 
@@ -163,7 +163,14 @@ int main() {
 									switch (opcionCliente) {
 										case '1':
 											//PERFIL
+											do{
 												menuPerfil(u);
+												opcionVolverAtrasPerfil= volverAtras();
+												if(opcionVolverAtrasPerfil=='0'){
+													printf("Caracter invalido\n: ");
+												}
+											}while(opcionVolverAtrasPerfil!='0');
+
 											break;
 										case '2':
 											//CATALOGO
@@ -224,12 +231,15 @@ int main() {
 															}
 														}while(opcionVolverAtrasCat!='0');
 														break;
+													case'0':
+														printf("\033[0;33mSaliendo del menú catálogo...\n\033[0m");
+														break;
 													default:
-														printf("Opción invalida. Por favor, ingrese una opción válida.\n");
+														printf("\033[1;31mOpción inválida. Por favor, ingrese una opción válida.\n\033[0m");
 														fflush(stdout);
 														break;
 												}
-											}while(opcionCatalogo!=0);
+											}while(opcionCatalogo!='0');
 											break;
 										case '3':
 											//ALQUILAR TRASTERO
@@ -289,7 +299,7 @@ int main() {
 											sleep(1);
 											break;
 										default:
-											printf("Opción invalida. Por favor, ingrese una opción válida.\n");
+											printf("\033[1;31mOpción inválida. Por favor, ingrese una opción válida.\n\033[0m");
 											fflush(stdout);
 											break;
 									}
@@ -304,7 +314,7 @@ int main() {
 							fflush(stdout);
 							break;
 						default:
-							printf("Opción invalida. Por favor, ingrese una opción válida.\n");
+							printf("\033[1;31mOpción inválida. Por favor, ingrese una opción válida.\n\033[0m");
 							fflush(stdout);
 							break;
 					}
