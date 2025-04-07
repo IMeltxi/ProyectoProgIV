@@ -61,7 +61,7 @@ void aniadirUsuarioABBDD(sqlite3 *db, Usuario u){
 	    if (rc != SQLITE_OK) {
 	        printf("Error al preparar la sentencia: %s\n", sqlite3_errmsg(db));
 	        sqlite3_close(db);
-	        sleep(1);
+
 	        return;
 	    }
 
@@ -69,7 +69,7 @@ void aniadirUsuarioABBDD(sqlite3 *db, Usuario u){
 	    if (rc != SQLITE_DONE) {
 	        printf("Error al insertar datos: %s\n", sqlite3_errmsg(db));
 	        sqlite3_close(db);
-	        sleep(1);
+
 	    } else {
 	        printf("Usuario añadido correctamente.\n");
 	    }
@@ -115,7 +115,7 @@ void obtenerFechaActual(char *buffer, int buffer_size) {
 
 void aniadirTrasteroAlquilado(sqlite3 *db, Trastero t, Usuario u){
 	sqlite3_stmt *stmt1,*stmt2;
-	char sql[100];
+	char sql[500];
 	char fecha[11]; // Buffer para la fecha
 
 	obtenerFechaActual(fecha, sizeof(fecha)); // Obtener la fecha actual
@@ -127,7 +127,7 @@ void aniadirTrasteroAlquilado(sqlite3 *db, Trastero t, Usuario u){
 	sqlite3_finalize(stmt1); //Cerrar la sentencia
 
 	// Construir la consulta SQL con sprintf
-	sprintf(sql, "UPDATE Trasteros SET disponible = 0 WHERE numeroTrastero = %i", t.numeroTrastero);
+	sprintf(sql, "UPDATE Trastero SET disponible = 0 WHERE numeroTrastero = %i", t.numeroTrastero);
 	sqlite3_prepare_v2(db, sql, -1, &stmt2, NULL); //Preparar la sentencia
 	sqlite3_step(stmt2); //Ejecutar la sentencia
 	sqlite3_finalize(stmt2); //Cerrar la sentencia

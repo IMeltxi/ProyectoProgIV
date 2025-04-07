@@ -240,26 +240,40 @@ int main() {
 										case '3':
 											//ALQUILAR TRASTERO
 											printf("ALQUILAR TRASTERO");
-											printf("\nIndique el numero de trastero que desea alquilar \n: ");
-											fflush(stdout);
-											fflush(stdin);
-											scanf("%d", &numTrastero);
-											//Obetenemos el trastero que quiere alquilar
-											t= buscarTrasteroDDBB(db,numTrastero);
+											    printf("\nIndique el numero de trastero que desea alquilar \n: ");
+											    fflush(stdout);
+
+											    // Esta línea es crucial
+											    int temp_num;
+											    if (scanf("%d", &temp_num) != 1) {
+											        printf("Error al leer el número.\n");
+											        // Limpia el buffer de entrada
+											        while (getchar() != '\n');
+											        break;
+											    }
+											    numTrastero = temp_num;
+
+											    printf("Número leído: %d\n", numTrastero);
+											t = buscarTrasteroDDBB(db, numTrastero);
+											printf("DEBUG: Después de buscarTrasteroDDBB\n");
 											if(t.numeroTrastero!=-1){
+												printf("DEBUG: Después de if\n");
 												if(t.disponible==0){
-													printf("Lo sentimos, este trastero esta alquilado por otra persona.\n");
+													printf("\033[0;33mLo sentimos, este trastero no está disponible en nuestro catálogo.\n\033[0m");
+													printf("DEBUG: Después de if2\n");
 												}else{
-													//Marcamos como no disponible en local
 													alquilarTrastero(&t);
+													printf("DEBUG: Después de alquilar\n");
 													//Marcamos como no disponible en la BD
 													aniadirTrasteroAlquilado(db,t,u);
-													printf("El trastero con numero %d ha sido alquilado por %s.",t.numeroTrastero,u.nombre);
-												};
+													printf("\033[0;32mEl trastero con numero %d ha sido correctamente alquilado por %s.\033[0m\n", t.numeroTrastero, u.nombre);
+												}
 
 											}else{
-												printf("No existe este trastero en nuestro catalogo.\n");
+												printf("\033[0;31mNo existe este trastero en nuestro catálogo.\n\033[0m");
+
 											}
+
 											break;
 										case '4':
 											//DEVOLVER TRASTERO
@@ -267,31 +281,32 @@ int main() {
 											printf("\nIndique el numero de trastero que desea devolver \n: ");
 											fflush(stdout);
 											fflush(stdin);
-											scanf("%d", &numTrastero);
+											scanf("%i", &numTrastero);
 											//Obetenemos el trastero que quiere alquilar
 											t= buscarTrasteroDDBB(db,numTrastero);
 											if(t.numeroTrastero!=-1){
 												if(t.disponible==1){
-													printf("Lo sentimos, este trastero ya esta disponible en nuestro catalogo.\n");
+													printf("\033[0;33mLo sentimos, este trastero ya está disponible en nuestro catálogo.\n\033[0m");
 												}else if(verificarAlquiler(db,numTrastero,u.dni)==1){ //Verificamos que este usuario es el que ha alquilado el trastero
 													//Marcamos como disponible en local
 													devolverTrastero(&t);
 													//Marcamos como no disponible en la BD
 													devolverTrasteroBBDD(db,t);
-													printf("El trastero con numero %d ha sido correctamente devuelto por %s.\n",t.numeroTrastero,u.nombre);
-
+													printf("\033[0;32mEl trastero con numero %d ha sido correctamente devuelto por %s.\033[0m\n", t.numeroTrastero, u.nombre);
+													actualizarValoracion(&t);
 												}else{
-													printf("Este trastero no ha sido alquilado por usted\n");
+													printf("\033[0;31mEste trastero no ha sido alquilado por usted\n\033[0m");
 												}
 
 											}else{
-												printf("No existe este trastero en nuestro catalogo.\n");
+												printf("\033[0;31mNo existe este trastero en nuestro catálogo.\n\033[0m");
+
 											}
-											actualizarValoracion(&t);
+
 											break;
 										case '0':
 											//CERRAR SESION
-											printf("Cerrando sesion...");
+											printf("\033[0;33mCerrando sesión...\033[0m");
 
 											break;
 										default:
@@ -299,7 +314,7 @@ int main() {
 											fflush(stdout);
 											break;
 									}
-								}while(opcionCliente!=0);
+								}while(opcionCliente!='0');
 							}
 							break;
 						case '2':

@@ -9,8 +9,6 @@
 
 #define ADMIN_USER "admin"
 #define ADMIN_PASS "1234"
-#define USER1 "user"
-#define USER_PASS "1234"
 
 ListaTrasteros listaTrasteros;
 //Simula que limpia la consola empujando el contenido para arriba
