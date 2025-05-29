@@ -17,11 +17,11 @@ void aniadirTrastero(ListaTrasteros *lt, Trastero t) {
     if (lt->numeroTrasteros < 100) {
         lt->aTrasteros[lt->numeroTrasteros] = t;
         lt->numeroTrasteros++;
-        printf("\033[32mTrastero añadido correctamente.\033[0m\n");
-        fflush(stdout);
+//        printf("\033[32mTrastero añadido correctamente.\033[0m\n");
+//        fflush(stdout);
     } else {
-    	printf("\033[31mNo se puede añadir más trasteros. Límite de 100 alcanzado.\033[0m\n");
-        fflush(stdout);
+//    	printf("\033[31mNo se puede añadir más trasteros. Límite de 100 alcanzado.\033[0m\n");
+//        fflush(stdout);
     }
 }
 
@@ -41,14 +41,14 @@ void eliminarTrastero(ListaTrasteros *lt, Trastero t) {
     int i;
     int pos = buscarTrastero(*lt, t.numeroTrastero);
     if (pos == -1) {
-    	printf("\033[31mERROR: Ese trastero no existe\033[0m\n");
+//    	printf("\033[31mERROR: Ese trastero no existe\033[0m\n");
     } else {
         for (i = pos; i < lt->numeroTrasteros - 1; i++) {
             lt->aTrasteros[i] = lt->aTrasteros[i + 1];
         }
         lt->numeroTrasteros--;
-        printf("\033[32mTrastero eliminado correctamente.\033[0m\n");
-        fflush(stdout);
+//        printf("\033[32mTrastero eliminado correctamente.\033[0m\n");
+//        fflush(stdout);
     }
 }
 

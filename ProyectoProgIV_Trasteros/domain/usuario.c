@@ -3,6 +3,7 @@
 #include <stdlib.h> //malloc y free
 #include <string.h>
 
+
 void inicializarListaUsuarios(ListaUsuarios *lu){
 	lu->numUsuarios = 0;
 	lu->aUsuarios = NULL;
@@ -34,8 +35,9 @@ void visualizarUsuario(Usuario u){
 }
 void visualizarListaUsuarios(ListaUsuarios lu){
 	int i;
-	printf("\033[34m%s%15s%15s%15s%20s%15s%15s\033[0m\n", "NOMBRE", "APELLIDOS", "DNI", "TELEFONO", "EMAIL", "DIRECCION", "CONTRASEÑA");
-	fflush(stdout);
+//	printf("\033[34m%s%15s%15s%15s%20s%15s%15s\033[0m\n", "NOMBRE", "APELLIDOS", "DNI", "TELEFONO", "EMAIL", "DIRECCION", "CONTRASEÑA");
+//	fflush(stdout);
+
 	for(i=0;i<lu.numUsuarios;i++){
 		visualizarUsuario(lu.aUsuarios[i]);
 		fflush(stdout);

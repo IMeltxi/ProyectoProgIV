@@ -170,28 +170,10 @@ char menuAdministrador() {
     return opcion;
 }
 
-int autenticarAdministrador() {
-    char usuario[50], contrasena[50];
-    printf("Ingrese usuario: ");
-	fflush(stdout);
-	fflush(stdin);
-    gets(usuario);
-
-    printf("Ingrese contrasena: ");
-	fflush(stdout);
-	fflush(stdin);
-    gets(contrasena);
-
+int autenticarAdministrador(char* usuario,char* contrasena) {
     if (strcmp(usuario, ADMIN_USER) == 0 && strcmp(contrasena, ADMIN_PASS) == 0) {
-        printf("\033[1;32mAcceso concedido.\033[0m\n");
-
-        limpiarConsola();
         return 1;
     } else {
-        printf("\033[1;31mAcceso denegado.\033[0m\n");
-    	fflush(stdout);
-
-        limpiarConsola();
         return 0;
     }
 }

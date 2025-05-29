@@ -76,36 +76,40 @@ void aniadirUsuarioABBDD(sqlite3 *db, Usuario u){
 
 	    sqlite3_finalize(stmt); // Cerrar la sentencia
 }
-void aniadirTrasteroABBDD(sqlite3 *db, Trastero t){
-	sqlite3_stmt *stmt1,*stmt2;
-	char sql[500];
-	int totalTrasteros;
-	sprintf(sql, "SELECT COUNT(*) FROM Trastero");
-	if (sqlite3_prepare_v2(db, sql, -1, &stmt1, NULL) == SQLITE_OK) {
-		if (sqlite3_step(stmt1) == SQLITE_ROW) {
-			totalTrasteros = sqlite3_column_int(stmt1, 0);
-		 }
-	}
-	sqlite3_finalize(stmt1);
+int aniadirTrasteroABBDD(sqlite3 *db, Trastero t){
+    int result;
+    sqlite3_stmt *stmt1, *stmt2;
+    char sql[500];
+    int totalTrasteros = 0; // Inicializar
 
-	if (totalTrasteros < 100) {
-		sprintf(sql, "INSERT INTO Trastero (numeroTrastero, metrosCuadrados, precio, valoracion, numeroDeValoraciones, disponible)"
-		        "VALUES (%d, %d, %.2f, %.2f, %d, %d)",
-				t.numeroTrastero, t.metrosCuadrados, t.precio, t.valoracion, t.numeroDeValoraciones, t.disponible);
-		if (sqlite3_prepare_v2(db, sql, -1, &stmt2, NULL) == SQLITE_OK) {
-			sqlite3_step(stmt2); // Ejecutar la inserción
-			printf("\033[32mTrastero guardado a BD correctamente.\033[0m\n");
-			fflush(stdout);
-		} else {
-			fprintf(stderr, "Error al preparar la inserción: %s\n", sqlite3_errmsg(db));
-		}
-		sqlite3_finalize(stmt2);
-	} else {
-		printf("\033[31mNo se puede añadir más trasteros a BD. Límite de 100 alcanzado.\033[0m\n");
+    sprintf(sql, "SELECT COUNT(*) FROM Trastero");
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt1, NULL) == SQLITE_OK) {
+        if (sqlite3_step(stmt1) == SQLITE_ROW) {
+            totalTrasteros = sqlite3_column_int(stmt1, 0);
+        }
+    }
+    sqlite3_finalize(stmt1);
 
-	}
-}
-// Función para obtener la fecha actual en formato "YYYY-MM-DD"
+    if (totalTrasteros < 100) {
+        sprintf(sql, "INSERT INTO Trastero (numeroTrastero, metrosCuadrados, precio, valoracion, numeroDeValoraciones, disponible)"
+                " VALUES (%d, %d, %.2f, %.2f, %d, %d)",
+                t.numeroTrastero, t.metrosCuadrados, t.precio, t.valoracion, t.numeroDeValoraciones, t.disponible);
+
+        if (sqlite3_prepare_v2(db, sql, -1, &stmt2, NULL) == SQLITE_OK) {
+            if (sqlite3_step(stmt2) == SQLITE_DONE) { // Verificar que se ejecutó correctamente
+                sqlite3_finalize(stmt2);
+                return 1; // Éxito
+            } else {
+                sqlite3_finalize(stmt2);
+                return 0; // Error en la ejecución
+            }
+        } else {
+            return 0; // Error en la preparación
+        }
+    } else {
+        return 2; // Sin espacio
+    }
+}// Función para obtener la fecha actual en formato "YYYY-MM-DD"
 //Generada con Chat-GPT
 void obtenerFechaActual(char *buffer, int buffer_size) {
     time_t t = time(NULL);
@@ -423,7 +427,7 @@ void cargarUsuariosDesdeDB(ListaUsuarios *lu, sqlite3 *db) {
 
     // Preparamos la consulta SQL
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) {
-        printf("Error al preparar la consulta SQL: %s\n", sqlite3_errmsg(db));
+       // printf("Error al preparar la consulta SQL: %s\n", sqlite3_errmsg(db));
         return;
     }
 
@@ -451,7 +455,7 @@ void cargarUsuariosDesdeDB(ListaUsuarios *lu, sqlite3 *db) {
             lu->aUsuarios = realloc(lu->aUsuarios, lu->numUsuarios * sizeof(Usuario));
 
             if (lu->aUsuarios == NULL) {
-                printf("\033[31mError al asignar memoria\033[0m\n");
+                //printf("\033[31mError al asignar memoria\033[0m\n");
                 sqlite3_finalize(stmt);
                 return;
             }

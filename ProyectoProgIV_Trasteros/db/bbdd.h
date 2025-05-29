@@ -11,7 +11,7 @@ void crearTablas(sqlite3 *db);
 //Funcion para añadir usuarios a la tabla Usuarios
 void aniadirUsuarioABBDD(sqlite3 *db, Usuario u);
 //Funcion para añadir trasteros a la tabla Trasteros
-void aniadirTrasteroABBDD(sqlite3 *db, Trastero t);
+int aniadirTrasteroABBDD(sqlite3 *db, Trastero t);
 //Funcion para obtener la fecha en la que se realiza la operacion
 void obtenerFechaActual(char *buffer, int buffer_size); //Generada con IA
 //Funcion para guardar
