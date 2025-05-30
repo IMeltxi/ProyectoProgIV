@@ -9,7 +9,7 @@
 int inicializarBBDD(sqlite3 **db);
 void crearTablas(sqlite3 *db);
 //Funcion para añadir usuarios a la tabla Usuarios
-void aniadirUsuarioABBDD(sqlite3 *db, Usuario u);
+int aniadirUsuarioABBDD(sqlite3 *db, Usuario u);
 //Funcion para añadir trasteros a la tabla Trasteros
 int aniadirTrasteroABBDD(sqlite3 *db, Trastero t);
 //Funcion para obtener la fecha en la que se realiza la operacion

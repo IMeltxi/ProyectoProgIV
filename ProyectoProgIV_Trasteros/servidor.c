@@ -88,10 +88,13 @@ int main(int argc, char *argv[]) {
 		ListaUsuarios lu;
 		ListaTrasteros lt;
 		sqlite3 *db; //Acceso a la bbdd
-		int numTrastero,dniUser,trasteroAEliminar,result,i;
+		int numTrastero,dniUser,trasteroAEliminar,result,i,dni;
 		char opcionPrincipal,opcionAdmin,opcionAdminTrastero,
 		opcionUsuarioInicio,opcionCliente,opcionCatalogo,opcionVolverAtrasCat,opcionVolverAtrasPerfil;
-		char usuarioAdmin[50],contrasena[50];
+		char usuarioAdmin[50],contrasena[50],contrasenaIS[50];
+		//Variables para registrar usuario
+		char nombre[50], apellido[50], email[100],direccion[100],contrasenia[50],confirmarContrasena[50],telefono[20],dniReg[20];
+		int resultadoRegistro;
 		Trastero t;
 		Usuario u;
 
@@ -401,29 +404,6 @@ int main(int argc, char *argv[]) {
 												}
 		                        			}while(opcionAdminTrastero!='0');
 		                            break;
-		                        	case '5':
-		                        		//OBTENER FICHEROS
-		                        		//opcionAdminTrastero=menuFicherosAdmin();
-		                        		do{
-		                        			switch (opcionAdminTrastero) {
-												case '1':
-													//OBTENER FICHERO DE LOS TRASTEROS ACTUALMENTE ALQUILADOS
-													crearFicheroAlquilados(db);
-													break;
-												case '2':
-													//OBTENER FICHERO DE TODOS LOS TRASTEROS QUE HAN SIDO ALQUILADOS
-													crearFicheroHistorial(db);
-													break;
-					                        	case '0':
-					                        		printf("Saliendo de la opcion ficheros...\n");
-					                        		break;
-												default:
-													printf("Opción invalida. Por favor, ingrese una opción válida.\n");
-													fflush(stdout);
-													break;
-											}
-		                        		}while(opcionAdminTrastero!='0');
-		                        		break;
 		                        	case '0':
 		                        		printf("Saliendo del menú administrador...\n");
 		                        		break;
@@ -441,133 +421,313 @@ int main(int argc, char *argv[]) {
 		            case '2': {
 		            	do{
 		            		// opcionUsuarioInicio = menuIniReg();
-		            		 switch (opcionUsuarioInicio) {
-								case '1':
-									dniUser = autenticarUsuario(db);
+            				memset(recvBuff, 0, sizeof(recvBuff));
+            				recv(comm_socket,recvBuff,sizeof(recvBuff),0);//recibimos opcion
+            				sscanf(recvBuff,"%c",&opcionUsuarioInicio); //obtener datos
+            				memset(sendBuff, 0, sizeof(sendBuff));
+            				sprintf(sendBuff,"El servidor recibio: %c",opcionUsuarioInicio);
+            				send(comm_socket,sendBuff,strlen(sendBuff)+1,0); //enviar
 
+		            		switch (opcionUsuarioInicio) {
+								case '1':
+									// Recibir DNI
+									memset(recvBuff, 0, sizeof(recvBuff));
+									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+									dni = atoi(recvBuff); // Convertir string recibido a int
+
+									// Confirmar recepción del DNI
+									memset(sendBuff, 0, sizeof(sendBuff));
+									sprintf(sendBuff, "DNI recibido: %d", dni);
+									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
+									// Recibir contraseña
+									memset(recvBuff, 0, sizeof(recvBuff));
+									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+									strcpy(contrasenaIS, recvBuff);
+
+									// Confirmar recepción de la contraseña
+									memset(sendBuff, 0, sizeof(sendBuff));
+									sprintf(sendBuff, "Contraseña recibida: %s", contrasenaIS);
+									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
+									//Devuelve el dniUser si ha iniciado sesion, si es incorrecto dniUser=-1
+									dniUser = autenticarUsuario(db,dni,contrasenaIS);
+									// ENVIAR RESULTADO DE AUTENTICACIÓN AL CLIENTE
+									memset(sendBuff, 0, sizeof(sendBuff));
+									sprintf(sendBuff, "%d", dniUser);
+									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
 									//-1 = Login fallido
 									if(dniUser!=-1){
 										//Obtenemos el Usuario logeado
 										u = obtenerUsuario(db,dniUser);
 
 										do{
-											opcionCliente = menuCliente();
+											//opcionCliente = menuCliente();
+											memset(recvBuff, 0, sizeof(recvBuff));
+											recv(comm_socket,recvBuff,sizeof(recvBuff),0);//recibimos opcion
+											sscanf(recvBuff,"%c",&opcionCliente); //obtener datos
+											memset(sendBuff, 0, sizeof(sendBuff));
+											sprintf(sendBuff,"El servidor recibio: %c",opcionCliente);
+											send(comm_socket,sendBuff,strlen(sendBuff)+1,0); //enviar
+
 											switch (opcionCliente) {
 												case '1':
 													//PERFIL
-													do{
-														menuPerfil(u);
-														opcionVolverAtrasPerfil= volverAtras();
-														if(opcionVolverAtrasPerfil=='0'){
-															printf("Caracter invalido\n: ");
-														}
-													}while(opcionVolverAtrasPerfil!='0');
+													// Después de obtener el usuario
+													u = obtenerUsuario(db, dniUser);
+													//MANDAR NOMBRE
+													memset(sendBuff, 0, sizeof(sendBuff));
+													sprintf(sendBuff, "%s", u.nombre);
+													send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+													// Enviar apellidos
+													memset(sendBuff, 0, sizeof(sendBuff));
+													sprintf(sendBuff, "%s", u.apellido);
+													send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+													// Enviar DNI
+													memset(sendBuff, 0, sizeof(sendBuff));
+													sprintf(sendBuff, "%d", u.dni);
+													send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+													// Enviar teléfono
+													memset(sendBuff, 0, sizeof(sendBuff));
+													sprintf(sendBuff, "%d", u.telefono);
+													send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+													// Enviar email
+													memset(sendBuff, 0, sizeof(sendBuff));
+													sprintf(sendBuff, "%s", u.email);
+													send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+													// Enviar dirección
+													memset(sendBuff, 0, sizeof(sendBuff));
+													sprintf(sendBuff, "%s", u.direccion);
+													send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
 													break;
 												case '2':
 													//CATALOGO
 													do{
-														opcionCatalogo = menuCatalogo();
+														//opcionCatalogo = menuCatalogo();
+														memset(recvBuff, 0, sizeof(recvBuff));
+														recv(comm_socket,recvBuff,sizeof(recvBuff),0);//recibimos opcion
+														sscanf(recvBuff,"%c",&opcionCatalogo); //obtener datos
+														memset(sendBuff, 0, sizeof(sendBuff));
+														sprintf(sendBuff,"El servidor recibio: %c",opcionCatalogo);
+														send(comm_socket,sendBuff,strlen(sendBuff)+1,0); //enviar
+
 														switch (opcionCatalogo) {
 															case '1':
-																do{
 																//Ordenamos la lista por numero de trastero
 																	//(1);
-																	limpiarConsola();
 																	ordenarPorNumeroTrastero(&lt);
-																	visualizarTrasteros(lt);
-																	opcionVolverAtrasCat= volverAtras();
-																	if(opcionVolverAtrasCat=='0'){
-																		printf("Caracter invalido\n: ");
+																	memset(sendBuff, 0, sizeof(sendBuff));
+																	sprintf(sendBuff, "%d", lt.numeroTrasteros);
+																	send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+																	for(i = 0; i < lt.numeroTrasteros; i++){
+																			// Enviar número del trastero
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%d", lt.aTrasteros[i].numeroTrastero);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar metros cuadrados
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%d", lt.aTrasteros[i].metrosCuadrados);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar precio
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%.2f", lt.aTrasteros[i].precio);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar valoración
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%.2f", lt.aTrasteros[i].valoracion);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar número de valoraciones
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%d", lt.aTrasteros[i].numeroDeValoraciones);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar disponibilidad
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%s", lt.aTrasteros[i].disponible ? "DISPONIBLE" : "OCUPADO");
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
 																	}
-																}while(opcionVolverAtrasCat!='0');
-																break;
+																	break;
 															case '2':
-																do{
 																//Ordenamos la lista por precio
-																	limpiarConsola();
 																	ordenarPorPrecio(&lt);
-																	visualizarTrasteros(lt);
-																	opcionVolverAtrasCat= volverAtras();
-																	if(opcionVolverAtrasCat=='0'){
-																		printf("Caracter invalido\n: ");
+																	memset(sendBuff, 0, sizeof(sendBuff));
+																	sprintf(sendBuff, "%d", lt.numeroTrasteros);
+																	send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+																	for(i = 0; i < lt.numeroTrasteros; i++){
+																			// Enviar número del trastero
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%d", lt.aTrasteros[i].numeroTrastero);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar metros cuadrados
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%d", lt.aTrasteros[i].metrosCuadrados);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar precio
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%.2f", lt.aTrasteros[i].precio);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar valoración
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%.2f", lt.aTrasteros[i].valoracion);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar número de valoraciones
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%d", lt.aTrasteros[i].numeroDeValoraciones);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar disponibilidad
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%s", lt.aTrasteros[i].disponible ? "DISPONIBLE" : "OCUPADO");
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
 																	}
-																}while(opcionVolverAtrasCat!='0');
-																break;
+																	break;
+
 															case '3':
 																//VER METROS
-																do{
 																//Ordenamos la lista por Metros Cuadrados
-																	limpiarConsola();
 																	ordenarPorMetrosCuadrados(&lt);
-																	visualizarTrasteros(lt);
-																	opcionVolverAtrasCat= volverAtras();
-																	if(opcionVolverAtrasCat=='0'){
-																		printf("Caracter invalido\n: ");
+																	memset(sendBuff, 0, sizeof(sendBuff));
+																	sprintf(sendBuff, "%d", lt.numeroTrasteros);
+																	send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+																	for(i = 0; i < lt.numeroTrasteros; i++){
+																			// Enviar número del trastero
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%d", lt.aTrasteros[i].numeroTrastero);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar metros cuadrados
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%d", lt.aTrasteros[i].metrosCuadrados);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar precio
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%.2f", lt.aTrasteros[i].precio);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar valoración
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%.2f", lt.aTrasteros[i].valoracion);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar número de valoraciones
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%d", lt.aTrasteros[i].numeroDeValoraciones);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar disponibilidad
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%s", lt.aTrasteros[i].disponible ? "DISPONIBLE" : "OCUPADO");
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
 																	}
-																}while(opcionVolverAtrasCat!='0');
-																break;
+																	break;
+
 															case '4':
 																//VER VALORACION
-																do{
 																//Ordenamos la lista por Valoracion
-
-																	limpiarConsola();
 																	ordenarPorValoracion(&lt);
-																	visualizarTrasteros(lt);
-																	opcionVolverAtrasCat= volverAtras();
-																	if(opcionVolverAtrasCat=='0'){
-																		printf("Caracter invalido\n: ");
+																	memset(sendBuff, 0, sizeof(sendBuff));
+																	sprintf(sendBuff, "%d", lt.numeroTrasteros);
+																	send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+																	for(i = 0; i < lt.numeroTrasteros; i++){
+																			// Enviar número del trastero
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%d", lt.aTrasteros[i].numeroTrastero);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar metros cuadrados
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%d", lt.aTrasteros[i].metrosCuadrados);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar precio
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%.2f", lt.aTrasteros[i].precio);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar valoración
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%.2f", lt.aTrasteros[i].valoracion);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar número de valoraciones
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%d", lt.aTrasteros[i].numeroDeValoraciones);
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+																			// Enviar disponibilidad
+																			memset(sendBuff, 0, sizeof(sendBuff));
+																			sprintf(sendBuff, "%s", lt.aTrasteros[i].disponible ? "DISPONIBLE" : "OCUPADO");
+																			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
 																	}
-																}while(opcionVolverAtrasCat!='0');
-																break;
+																	break;
+
 															case'0':
-																printf("\033[0;33mSaliendo del menú catálogo...\n\033[0m");
+																//printf("\033[0;33mSaliendo del menú catálogo...\n\033[0m");
 																break;
 															default:
-																printf("\033[1;31mOpción inválida. Por favor, ingrese una opción válida.\n\033[0m");
-																fflush(stdout);
+//																printf("\033[1;31mOpción inválida. Por favor, ingrese una opción válida.\n\033[0m");
+//																fflush(stdout);
 																break;
 														}
 													}while(opcionCatalogo!='0');
 													break;
 												case '3':
 													//ALQUILAR TRASTERO
-													printf("ALQUILAR TRASTERO");
-													    printf("\nIndique el numero de trastero que desea alquilar \n: ");
-													    fflush(stdout);
+													// Recibir numTrastero
+													memset(recvBuff, 0, sizeof(recvBuff));
+													recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+													numTrastero = atoi(recvBuff); // Convertir string recibido a int
 
-													    // Esta línea es crucial
-													    int temp_num;
-													    if (scanf("%d", &temp_num) != 1) {
-													        printf("Error al leer el número.\n");
-													        // Limpia el buffer de entrada
-													        while (getchar() != '\n');
-													        break;
-													    }
-													    numTrastero = temp_num;
+													// Confirmar recepción del numTrastero
+													memset(sendBuff, 0, sizeof(sendBuff));
+													sprintf(sendBuff, "Trastero recibido: %d", numTrastero);
+													send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
 
-													    printf("Número leído: %d\n", numTrastero);
+
 													t = buscarTrasteroDDBB(db, numTrastero);
 													if(t.numeroTrastero!=-1){
 
 														if(t.disponible==0){
-															printf("\033[0;33mLo sentimos, este trastero no está disponible en nuestro catálogo.\n\033[0m");
-
+															//printf("\033[0;33mLo sentimos, este trastero no está disponible en nuestro catálogo.\n\033[0m");
+															result=0;
 														}else{
 															alquilarTrastero(&t);
 
 															//Marcamos como no disponible en la BD
 															aniadirTrasteroAlquilado(db,t,u);
-															printf("\033[0;32mEl trastero con numero %d ha sido correctamente alquilado por %s.\033[0m\n", t.numeroTrastero, u.nombre);
+															result = 1;
+														//	printf("\033[0;32mEl trastero con numero %d ha sido correctamente alquilado por %s.\033[0m\n", t.numeroTrastero, u.nombre);
 														}
 
 													}else{
-														printf("\033[0;31mNo existe este trastero en nuestro catálogo.\n\033[0m");
-
+													//	printf("\033[0;31mNo existe este trastero en nuestro catálogo.\n\033[0m");
+														result = 2;
 													}
-
+													// Enviar flag del resultado
+													memset(sendBuff, 0, sizeof(sendBuff));
+													sprintf(sendBuff, "%d",result);
+													send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 													break;
+
 												case '4':
 													//DEVOLVER TRASTERO
 													printf("DEVOLVER TRASTERO");
@@ -588,11 +748,11 @@ int main(int argc, char *argv[]) {
 															printf("\033[0;32mEl trastero con numero %d ha sido correctamente devuelto por %s.\033[0m\n", t.numeroTrastero, u.nombre);
 															actualizarValoracion(&t);
 														}else{
-															printf("\033[0;31mEste trastero no ha sido alquilado por usted\n\033[0m");
+															//printf("\033[0;31mEste trastero no ha sido alquilado por usted\n\033[0m");
 														}
 
 													}else{
-														printf("\033[0;31mNo existe este trastero en nuestro catálogo.\n\033[0m");
+														//printf("\033[0;31mNo existe este trastero en nuestro catálogo.\n\033[0m");
 
 													}
 
@@ -611,7 +771,94 @@ int main(int argc, char *argv[]) {
 									}
 									break;
 								case '2':
-									registrarUsuario(db);
+									// Recibir nombre
+									memset(recvBuff, 0, sizeof(recvBuff));
+									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+									strcpy(nombre, recvBuff);
+
+									// Confirmar recepción del nombre
+									memset(sendBuff, 0, sizeof(sendBuff));
+									sprintf(sendBuff, "Nombre recibido: %s", nombre);
+									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
+									// Recibir apellido
+									memset(recvBuff, 0, sizeof(recvBuff));
+									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+									strcpy(apellido, recvBuff);
+
+									// Confirmar recepción del apellido
+									memset(sendBuff, 0, sizeof(sendBuff));
+									sprintf(sendBuff, "Apellido recibido: %s", apellido);
+									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
+									// Recibir email
+									memset(recvBuff, 0, sizeof(recvBuff));
+									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+									strcpy(email, recvBuff);
+
+									// Confirmar recepción del email
+									memset(sendBuff, 0, sizeof(sendBuff));
+									sprintf(sendBuff, "Email recibido: %s", email);
+									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
+									// Recibir direccion
+									memset(recvBuff, 0, sizeof(recvBuff));
+									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+									strcpy(direccion, recvBuff);
+
+									// Confirmar recepción de la direccion
+									memset(sendBuff, 0, sizeof(sendBuff));
+									sprintf(sendBuff, "Direccion recibida: %s", direccion);
+									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
+									// Recibir contraseña
+									memset(recvBuff, 0, sizeof(recvBuff));
+									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+									strcpy(contrasenia, recvBuff);
+
+									// Confirmar recepción de la contraseña
+									memset(sendBuff, 0, sizeof(sendBuff));
+									sprintf(sendBuff, "Contraseña recibida: %s", contrasenia);
+									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
+									// Recibir confirmar contraseña
+									memset(recvBuff, 0, sizeof(recvBuff));
+									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+									strcpy(confirmarContrasena, recvBuff);
+
+									// Confirmar recepción de confirmar contraseña
+									memset(sendBuff, 0, sizeof(sendBuff));
+									sprintf(sendBuff, "Confirmacion contraseña recibida: %s", confirmarContrasena);
+									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
+									// Recibir telefono
+									memset(recvBuff, 0, sizeof(recvBuff));
+									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+									strcpy(telefono, recvBuff);
+
+									// Confirmar recepción del telefono
+									memset(sendBuff, 0, sizeof(sendBuff));
+									sprintf(sendBuff, "Telefono recibido: %s", telefono);
+									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
+									// Recibir DNI
+									memset(recvBuff, 0, sizeof(recvBuff));
+									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+									strcpy(dniReg, recvBuff);
+
+									// Confirmar recepción del DNI
+									memset(sendBuff, 0, sizeof(sendBuff));
+									sprintf(sendBuff, "DNI recibido: %s", dniReg);
+									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
+									// EJECUTAR REGISTRO
+									resultadoRegistro = registrarUsuario(db, nombre, apellido, email, direccion, contrasenia, confirmarContrasena, telefono, dniReg);
+
+									// ENVIAR RESULTADO AL CLIENTE
+									memset(sendBuff, 0, sizeof(sendBuff));
+									sprintf(sendBuff, "%d", resultadoRegistro);
+									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
 									break;
 								case '0':
 									//printf("Volviendo al menú principal...\n\n");
@@ -632,7 +879,7 @@ int main(int argc, char *argv[]) {
 		            default:
 		            	//printf("Opción invalida. Por favor, ingrese una opción válida.\n");
 		            	//fflush(stdout);
-		            	result=0;
+		            	break;
 		        }
 		    } while (opcionPrincipal != '0');
 

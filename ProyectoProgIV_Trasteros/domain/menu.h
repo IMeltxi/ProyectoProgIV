@@ -23,9 +23,9 @@ char menuFicherosAdmin();
 
 //Cambiar metodo
 
-int autenticarUsuario(sqlite3 *db);
+int autenticarUsuario(sqlite3 *db,int dni, char* contrasena);
 
-void registrarUsuario(sqlite3 *db);
+int registrarUsuario(sqlite3 *db,char* nombre, char* apellido, char* email, char* direccion, char* contrasena, char* confirmarContrasena, char* telefono, char* dni);
 char manejarCliente(sqlite3 *db);
 void cerrarPrograma(sqlite3 *db, ListaUsuarios *lu, ListaTrasteros *lt);
 #endif /* MENU_H_ */

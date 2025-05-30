@@ -244,58 +244,12 @@ char menuFicherosAdmin(){
 }
 
 
-void registrarUsuario(sqlite3 *db) {
-    char nombre[50], apellido[50], email[50], direccion[50];
-    char contrasena[50], confirmarContrasena[50], telefono[10], dni[10];
+int registrarUsuario(sqlite3 *db,char* nombre, char* apellido, char* email, char* direccion, char* contrasena, char* confirmarContrasena, char* telefono, char* dni) {
     int dniComp;
     char c;
-
-    while ((c = getchar()) != '\n' && c != EOF);//Limpiar el buffer
-    printf("Introduce el nombre: ");
-    fflush(stdout);
-    fgets(nombre, sizeof(nombre), stdin);
-    nombre[strcspn(nombre, "\n")] = 0;
-
-    printf("Introduce el apellido: ");
-    fflush(stdout);
-    fgets(apellido, sizeof(apellido), stdin);
-    apellido[strcspn(apellido, "\n")] = 0;
-
-    printf("Introduce el email: ");
-    fflush(stdout);
-    fgets(email, sizeof(email), stdin);
-    email[strcspn(email, "\n")] = 0;
-
-    printf("Introduce la dirección: ");
-    fflush(stdout);
-    fgets(direccion, sizeof(direccion), stdin);
-    direccion[strcspn(direccion, "\n")] = 0;
-
-    printf("Introduce el DNI: ");
-    fflush(stdout);
-    fgets(dni, sizeof(dni), stdin);
-    dni[strcspn(dni, "\n")] = 0;
-
-    printf("Introduce el teléfono: ");
-    fflush(stdout);
-    fgets(telefono, sizeof(telefono), stdin);
-    telefono[strcspn(telefono, "\n")] = 0;
-
-    printf("Introduce la contraseña: ");
-    fflush(stdout);
-    fgets(contrasena, sizeof(contrasena), stdin);
-    contrasena[strcspn(contrasena, "\n")] = 0;
-
-    printf("Confirma la contraseña: ");
-    fflush(stdout);
-    fgets(confirmarContrasena, sizeof(confirmarContrasena), stdin);
-    confirmarContrasena[strcspn(confirmarContrasena, "\n")] = 0;
-
-    fflush(stdout);
     dniComp = atoi(dni);
     if (usuarioRegistrado(db, dniComp) == 1) {
-    	printf("\033[38;5;208mEste DNI ya está registrado\n\033[0m");
-        fflush(stdout);
+    	return 0;
 
     } else if (strcmp(contrasena, confirmarContrasena) == 0) {
         Usuario u;
@@ -307,46 +261,25 @@ void registrarUsuario(sqlite3 *db) {
         strcpy(u.direccion, direccion);
         strcpy(u.contrasenia, contrasena);
 
-        aniadirUsuarioABBDD(db, u);
-        printf("\033[1;32mUsuario registrado\n\033[0m");
+        return aniadirUsuarioABBDD(db, u);
 
-        fflush(stdout);
     } else {
-    	printf("\033[1;31mLas contraseñas no coinciden\n\033[0m");
-        fflush(stdout);
+//    	printf("\033[1;31mLas contraseñas no coinciden\n\033[0m");
+//        fflush(stdout);
+    	return 2;
     }
 }
 
-int autenticarUsuario(sqlite3 *db) {
-	char dni[50], contrasena[50];
-	int intentos=0;
-	do{
+int autenticarUsuario(sqlite3 *db,int dni,char* contrasena) {
 		Usuario u;
-		printf("Ingrese dni: ");
-		fflush(stdout);
-		fflush(stdin);
-		gets(dni);
-
-		printf("Ingrese contrasena: ");
-		fflush(stdout);
-		fflush(stdin);
-		gets(contrasena);
-		u = obtenerUsuario(db,atoi(dni));
+		u = obtenerUsuario(db,dni);
 		if(u.dni!=-1){
 			//Usuario encontrado
-			if (atoi(dni)==u.dni&& strcmp(contrasena, u.contrasenia) == 0) {
-				printf("\033[1;32mAcceso concedido.\n\033[0m");
-
+			if (dni==u.dni && (strcmp(contrasena, u.contrasenia) == 0)) {
+				//printf("\033[1;32mAcceso concedido.\n\033[0m");
 				return u.dni;
 				}
 		}
-		intentos++;
-		printf("\033[1;33mEl dni o la contraseña son incorrectas.\nIntentos restantes: %d\n\033[0m", 3 - intentos);
-
-
-	}while(intentos<3);
-	printf("\033[1;31mHas superado el numero maximo de intentos.\nAcceso denegado.\n\033[0m");
-
 	return -1;
 }
 
@@ -358,13 +291,13 @@ char manejarCliente(sqlite3 *db) {
         opcion = menuIniReg();
         switch (opcion) {
             case '1':
-            	if(autenticarUsuario(db)){
-                printf("Iniciando sesión...\n");
-                strcpy(usuarioActual.nombre, "Usuario");
-                strcpy(usuarioActual.apellido, "Prueba");
-                usuarioActual.dni = 12345678;
-                menuCliente(usuarioActual, db);
-            	}
+//            	if(autenticarUsuario(db)){
+//                printf("Iniciando sesión...\n");
+//                strcpy(usuarioActual.nombre, "Usuario");
+//                strcpy(usuarioActual.apellido, "Prueba");
+//                usuarioActual.dni = 12345678;
+//                menuCliente(usuarioActual, db);
+//            	}
             	break;
             case '2':
 //            	if(registrarUsuario(db)){
