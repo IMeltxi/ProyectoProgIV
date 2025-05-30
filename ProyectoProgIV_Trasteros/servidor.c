@@ -155,29 +155,21 @@ int main(int argc, char *argv[]) {
 		                        		memset(recvBuff, 0, sizeof(recvBuff));
 		                        		recv(comm_socket,recvBuff,sizeof(recvBuff),0);//recibimos numero de trastero del CLIENTE
 				            			t.numeroTrastero = atoi(recvBuff); // convierte a int
-										//Mandamos al cliente lo que hemos recibido
-				            												sprintf(sendBuff, "El servidor recibio trastero: %s", recvBuff);
-				            												send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
 				            			memset(recvBuff, 0, sizeof(recvBuff));
 				            			recv(comm_socket,recvBuff,sizeof(recvBuff),0);//recibimos metros cuadrados del CLIENTE
 				            			t.metrosCuadrados = atoi(recvBuff); // convierte a int
-				            			//Mandamos al cliente lo que hemos recibido
-																			sprintf(sendBuff, "El servidor recibio estos metros cuadrados: %s", recvBuff);
-																			send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
 				            			memset(recvBuff, 0, sizeof(recvBuff));
 				            			recv(comm_socket,recvBuff,sizeof(recvBuff),0);//recibimos precio del CLIENTE
 				            			t.precio = atof(recvBuff); // convierte a int
-																			//Mandamos al cliente lo que hemos recibido
-																			sprintf(sendBuff, "El servidor recibio precio: %s", recvBuff);
-																			send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
 										t.valoracion = 0.0;
 										t.numeroDeValoraciones = 0;
 										t.disponible = 1;
 
 										if(t.numeroTrastero <= 0){
-											memset(sendBuff, 0, sizeof(sendBuff));
-											sprintf(sendBuff, "%d", 3); // Flag para número inválido
-											send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
 										} else if(buscarTrastero(lt, t.numeroTrastero) == -1){
 											aniadirTrastero(&lt, t);
 											result = aniadirTrasteroABBDD(db, t);
@@ -195,12 +187,6 @@ int main(int argc, char *argv[]) {
 		                        		//trasteroAEliminar = menuEliminarTrastero();
 		                        		memset(recvBuff, 0, sizeof(recvBuff));
 		                        		recv(comm_socket, recvBuff, sizeof(recvBuff), 0); // Recibimos número de trastero del CLIENTE
-
-		                        		// Confirmar al cliente qué número de trastero recibimos
-		                        		memset(sendBuff, 0, sizeof(sendBuff));
-		                        		strcpy(sendBuff, recvBuff);
-		                        		send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0); // Enviamos confirmación
-
 		                        		trasteroAEliminar = atoi(recvBuff); // Convierte a int
 		                        		t = obtenerTrastero(lt, trasteroAEliminar);
 
@@ -270,9 +256,7 @@ int main(int argc, char *argv[]) {
 		                        				memset(recvBuff, 0, sizeof(recvBuff));
 		                        				recv(comm_socket,recvBuff,sizeof(recvBuff),0);//recibimos opcion
 		                        				sscanf(recvBuff,"%c",&opcionAdminTrastero); //obtener datos
-		                        				memset(sendBuff, 0, sizeof(sendBuff));
-		                        				sprintf(sendBuff,"El servidor recibio: %c",opcionAdminTrastero);
-		                        				send(comm_socket,sendBuff,strlen(sendBuff)+1,0); //enviar
+
 		                        				switch (opcionAdminTrastero) {
 													case '1':
 														//VER TODOS LOS TRASTEROS
@@ -395,11 +379,11 @@ int main(int argc, char *argv[]) {
 		                        			}while(opcionAdminTrastero!='0');
 		                            break;
 		                        	case '0':
-		                        		printf("Saliendo del menú administrador...\n");
+		                        		//printf("Saliendo del menú administrador...\n");
 		                        		break;
 		    						default:
-		    							printf("Opción invalida. Por favor, ingrese una opción válida.\n");
-		    							fflush(stdout);
+//		    							printf("Opción invalida. Por favor, ingrese una opción válida.\n");
+//		    							fflush(stdout);
 		    							break;
 		            			}
 
@@ -414,9 +398,7 @@ int main(int argc, char *argv[]) {
             				memset(recvBuff, 0, sizeof(recvBuff));
             				recv(comm_socket,recvBuff,sizeof(recvBuff),0);//recibimos opcion
             				sscanf(recvBuff,"%c",&opcionUsuarioInicio); //obtener datos
-            				memset(sendBuff, 0, sizeof(sendBuff));
-            				sprintf(sendBuff,"El servidor recibio: %c",opcionUsuarioInicio);
-            				send(comm_socket,sendBuff,strlen(sendBuff)+1,0); //enviar
+
 
 		            		switch (opcionUsuarioInicio) {
 								case '1':
@@ -425,20 +407,11 @@ int main(int argc, char *argv[]) {
 									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 									dni = atoi(recvBuff); // Convertir string recibido a int
 
-									// Confirmar recepción del DNI
-									memset(sendBuff, 0, sizeof(sendBuff));
-									sprintf(sendBuff, "DNI recibido: %d", dni);
-									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
-
 									// Recibir contraseña
 									memset(recvBuff, 0, sizeof(recvBuff));
 									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 									strcpy(contrasenaIS, recvBuff);
 
-									// Confirmar recepción de la contraseña
-									memset(sendBuff, 0, sizeof(sendBuff));
-									sprintf(sendBuff, "Contraseña recibida: %s", contrasenaIS);
-									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
 
 									//Devuelve el dniUser si ha iniciado sesion, si es incorrecto dniUser=-1
 									dniUser = autenticarUsuario(db,dni,contrasenaIS);
@@ -456,9 +429,7 @@ int main(int argc, char *argv[]) {
 											memset(recvBuff, 0, sizeof(recvBuff));
 											recv(comm_socket,recvBuff,sizeof(recvBuff),0);//recibimos opcion
 											sscanf(recvBuff,"%c",&opcionCliente); //obtener datos
-											memset(sendBuff, 0, sizeof(sendBuff));
-											sprintf(sendBuff,"El servidor recibio: %c",opcionCliente);
-											send(comm_socket,sendBuff,strlen(sendBuff)+1,0); //enviar
+
 
 											switch (opcionCliente) {
 												case '1':
@@ -503,9 +474,6 @@ int main(int argc, char *argv[]) {
 														memset(recvBuff, 0, sizeof(recvBuff));
 														recv(comm_socket,recvBuff,sizeof(recvBuff),0);//recibimos opcion
 														sscanf(recvBuff,"%c",&opcionCatalogo); //obtener datos
-														memset(sendBuff, 0, sizeof(sendBuff));
-														sprintf(sendBuff,"El servidor recibio: %c",opcionCatalogo);
-														send(comm_socket,sendBuff,strlen(sendBuff)+1,0); //enviar
 
 														switch (opcionCatalogo) {
 															case '1':
@@ -687,12 +655,6 @@ int main(int argc, char *argv[]) {
 													recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 													numTrastero = atoi(recvBuff); // Convertir string recibido a int
 
-													// Confirmar recepción del numTrastero
-													memset(sendBuff, 0, sizeof(sendBuff));
-													sprintf(sendBuff, "Trastero recibido: %d", numTrastero);
-													send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
-
-
 													t = buscarTrasteroDDBB(db, numTrastero);
 													if(t.numeroTrastero!=-1){
 
@@ -729,11 +691,6 @@ int main(int argc, char *argv[]) {
 													memset(recvBuff, 0, sizeof(recvBuff));
 													recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 													numTrastero = atoi(recvBuff); // Convertir string recibido a int
-
-													// Confirmar recepción del numTrastero
-													memset(sendBuff, 0, sizeof(sendBuff));
-													sprintf(sendBuff, "Trastero recibido: %d", numTrastero);
-													send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
 
 													// Enviar nombre del usuario
 													memset(sendBuff, 0, sizeof(sendBuff));
@@ -790,80 +747,41 @@ int main(int argc, char *argv[]) {
 									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 									strcpy(nombre, recvBuff);
 
-									// Confirmar recepción del nombre
-									memset(sendBuff, 0, sizeof(sendBuff));
-									sprintf(sendBuff, "Nombre recibido: %s", nombre);
-									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
-
 									// Recibir apellido
 									memset(recvBuff, 0, sizeof(recvBuff));
 									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 									strcpy(apellido, recvBuff);
 
-									// Confirmar recepción del apellido
-									memset(sendBuff, 0, sizeof(sendBuff));
-									sprintf(sendBuff, "Apellido recibido: %s", apellido);
-									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
 
 									// Recibir email
 									memset(recvBuff, 0, sizeof(recvBuff));
 									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 									strcpy(email, recvBuff);
 
-									// Confirmar recepción del email
-									memset(sendBuff, 0, sizeof(sendBuff));
-									sprintf(sendBuff, "Email recibido: %s", email);
-									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
-
 									// Recibir direccion
 									memset(recvBuff, 0, sizeof(recvBuff));
 									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 									strcpy(direccion, recvBuff);
-
-									// Confirmar recepción de la direccion
-									memset(sendBuff, 0, sizeof(sendBuff));
-									sprintf(sendBuff, "Direccion recibida: %s", direccion);
-									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
 
 									// Recibir contraseña
 									memset(recvBuff, 0, sizeof(recvBuff));
 									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 									strcpy(contrasenia, recvBuff);
 
-									// Confirmar recepción de la contraseña
-									memset(sendBuff, 0, sizeof(sendBuff));
-									sprintf(sendBuff, "Contraseña recibida: %s", contrasenia);
-									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
-
 									// Recibir confirmar contraseña
 									memset(recvBuff, 0, sizeof(recvBuff));
 									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 									strcpy(confirmarContrasena, recvBuff);
-
-									// Confirmar recepción de confirmar contraseña
-									memset(sendBuff, 0, sizeof(sendBuff));
-									sprintf(sendBuff, "Confirmacion contraseña recibida: %s", confirmarContrasena);
-									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
 
 									// Recibir telefono
 									memset(recvBuff, 0, sizeof(recvBuff));
 									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 									strcpy(telefono, recvBuff);
 
-									// Confirmar recepción del telefono
-									memset(sendBuff, 0, sizeof(sendBuff));
-									sprintf(sendBuff, "Telefono recibido: %s", telefono);
-									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
-
 									// Recibir DNI
 									memset(recvBuff, 0, sizeof(recvBuff));
 									recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 									strcpy(dniReg, recvBuff);
-
-									// Confirmar recepción del DNI
-									memset(sendBuff, 0, sizeof(sendBuff));
-									sprintf(sendBuff, "DNI recibido: %s", dniReg);
-									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
 
 									// EJECUTAR REGISTRO
 									resultadoRegistro = registrarUsuario(db, nombre, apellido, email, direccion, contrasenia, confirmarContrasena, telefono, dniReg);
