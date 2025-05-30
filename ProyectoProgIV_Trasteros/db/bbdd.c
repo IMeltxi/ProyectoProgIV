@@ -362,6 +362,60 @@ void cargarUsuariosDesdeDB(ListaUsuarios *lu, sqlite3 *db) {
     // Finalizar la sentencia SQL
     sqlite3_finalize(stmt);
 }
+int registrarUsuario(sqlite3 *db,char* nombre, char* apellido, char* email, char* direccion, char* contrasena, char* confirmarContrasena, char* telefono, char* dni) {
+    int dniComp;
+    char c;
+    dniComp = atoi(dni);
+    if (usuarioRegistrado(db, dniComp) == 1) {
+    	return 0;
+
+    } else if (strcmp(contrasena, confirmarContrasena) == 0) {
+        Usuario u;
+        strcpy(u.nombre, nombre);
+        strcpy(u.apellido, apellido);
+        u.dni = atoi(dni);
+        u.telefono = atoi(telefono);
+        strcpy(u.email, email);
+        strcpy(u.direccion, direccion);
+        strcpy(u.contrasenia, contrasena);
+
+        return aniadirUsuarioABBDD(db, u);
+
+    } else {
+//    	printf("\033[1;31mLas contraseñas no coinciden\n\033[0m");
+//        fflush(stdout);
+    	return 2;
+    }
+}
+
+void cerrarPrograma(sqlite3 *db, ListaUsuarios *lu, ListaTrasteros *lt) {
+    // Liberar la memoria de las listas
+	if (lu->aUsuarios != NULL) {
+	        free(lu->aUsuarios);
+	        lu->aUsuarios = NULL;  // Establecer a NULL después de liberar la memoria
+	 }
+	 lu->numUsuarios = 0;
+
+    // Cerrar la base de datos
+    if (db != NULL) {
+        sqlite3_close(db);
+       // printf("\033[0;32mBase de datos cerrada correctamente.\033[0m\n");
+    }
+
+   // printf("Fin del programa\n");
+}
+int autenticarUsuario(sqlite3 *db,int dni,char* contrasena) {
+		Usuario u;
+		u = obtenerUsuario(db,dni);
+		if(u.dni!=-1){
+			//Usuario encontrado
+			if (dni==u.dni && (strcmp(contrasena, u.contrasenia) == 0)) {
+				//printf("\033[1;32mAcceso concedido.\n\033[0m");
+				return u.dni;
+				}
+		}
+	return -1;
+}
 
 
 

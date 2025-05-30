@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "domain/menu.h"
 #include "domain/usuario.h"
 #include "domain/trastero.h"
 #include "db/bbdd.h"
@@ -119,8 +118,6 @@ int main(int argc, char *argv[]) {
 		        //opcionPrincipal = mostrarMenuPrincipal();
 			recv(comm_socket,recvBuff,sizeof(recvBuff),0);//recibimos opcion
 			sscanf(recvBuff,"%c",&opcionPrincipal); //obtener datos
-			sprintf(sendBuff,"El servidor recibio: %c",opcionPrincipal);
-			send(comm_socket,sendBuff,sizeof(sendBuff),0);  //enviar
 
 			switch (opcionPrincipal) { //La variable verdadera es opcionPrincipal
 		        //PERFIL ADMIN
@@ -130,15 +127,11 @@ int main(int argc, char *argv[]) {
 		            		memset(recvBuff, 0, sizeof(recvBuff));
 		            		recv(comm_socket,recvBuff,sizeof(recvBuff),0);//recibimos usuario
 							strcpy(usuarioAdmin,recvBuff);
-							//Mandamos al cliente lo que hemos recibido
-									sprintf(sendBuff, "El servidor recibio usuario: %s", recvBuff);
-									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
 							memset(recvBuff, 0, sizeof(recvBuff));
 							recv(comm_socket,recvBuff,sizeof(recvBuff),0);//recibimos contraseña
 							strcpy(contrasena,recvBuff);
-							//Mandamos al cliente lo que hemos recibido
-									sprintf(sendBuff, "El servidor recibio contraseña: %s", recvBuff);
-									send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
 							result = autenticarAdministrador(usuarioAdmin,contrasena);
 							memset(sendBuff, 0, sizeof(sendBuff));
 							if(result==1){
@@ -154,9 +147,6 @@ int main(int argc, char *argv[]) {
 		            			memset(recvBuff, 0, sizeof(recvBuff));
 								recv(comm_socket,recvBuff,sizeof(recvBuff),0);//recibimos opcion
 								sscanf(recvBuff,"%c",&opcionAdmin); //obtener datos
-								memset(sendBuff, 0, sizeof(sendBuff));
-								sprintf(sendBuff,"El servidor recibio: %c",opcionAdminTrastero);
-								send(comm_socket,sendBuff,strlen(sendBuff)+1,0); //enviar
 
 		            			switch (opcionAdmin) {
 		                        	case '1':

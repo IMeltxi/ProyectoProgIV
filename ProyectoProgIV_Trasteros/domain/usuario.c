@@ -2,7 +2,8 @@
 #include <stdio.h> //printf, scanf, fflush(stdin), fflush(stdout) y NULL
 #include <stdlib.h> //malloc y free
 #include <string.h>
-
+#define ADMIN_USER "admin"
+#define ADMIN_PASS "1234"
 
 void inicializarListaUsuarios(ListaUsuarios *lu){
 	lu->numUsuarios = 0;
@@ -102,5 +103,12 @@ void cargarUsuariosDesdeCSV(ListaUsuarios *lu, char *nombreArchivo) {
     }
 
     fclose(pf);
+}
+int autenticarAdministrador(char* usuario,char* contrasena) {
+    if (strcmp(usuario, ADMIN_USER) == 0 && strcmp(contrasena, ADMIN_PASS) == 0) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 

@@ -25,5 +25,7 @@ Usuario* iniciarSesion(ListaUsuarios lu,char* email, char* contra);
 void visualizarPerfilUsuario(Usuario u);
 
 void cargarUsuariosDesdeCSV(ListaUsuarios *lu, char *nombreArchivo);
+int autenticarAdministrador(char* usuario,char* contrasena);
+
 
 #endif

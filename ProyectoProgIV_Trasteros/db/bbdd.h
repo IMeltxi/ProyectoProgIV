@@ -28,4 +28,8 @@ int verificarAlquiler(sqlite3 *db, int numeroTrastero, int dni);
 
 void cargarTrasterosDesdeDB(ListaTrasteros *lt, sqlite3 *db);
 void cargarUsuariosDesdeDB(ListaUsuarios *lu, sqlite3 *db);
+int registrarUsuario(sqlite3 *db,char* nombre, char* apellido, char* email, char* direccion, char* contrasena, char* confirmarContrasena, char* telefono, char* dni);
+void cerrarPrograma(sqlite3 *db, ListaUsuarios *lu, ListaTrasteros *lt);
+int autenticarUsuario(sqlite3 *db,int dni,char* contrasena);
+
 #endif /* BBDD_H_ */
