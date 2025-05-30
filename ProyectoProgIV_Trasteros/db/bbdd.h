@@ -24,11 +24,7 @@ void aniadirTrasteroAlquilado(sqlite3 *db, Trastero t, Usuario u);
 int usuarioRegistrado(sqlite3 *db,int dni);
 Trastero buscarTrasteroDDBB(sqlite3 *db, int numeroTrastero);
 void eliminarTrasteroDDBB(sqlite3 *db,int numeroTrastero);
-void obtenerListaTrasterosAlquiladosCSV(sqlite3 *db);
 int verificarAlquiler(sqlite3 *db, int numeroTrastero, int dni);
-
-void crearFicheroAlquilados(sqlite3 *db);
-void crearFicheroHistorial(sqlite3 *db);
 
 void cargarTrasterosDesdeDB(ListaTrasteros *lt, sqlite3 *db);
 void cargarUsuariosDesdeDB(ListaUsuarios *lu, sqlite3 *db);

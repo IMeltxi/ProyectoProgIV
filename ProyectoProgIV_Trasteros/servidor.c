@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 		ListaUsuarios lu;
 		ListaTrasteros lt;
 		sqlite3 *db; //Acceso a la bbdd
-		int numTrastero,dniUser,trasteroAEliminar,result,i,dni;
+		int numTrastero,dniUser,trasteroAEliminar,result,i,dni,valoracion;
 		char opcionPrincipal,opcionAdmin,opcionAdminTrastero,
 		opcionUsuarioInicio,opcionCliente,opcionCatalogo,opcionVolverAtrasCat,opcionVolverAtrasPerfil;
 		char usuarioAdmin[50],contrasena[50],contrasenaIS[50];
@@ -172,7 +172,7 @@ int main(int argc, char *argv[]) {
 				            			recv(comm_socket,recvBuff,sizeof(recvBuff),0);//recibimos metros cuadrados del CLIENTE
 				            			t.metrosCuadrados = atoi(recvBuff); // convierte a int
 				            			//Mandamos al cliente lo que hemos recibido
-																			sprintf(sendBuff, "El servidor recibio metrosCuadrados: %s", recvBuff);
+																			sprintf(sendBuff, "El servidor recibio estos metros cuadrados: %s", recvBuff);
 																			send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
 				            			memset(recvBuff, 0, sizeof(recvBuff));
 				            			recv(comm_socket,recvBuff,sizeof(recvBuff),0);//recibimos precio del CLIENTE
@@ -722,6 +722,11 @@ int main(int argc, char *argv[]) {
 													//	printf("\033[0;31mNo existe este trastero en nuestro catálogo.\n\033[0m");
 														result = 2;
 													}
+													// Enviar nombre del usuario
+													memset(sendBuff, 0, sizeof(sendBuff));
+													sprintf(sendBuff, "%s",u.nombre);
+													send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
 													// Enviar flag del resultado
 													memset(sendBuff, 0, sizeof(sendBuff));
 													sprintf(sendBuff, "%d",result);
@@ -730,31 +735,50 @@ int main(int argc, char *argv[]) {
 
 												case '4':
 													//DEVOLVER TRASTERO
-													printf("DEVOLVER TRASTERO");
-													printf("\nIndique el numero de trastero que desea devolver \n: ");
-													fflush(stdout);
-													fflush(stdin);
-													scanf("%i", &numTrastero);
+													//recibimos numero de trastero
+													memset(recvBuff, 0, sizeof(recvBuff));
+													recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+													numTrastero = atoi(recvBuff); // Convertir string recibido a int
+
+													// Confirmar recepción del numTrastero
+													memset(sendBuff, 0, sizeof(sendBuff));
+													sprintf(sendBuff, "Trastero recibido: %d", numTrastero);
+													send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+
+													// Enviar nombre del usuario
+													memset(sendBuff, 0, sizeof(sendBuff));
+													sprintf(sendBuff, "%s",u.nombre);
+													send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
 													//Obetenemos el trastero que quiere alquilar
 													t= buscarTrasteroDDBB(db,numTrastero);
+													result = 3;
 													if(t.numeroTrastero!=-1){
 														if(t.disponible==1){
-															printf("\033[0;33mLo sentimos, este trastero ya está disponible en nuestro catálogo.\n\033[0m");
+//															printf("\033[0;33mLo sentimos, este trastero ya está disponible en nuestro catálogo.\n\033[0m");
+															result = 0;
 														}else if(verificarAlquiler(db,numTrastero,u.dni)==1){ //Verificamos que este usuario es el que ha alquilado el trastero
 															//Marcamos como disponible en local
 															devolverTrastero(&t);
 															//Marcamos como no disponible en la BD
 															devolverTrasteroBBDD(db,t);
-															printf("\033[0;32mEl trastero con numero %d ha sido correctamente devuelto por %s.\033[0m\n", t.numeroTrastero, u.nombre);
-															actualizarValoracion(&t);
+															//printf("\033[0;32mEl trastero con numero %d ha sido correctamente devuelto por %s.\033[0m\n", t.numeroTrastero, u.nombre);
+															result = 1;
+
 														}else{
 															//printf("\033[0;31mEste trastero no ha sido alquilado por usted\n\033[0m");
+															result = 2;
 														}
 
 													}else{
 														//printf("\033[0;31mNo existe este trastero en nuestro catálogo.\n\033[0m");
-
+														result = 3;
 													}
+
+													// Enviar flag del resultado
+													memset(sendBuff, 0, sizeof(sendBuff));
+													sprintf(sendBuff, "%d",result);
+													send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
 													break;
 												case '0':

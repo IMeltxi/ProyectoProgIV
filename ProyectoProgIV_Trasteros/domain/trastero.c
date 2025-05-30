@@ -66,21 +66,14 @@ Trastero obtenerTrastero(ListaTrasteros lt, int numeroTrastero){
 	return t;
 }
 
-void actualizarValoracion(Trastero *t){
-	int valoracion;
-	do{
-	printf("\033[0;33m\nComo valoraria este trastero?(1-5): \n\033[0m");
-	fflush(stdout);
-	fflush(stdin);
-	scanf("%d", &valoracion);
+void actualizarValoracion(Trastero *t,int valoracion){
 	if(valoracion<1||valoracion>5){
-		printf("\033[0;31mSeleccione un valor entre el 1 y el 5.\n\033[0m");
+		//printf("\033[0;31mSeleccione un valor entre el 1 y el 5.\n\033[0m");
 	}else{
 		t->valoracion= (t->valoracion+valoracion)/2;
 		t->numeroDeValoraciones++;
 		printf("\033[0;32m\nHas valorado este trastero como un %d/5. \n\033[0m",valoracion);
 	}
-	}while(valoracion<1||valoracion>5);
 
 }
 

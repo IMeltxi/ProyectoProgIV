@@ -253,10 +253,6 @@ void eliminarTrasteroDDBB(sqlite3 *db,int numeroTrastero){
 	sqlite3_step(stmt); //Ejecutar la sentencia
 	sqlite3_finalize(stmt); //Cerrar la sentencia
 }
-//TODO: Modificar la funcion para que cumpla con su nombre
-void obtenerListaTrasterosAlquiladosCSV(sqlite3 *db) {
-
-}
 int verificarAlquiler(sqlite3 *db, int numeroTrastero, int dni){
 		sqlite3_stmt *stmt;
 		char sql[150];
@@ -279,113 +275,6 @@ int verificarAlquiler(sqlite3 *db, int numeroTrastero, int dni){
 		return encontrado;
 
 }
-void crearFicheroAlquilados(sqlite3 *db) {
-    FILE *f;
-    sqlite3_stmt *stmt;
-    char sql[250];
-
-    // Abrir el archivo para escritura
-    f = fopen("TrasterosAlquilados.txt", "w");
-    if (f == NULL) {
-        fprintf(stderr, "Error al abrir el archivo para escribir.\n");
-        return;
-    }
-
-    // Escribir los encabezados en el archivo
-    fprintf(f, "NUMERO DE TRASTERO;DNI;DIA INICIO\n");
-
-    // Consulta SQL para obtener los valores de la tabla ALQUILADOS
-    sprintf(sql, "SELECT numeroTrastero, dni, diaInicio FROM Alquilados");
-
-    // Preparar la consulta
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) {
-        fprintf(stderr, "Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
-        fclose(f);
-        return;
-    }
-
-    // Ejecutar la consulta y escribir los resultados en el archivo
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
-        // Obtener los valores de cada columna
-        int numeroTrastero = sqlite3_column_int(stmt, 0);
-        const char *dni = (const char*)sqlite3_column_text(stmt, 1);
-        const char *diaInicio = (const char*)sqlite3_column_text(stmt, 2);
-
-        // Escribir los valores en el archivo
-        fprintf(f, "%d;%s;%s\n", numeroTrastero, dni, diaInicio);
-    }
-
-    // Finalizar el statement y cerrar el archivo
-    sqlite3_finalize(stmt);
-    fclose(f);
-}
-void crearFicheroHistorial(sqlite3 *db) {
-    FILE *f;
-    sqlite3_stmt *stmt;
-    char sql[250];
-
-    // Abrir el archivo para escribir los datos
-    f = fopen("TrasterosHistorial.txt", "w");
-    if (f == NULL) {
-        fprintf(stderr, "Error al abrir el archivo TrasterosHistorial.txt\n");
-        return;
-    }
-
-    // Escribir los encabezados del archivo
-    fprintf(f, "NUMERO DE TRASTERO;DNI;VALORACION;NUMERO DE VALORACIONES;DIA INICIO;DIA FINAL\n");
-
-    // Consulta para obtener los datos de la tabla historial
-    snprintf(sql, sizeof(sql), "SELECT numeroTrastero, dni, valoracion, numeroDeValoraciones, diaInicio, diaFinal FROM historial");
-
-    // Preparar la consulta
-    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-    if (rc != SQLITE_OK) {
-        fprintf(stderr, "Error al preparar la consulta: %s\n", sqlite3_errmsg(db));
-        fclose(f);
-        return;
-    }
-
-    // Ejecutar la consulta y escribir los resultados en el archivo
-    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-        // Obtener los valores de cada columna
-        int numeroTrastero = sqlite3_column_int(stmt, 0);
-        int dni = sqlite3_column_int(stmt, 1);
-        double valoracion = sqlite3_column_double(stmt, 2);  // Cambio de float a double
-        int numeroDeValoraciones = sqlite3_column_int(stmt, 3);
-        const char *diaInicio = (const char*)sqlite3_column_text(stmt, 4);
-        const char *diaFinal = (const char*)sqlite3_column_text(stmt, 5);
-
-        // Comprobar si las fechas son nulas (en caso de que se pueda dar el caso)
-        if (diaInicio == NULL) {
-            diaInicio = "N/A"; // Asignar un valor predeterminado en caso de que sea nulo
-        }
-        if (diaFinal == NULL) {
-            diaFinal = "N/A"; // Asignar un valor predeterminado en caso de que sea nulo
-        }
-
-        // Escribir los valores en el archivo
-        fprintf(f, "%d;%d;%.2f;%d;%s;%s\n", numeroTrastero, dni, valoracion, numeroDeValoraciones, diaInicio, diaFinal);
-    }
-
-    // Si no hubo filas, mostrar un mensaje
-    if (rc != SQLITE_DONE) {
-        fprintf(stderr, "Error al leer los resultados: %s\n", sqlite3_errmsg(db));
-    }
-
-    // Verificar si no se obtuvo ningún dato
-    if (rc == SQLITE_OK) {
-        fprintf(stderr, "No se encontraron datos para la consulta.\n");
-    }
-
-    // Finalizar la consulta
-    sqlite3_finalize(stmt);
-
-    // Cerrar el archivo después de escribir
-    fclose(f);
-}
-
-
-
 void cargarTrasterosDesdeDB(ListaTrasteros *lt, sqlite3 *db) {
     sqlite3_stmt *stmt;
     char sql[500];

@@ -25,7 +25,7 @@ int buscarTrastero(ListaTrasteros lt, int numeroTrastero);
 void aniadirTrastero(ListaTrasteros *lt, Trastero t);
 void eliminarTrastero(ListaTrasteros *lt, Trastero t);
 Trastero obtenerTrastero(ListaTrasteros lt, int numeroTrastero);
-void actualizarValoracion(Trastero *t);
+void actualizarValoracion(Trastero *t,int valoracion);
 void visualizarTrasteros(ListaTrasteros lt);
 void visualizarTrastero(Trastero t);
 
